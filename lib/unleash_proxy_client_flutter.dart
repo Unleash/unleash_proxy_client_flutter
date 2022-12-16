@@ -48,15 +48,16 @@ class UnleashClient extends EventEmitter {
   final String url;
   final String clientKey;
   final String appName;
-  final int refreshInterval = 15;
-  late Future<dynamic> Function(Uri, String) fetcher;
-  late Timer timer;
-  late Map<String, ToggleConfig> toggles = {};
+  final int refreshInterval;
+  final Future<dynamic> Function(Uri, String) fetcher;
+  Timer? timer;
+  Map<String, ToggleConfig> toggles = {};
 
   UnleashClient(
       {required this.url,
       required this.clientKey,
       required this.appName,
+      this.refreshInterval = 30,
       this.fetcher = get});
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
@@ -68,10 +69,16 @@ class UnleashClient extends EventEmitter {
   Future<void> start() async {
     toggles = await fetchToggles();
     emit('ready', 'feature toggle ready');
-    // timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
-    // fetchToggles();
+    timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
+      fetchToggles();
+    });
+  }
 
-    // });
+  void stop() {
+    if(timer != null) {
+      timer?.cancel();
+    }
+
   }
 
   bool isEnabled(String featureName) {

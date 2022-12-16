@@ -51,6 +51,7 @@ void main() {
 
     unleash.start();
     await completer.future;
+    unleash.stop();
 
     expect(unleash.isEnabled('flutter-on'), true);
     expect(unleash.isEnabled('flutter-off'), false);
@@ -66,6 +67,24 @@ void main() {
         fetcher: getMock);
 
     await unleash.start();
+    unleash.stop();
+
+    expect(unleash.isEnabled('flutter-on'), true);
+    expect(unleash.isEnabled('flutter-off'), false);
+    expect(getMock.calledTimes, 1);
+  });
+
+  test('can refetch toggles at a regular interval', () async {
+    var getMock = new GetMock();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        refreshInterval: 1,
+        fetcher: getMock);
+
+    await unleash.start();
+    unleash.stop();
 
     expect(unleash.isEnabled('flutter-on'), true);
     expect(unleash.isEnabled('flutter-off'), false);
