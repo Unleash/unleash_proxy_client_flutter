@@ -14,12 +14,18 @@ class ToggleConfig {
   ToggleConfig({required this.enabled, required this.impressionData});
 
   factory ToggleConfig.fromJson(dynamic json) {
-    return ToggleConfig(enabled: json["enabled"], impressionData: json["impressionData"]);
+    return ToggleConfig(
+        enabled: json["enabled"], impressionData: json["impressionData"]);
   }
 }
 
-
-
+Future<dynamic> get(Uri url, String clientKey) async {
+  return http.get(url, headers: {
+    'Accept': 'application/json',
+    'Cache': 'no-cache',
+    'Authorization': clientKey,
+  });
+}
 
 class UnleashClient extends EventEmitter {
   final String url;
@@ -36,15 +42,13 @@ class UnleashClient extends EventEmitter {
   });
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
-    var response = await http.get(Uri.parse(url), headers: {
-      'Accept': 'application/json',
-      'Cache': 'no-cache',
-      'Authorization': clientKey,
-    });
+    var response = await get(Uri.parse(url), clientKey);
 
     if (response.statusCode == 200) {
       var toggleList = jsonDecode(response.body)['toggles'];
-      return Map.fromIterable(toggleList, key: (toggle) => toggle['name'], value: (toggle) => ToggleConfig.fromJson(toggle));
+      return Map.fromIterable(toggleList,
+          key: (toggle) => toggle['name'],
+          value: (toggle) => ToggleConfig.fromJson(toggle));
     } else {
       throw Exception('Failed to fetch toggles');
     }
@@ -54,7 +58,7 @@ class UnleashClient extends EventEmitter {
     toggles = await fetchToggles();
     emit('ready', 'feature toggle ready');
     // timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
-      // fetchToggles();
+    // fetchToggles();
 
     // });
   }
