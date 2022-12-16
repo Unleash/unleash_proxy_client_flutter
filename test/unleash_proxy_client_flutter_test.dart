@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 import 'dart:async';
+import 'package:fake_async/fake_async.dart';
 
 // todo: test rejecting invalid URLs
 Future<dynamic> getMock(Uri url, String clientKey) async {
@@ -28,7 +29,7 @@ class GetMock {
   }''';
     calledTimes++;
 
-    return  data;
+    return data;
   }
 }
 
@@ -75,19 +76,21 @@ void main() {
   });
 
   test('can refetch toggles at a regular interval', () async {
-    var getMock = new GetMock();
-    final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
-        clientKey: 'proxy-123',
-        appName: 'flutter-test',
-        refreshInterval: 1,
-        fetcher: getMock);
+    fakeAsync((async) {
+      var getMock = new GetMock();
+      final unleash = UnleashClient(
+          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          fetcher: getMock);
 
-    await unleash.start();
-    unleash.stop();
-
-    expect(unleash.isEnabled('flutter-on'), true);
-    expect(unleash.isEnabled('flutter-off'), false);
-    expect(getMock.calledTimes, 1);
+      unleash.start();
+      expect(getMock.calledTimes, 1);
+      async.elapse(Duration(seconds: 9));
+      expect(getMock.calledTimes, 1);
+      async.elapse(Duration(seconds: 1));
+      expect(getMock.calledTimes, 2);
+    });
   });
 }

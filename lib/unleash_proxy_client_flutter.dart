@@ -78,7 +78,6 @@ class UnleashClient extends EventEmitter {
     if(timer != null) {
       timer?.cancel();
     }
-
   }
 
   bool isEnabled(String featureName) {
