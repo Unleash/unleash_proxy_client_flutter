@@ -33,7 +33,7 @@ class GetMock {
 }
 
 void main() {
-  test('sample usage of Unleash client', () async {
+  test('can fetch initial toggles with ready', () async {
     var getMock = new GetMock();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
@@ -51,6 +51,21 @@ void main() {
 
     unleash.start();
     await completer.future;
+
+    expect(unleash.isEnabled('flutter-on'), true);
+    expect(unleash.isEnabled('flutter-off'), false);
+    expect(getMock.calledTimes, 1);
+  });
+
+  test('can fetch initial toggles with await', () async {
+    var getMock = new GetMock();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    await unleash.start();
 
     expect(unleash.isEnabled('flutter-on'), true);
     expect(unleash.isEnabled('flutter-off'), false);

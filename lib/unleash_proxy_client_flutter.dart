@@ -65,7 +65,7 @@ class UnleashClient extends EventEmitter {
     return parseToggleResponse(body);
   }
 
-  void start() async {
+  Future<void> start() async {
     toggles = await fetchToggles();
     emit('ready', 'feature toggle ready');
     // timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
