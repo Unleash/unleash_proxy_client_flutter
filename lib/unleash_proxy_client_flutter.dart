@@ -49,15 +49,15 @@ class UnleashClient extends EventEmitter {
   final String clientKey;
   final String appName;
   final int refreshInterval = 15;
-  // final fetcher Future<dynamic> get(Uri url, String clientKey) async {}
+  late Future<dynamic> Function(Uri, String) fetcher;
   late Timer timer;
   late Map<String, ToggleConfig> toggles = {};
 
-  UnleashClient({
-    required this.url,
-    required this.clientKey,
-    required this.appName,
-  });
+  UnleashClient(
+      {required this.url,
+      required this.clientKey,
+      required this.appName,
+      this.fetcher = get});
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
     var body = await get(Uri.parse(url), clientKey);
