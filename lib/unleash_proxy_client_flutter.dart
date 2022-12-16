@@ -1,8 +1,25 @@
 library unleash_proxy_client_flutter;
 
+import 'dart:ffi';
+
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'dart:convert';
 import 'package:events_emitter/events_emitter.dart';
+
+class ToggleConfig {
+  final bool enabled;
+  final bool impressionData;
+
+  ToggleConfig({required this.enabled, required this.impressionData});
+
+  factory ToggleConfig.fromJson(dynamic json) {
+    return ToggleConfig(enabled: json["enabled"], impressionData: json["impressionData"]);
+  }
+}
+
+
+
 
 class UnleashClient extends EventEmitter {
   final String url;
@@ -10,6 +27,7 @@ class UnleashClient extends EventEmitter {
   final String appName;
   final int refreshInterval = 15;
   late Timer timer;
+  late Map<String, ToggleConfig> toggles = {};
 
   UnleashClient({
     required this.url,
@@ -17,28 +35,31 @@ class UnleashClient extends EventEmitter {
     required this.appName,
   });
 
-  // Future<Map<String, dynamic>> fetchToggles() async {
-  //   var response = await http.get(url, headers: {
-  //     'Content-Type': 'application/json',
-  //     'Client-Key': clientKey,
-  //   });
-  //
-  //   if (response.statusCode == 200) {
-  //     return json.decode(response.body);
-  //   } else {
-  //     throw Exception('Failed to fetch toggles');
-  //   }
-  // }
+  Future<Map<String, ToggleConfig>> fetchToggles() async {
+    var response = await http.get(Uri.parse(url), headers: {
+      'Accept': 'application/json',
+      'Cache': 'no-cache',
+      'Authorization': clientKey,
+    });
 
-  void start() {
-    emit('ready', 'dummy data');
+    if (response.statusCode == 200) {
+      var toggleList = jsonDecode(response.body)['toggles'];
+      return Map.fromIterable(toggleList, key: (toggle) => toggle['name'], value: (toggle) => ToggleConfig.fromJson(toggle));
+    } else {
+      throw Exception('Failed to fetch toggles');
+    }
+  }
+
+  void start() async {
+    toggles = await fetchToggles();
+    emit('ready', 'feature toggle ready');
     // timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
       // fetchToggles();
 
     // });
   }
 
-  bool isEnabled(String s) {
-    return false;
+  bool isEnabled(String featureName) {
+    return toggles[featureName]?.enabled ?? false;
   }
 }
