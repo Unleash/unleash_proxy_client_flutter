@@ -93,4 +93,28 @@ void main() {
       expect(getMock.calledTimes, 2);
     });
   });
+
+  test('stopping client should cancel the timer', () async {
+    fakeAsync((async) {
+      var getMock = new GetMock();
+      final unleash = UnleashClient(
+          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          fetcher: getMock);
+
+      unleash.start();
+      async.elapse(Duration(seconds: 10));
+      expect(getMock.calledTimes, 2);
+      // first stop cancels the timer
+      unleash.stop();
+      async.elapse(Duration(seconds: 10));
+      expect(getMock.calledTimes, 2);
+      // second stop should be no-op
+      unleash.stop();
+      async.elapse(Duration(seconds: 10));
+      expect(getMock.calledTimes, 2);
+    });
+  });
 }

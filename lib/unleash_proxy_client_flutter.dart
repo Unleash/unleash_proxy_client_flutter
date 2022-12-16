@@ -74,9 +74,10 @@ class UnleashClient extends EventEmitter {
     });
   }
 
-  void stop() {
-    if(timer != null) {
-      timer?.cancel();
+   stop() {
+    final Timer? localTimer = timer;
+    if(localTimer != null && localTimer.isActive) {
+      localTimer.cancel();
     }
   }
 
