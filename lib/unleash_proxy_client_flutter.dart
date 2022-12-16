@@ -84,7 +84,7 @@ class UnleashContext {
 }
 
 class UnleashClient extends EventEmitter {
-  final String url;
+  String url;
   final String clientKey;
   final String appName;
   final int refreshInterval;
@@ -99,7 +99,7 @@ class UnleashClient extends EventEmitter {
       this.refreshInterval = 30,
       this.fetcher = get});
 
-  Future<Map<String, ToggleConfig>> fetchToggles(String url) async {
+  Future<Map<String, ToggleConfig>> fetchToggles() async {
     var body = await fetcher(Uri.parse(url), clientKey);
 
     return parseToggleResponse(body);
@@ -108,14 +108,15 @@ class UnleashClient extends EventEmitter {
   Future<void> updateContext(UnleashContext unleashContext) async {
     var contextSnapshot = unleashContext.toSnapshot();
     var queryParams = Uri(queryParameters: contextSnapshot).query;
-    await fetchToggles(url+'?'+queryParams);
+    url = url+'?'+queryParams;
+    await fetchToggles();
   }
 
   Future<void> start() async {
-    toggles = await fetchToggles(url);
+    toggles = await fetchToggles();
     emit('ready', 'feature toggle ready');
     timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
-      fetchToggles(url);
+      fetchToggles();
     });
   }
 

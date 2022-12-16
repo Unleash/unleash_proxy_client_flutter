@@ -137,4 +137,26 @@ void main() {
       [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue'), 'proxy-123']
     ]);
   });
+
+  test('interval should pick settings from update context', () async {
+    fakeAsync((async) {
+      var getMock = new GetMock();
+      final unleash = UnleashClient(
+          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          fetcher: getMock);
+
+      unleash.start();
+      unleash.updateContext(UnleashContext(userId: '123'));
+      async.elapse(Duration(seconds: 10));
+      expect(getMock.calledWith, [
+        [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'), 'proxy-123'],
+        [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'), 'proxy-123'],
+        [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'), 'proxy-123']
+      ]);
+
+    });
+  });
 }
