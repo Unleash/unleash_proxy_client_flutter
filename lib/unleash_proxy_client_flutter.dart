@@ -1,7 +1,5 @@
 library unleash_proxy_client_flutter;
 
-import 'dart:ffi';
-
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -13,7 +11,7 @@ class ToggleConfig {
 
   ToggleConfig({required this.enabled, required this.impressionData});
 
-  factory ToggleConfig.fromJson(dynamic json) {
+  factory ToggleConfig.fromJson(Map<String, dynamic> json) {
     return ToggleConfig(
         enabled: json["enabled"], impressionData: json["impressionData"]);
   }
@@ -35,7 +33,7 @@ Future<dynamic> get(Uri url, String clientKey) async {
   return response.body;
 }
 
-Map<String, ToggleConfig> parseToggleResponse(dynamic body) {
+Map<String, ToggleConfig> parseToggleResponse(String body) {
   var data = jsonDecode(body)['toggles'];
   // Check if there is anything to map over? Otherwise map might cause an error
   // Write a test that checks if the
