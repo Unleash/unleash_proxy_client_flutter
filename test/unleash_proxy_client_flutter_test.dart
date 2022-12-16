@@ -19,6 +19,7 @@ Future<dynamic> getMock(Uri url, String clientKey) async {
 
 class GetMock {
   var calledTimes = 0;
+  var calledWith = [];
 
   Future<dynamic> call(Uri url, String clientKey) async {
     var data = '''{ 
@@ -28,6 +29,7 @@ class GetMock {
      ] 
   }''';
     calledTimes++;
+    calledWith.add([url, clientKey]);
 
     return data;
   }
@@ -116,5 +118,23 @@ void main() {
       async.elapse(Duration(seconds: 10));
       expect(getMock.calledTimes, 2);
     });
+  });
+
+  test('can update context', () async {
+    var getMock = new GetMock();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    await unleash.start();
+    await unleash.updateContext(UnleashContext(userId: '123'));
+
+    expect(getMock.calledTimes, 2);
+    expect(getMock.calledWith, [
+      [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'), 'proxy-123'],
+      [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'), 'proxy-123']
+    ]);
   });
 }

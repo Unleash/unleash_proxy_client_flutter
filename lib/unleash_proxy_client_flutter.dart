@@ -44,6 +44,24 @@ Map<String, ToggleConfig> parseToggleResponse(dynamic body) {
       value: (toggle) => ToggleConfig.fromJson(toggle));
 }
 
+
+// interface IMutableContext {
+// userId?: string;
+// sessionId?: string;
+// remoteAddress?: string;
+// properties?: {
+// [key: string]: string;
+// };
+// }
+class UnleashContext {
+   String? userId;
+   String? sessionId;
+   String? remoteAddress;
+   Map<String, String> properties = {};
+
+  UnleashContext({this.userId, this.sessionId, this.remoteAddress, this.properties = const {}});
+}
+
 class UnleashClient extends EventEmitter {
   final String url;
   final String clientKey;
@@ -60,17 +78,21 @@ class UnleashClient extends EventEmitter {
       this.refreshInterval = 30,
       this.fetcher = get});
 
-  Future<Map<String, ToggleConfig>> fetchToggles() async {
+  Future<Map<String, ToggleConfig>> fetchToggles(String url) async {
     var body = await fetcher(Uri.parse(url), clientKey);
 
     return parseToggleResponse(body);
   }
 
+  Future<void> updateContext(UnleashContext unleashContext) async {
+    await fetchToggles(url + '?userId='+unleashContext.userId!);
+  }
+
   Future<void> start() async {
-    toggles = await fetchToggles();
+    toggles = await fetchToggles(url);
     emit('ready', 'feature toggle ready');
     timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
-      fetchToggles();
+      fetchToggles(url);
     });
   }
 
