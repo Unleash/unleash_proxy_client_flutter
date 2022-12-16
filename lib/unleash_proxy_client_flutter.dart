@@ -60,7 +60,7 @@ class UnleashClient extends EventEmitter {
       this.fetcher = get});
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
-    var body = await get(Uri.parse(url), clientKey);
+    var body = await fetcher(Uri.parse(url), clientKey);
 
     return parseToggleResponse(body);
   }

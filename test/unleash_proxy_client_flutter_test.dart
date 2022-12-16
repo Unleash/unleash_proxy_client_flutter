@@ -16,8 +16,25 @@ Future<dynamic> getMock(Uri url, String clientKey) async {
   completer.complete(data);
 }
 
+class GetMock {
+  var calledTimes = 0;
+
+  Future<dynamic> call(Uri url, String clientKey) async {
+    var data = '''{ 
+     "toggles": [
+      { "name": "flutter-on", "enabled": true, "impressionData": false }, 
+      { "name": "flutter-off", "enabled": false, "impressionData": false }
+     ] 
+  }''';
+    calledTimes++;
+
+    return  data;
+  }
+}
+
 void main() {
   test('sample usage of Unleash client', () async {
+    var getMock = new GetMock();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
         clientKey: 'proxy-123',
@@ -37,5 +54,6 @@ void main() {
 
     expect(unleash.isEnabled('flutter-on'), true);
     expect(unleash.isEnabled('flutter-off'), false);
+    expect(getMock.calledTimes, 1);
   });
 }
