@@ -60,6 +60,22 @@ class UnleashContext {
    Map<String, String> properties = {};
 
   UnleashContext({this.userId, this.sessionId, this.remoteAddress, this.properties = const {}});
+
+  Map<String, String> toSnapshot() {
+    final params = <String, String>{};
+
+    if (userId != null) {
+      params.putIfAbsent('userId', () => userId!);
+    }
+
+    if (sessionId != null) {
+      params.putIfAbsent('sessionId', () => sessionId!);
+    }
+
+    params.addAll(properties ?? {});
+
+    return params;
+  }
 }
 
 class UnleashClient extends EventEmitter {
@@ -85,7 +101,9 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
-    await fetchToggles(url + '?userId='+unleashContext.userId!);
+    var contextSnapshot = unleashContext.toSnapshot();
+    var queryParams = Uri(queryParameters: contextSnapshot).query;
+    await fetchToggles(url+'?'+queryParams);
   }
 
   Future<void> start() async {
