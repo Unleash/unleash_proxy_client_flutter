@@ -68,9 +68,14 @@ class UnleashContext {
       params.putIfAbsent('userId', () => userId!);
     }
 
+    if (remoteAddress != null) {
+      params.putIfAbsent('remoteAddress', () => remoteAddress!);
+    }
+
     if (sessionId != null) {
       params.putIfAbsent('sessionId', () => sessionId!);
     }
+
 
     params.addAll(properties ?? {});
 

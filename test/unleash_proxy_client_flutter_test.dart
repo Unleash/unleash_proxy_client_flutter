@@ -129,12 +129,12 @@ void main() {
         fetcher: getMock);
 
     await unleash.start();
-    await unleash.updateContext(UnleashContext(userId: '123'));
+    await unleash.updateContext(UnleashContext(userId: '123', remoteAddress: 'address', sessionId: 'session', properties: {'customKey': 'customValue'}));
 
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWith, [
       [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'), 'proxy-123'],
-      [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'), 'proxy-123']
+      [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue'), 'proxy-123']
     ]);
   });
 }
