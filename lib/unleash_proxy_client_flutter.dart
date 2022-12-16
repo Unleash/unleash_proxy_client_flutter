@@ -2,8 +2,9 @@ library unleash_proxy_client_flutter;
 
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:events_emitter/events_emitter.dart';
 
-class UnleashClient {
+class UnleashClient extends EventEmitter {
   final String url;
   final String clientKey;
   final String appName;
@@ -30,8 +31,14 @@ class UnleashClient {
   // }
 
   void start() {
-    timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
+    emit('ready', 'dummy data');
+    // timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
       // fetchToggles();
-    });
+
+    // });
+  }
+
+  bool isEnabled(String s) {
+    return false;
   }
 }
