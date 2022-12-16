@@ -20,11 +20,28 @@ class ToggleConfig {
 }
 
 Future<dynamic> get(Uri url, String clientKey) async {
-  return http.get(url, headers: {
+  var response = await http.get(url, headers: {
     'Accept': 'application/json',
     'Cache': 'no-cache',
     'Authorization': clientKey,
   });
+
+  if (response.statusCode != 200) {
+    // Do something else
+    // Remember: check 304 also
+    // Handle: 400 errors
+  }
+
+  return response.body;
+}
+
+Map<String, ToggleConfig> parseToggleResponse(dynamic body) {
+  var data = jsonDecode(body)['toggles'];
+  // Check if there is anything to map over? Otherwise map might cause an error
+  // Write a test that checks if the
+  return Map.fromIterable(data,
+      key: (toggle) => toggle['name'],
+      value: (toggle) => ToggleConfig.fromJson(toggle));
 }
 
 class UnleashClient extends EventEmitter {
@@ -32,6 +49,7 @@ class UnleashClient extends EventEmitter {
   final String clientKey;
   final String appName;
   final int refreshInterval = 15;
+  // final fetcher Future<dynamic> get(Uri url, String clientKey) async {}
   late Timer timer;
   late Map<String, ToggleConfig> toggles = {};
 
@@ -42,16 +60,9 @@ class UnleashClient extends EventEmitter {
   });
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
-    var response = await get(Uri.parse(url), clientKey);
+    var body = await get(Uri.parse(url), clientKey);
 
-    if (response.statusCode == 200) {
-      var toggleList = jsonDecode(response.body)['toggles'];
-      return Map.fromIterable(toggleList,
-          key: (toggle) => toggle['name'],
-          value: (toggle) => ToggleConfig.fromJson(toggle));
-    } else {
-      throw Exception('Failed to fetch toggles');
-    }
+    return parseToggleResponse(body);
   }
 
   void start() async {
