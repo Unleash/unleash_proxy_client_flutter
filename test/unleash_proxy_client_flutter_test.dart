@@ -22,12 +22,17 @@ var mockDataJson = jsonDecode(mockData);
 class GetMock {
   var calledTimes = 0;
   var calledWith = [];
+  var calledWithUrls = [];
 
-  Future<Response> call(Uri url, String clientKey) async {
+  Future<Response> call(Request request) async {
     calledTimes++;
-    calledWith.add([url, clientKey]);
+    calledWith.add([request.url, request.headers]);
+    calledWithUrls.add(request.url);
 
-    return Response(mockData, 200);
+    var response =  Response(mockData, 200);
+    // response.headers.addAll({'ETag': '123'});
+
+    return response;
   }
 }
 
@@ -163,10 +168,9 @@ void main() {
     await unleash.updateContext(UnleashContext(userId: '123', remoteAddress: 'address', sessionId: 'session', properties: {'customKey': 'customValue'}));
 
     expect(getMock.calledTimes, 2);
-    expect(getMock.calledWith, [
-      [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'), 'proxy-123'],
-      [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue'), 'proxy-123']
-    ]);
+    expect(getMock.calledWithUrls, [
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')]);
   });
 
   test('interval should pick settings from update context', () async {
@@ -182,16 +186,16 @@ void main() {
       unleash.start();
       unleash.updateContext(UnleashContext(userId: '123'));
       async.elapse(Duration(seconds: 10));
-      expect(getMock.calledWith, [
-        [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'), 'proxy-123'],
-        [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'), 'proxy-123'],
-        [Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'), 'proxy-123']
+      expect(getMock.calledWithUrls, [
+        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'),
+        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123')
       ]);
 
     });
   });
 
-  test('can fetch initial toggles with await', () async {
+  test('can propagate ETag back to the server', () async {
     var getMock = new GetMock();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',

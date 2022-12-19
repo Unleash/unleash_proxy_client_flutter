@@ -24,12 +24,8 @@ class ToggleConfig {
   }
 }
 
-Future<http.Response> get(Uri url, String clientKey) async {
-  var response = await http.get(url, headers: {
-    'Accept': 'application/json',
-    'Cache': 'no-cache',
-    'Authorization': clientKey,
-  });
+Future<http.Response> get(http.Request request) async {
+  var response = await http.get(request.url, headers: request.headers);
 
   if (response.statusCode != 200) {
     // Do something else
@@ -86,7 +82,7 @@ class UnleashClient extends EventEmitter {
   final String clientKey;
   final String appName;
   final int refreshInterval;
-  final Future<http.Response> Function(Uri, String) fetcher;
+  final Future<http.Response> Function(http.Request) fetcher;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   StorageProvider storageProvider;
@@ -101,7 +97,14 @@ class UnleashClient extends EventEmitter {
       }): storageProvider = storageProvider ?? InMemoryStorageProvider();
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
-    var response = await fetcher(Uri.parse(url), clientKey);
+    var headers = {
+      'Accept': 'application/json',
+      'Cache': 'no-cache',
+      'Authorization': clientKey,
+    };
+    var request = http.Request('GET', Uri.parse(url));
+    request.headers.addAll(headers);
+    var response = await fetcher(request);
     await storageProvider.save('unleash_repo', response.body);
 
     return parseToggleResponse(response.body);
