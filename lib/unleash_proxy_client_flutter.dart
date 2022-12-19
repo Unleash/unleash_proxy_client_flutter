@@ -11,28 +11,46 @@ import 'in_memory_storage_provider.dart';
 class Variant {
   final String name;
   final bool enabled;
+
   Variant({required this.name, required this.enabled});
 
+  factory Variant.fromJson(Map<String, dynamic> json) {
+    return Variant(name: json["name"], enabled: json["enabled"]);
+  }
+
   bool operator ==(Object other) {
-    return other is Variant &&
-        (other.name == name && other.enabled == enabled);
+    return other is Variant && (other.name == name && other.enabled == enabled);
+  }
+
+  String toString() {
+    return '{name: ${name}, enabled: ${enabled}}';
   }
 }
 
 class ToggleConfig {
   final bool enabled;
   final bool impressionData;
+  final Variant variant;
 
-  ToggleConfig({required this.enabled, required this.impressionData});
+  ToggleConfig(
+      {required this.enabled,
+      required this.impressionData,
+      required this.variant});
 
   factory ToggleConfig.fromJson(Map<String, dynamic> json) {
     return ToggleConfig(
-        enabled: json["enabled"], impressionData: json["impressionData"]);
+        enabled: json["enabled"],
+        impressionData: json["impressionData"],
+        variant: Variant.fromJson(json["variant"]));
   }
 
   bool operator ==(Object other) {
     return other is ToggleConfig &&
-        (other.enabled == enabled && other.impressionData == impressionData);
+        (other.enabled == enabled && other.impressionData == impressionData && other.variant == variant);
+  }
+
+  String toString() {
+    return '{enabled: ${enabled}, impressionData: ${impressionData}, variant: ${variant}}';
   }
 }
 
@@ -119,14 +137,14 @@ class UnleashClient extends EventEmitter {
       'Authorization': clientKey,
     };
     var localEtag = etag;
-    if(localEtag != null) {
+    if (localEtag != null) {
       headers.putIfAbsent('If-None-Match', () => localEtag);
     }
     var request = http.Request('GET', Uri.parse(url));
     request.headers.addAll(headers);
     var response = await fetcher(request);
 
-    if(response.headers.containsKey('ETag') && response.statusCode == 200) {
+    if (response.headers.containsKey('ETag') && response.statusCode == 200) {
       etag = response.headers['ETag'];
     }
 
@@ -142,8 +160,14 @@ class UnleashClient extends EventEmitter {
     await fetchToggles();
   }
 
-  Variant getVariant(String toggleName) {
-    return Variant(name: 'disabled', enabled: false);
+  Variant getVariant(String featureName) {
+    var toggle = toggles[featureName];
+
+    if(toggle != null) {
+      return toggle.variant;
+    } else {
+      return Variant(name: 'disabled', enabled: false);
+    }
   }
 
   Future<void> start() async {

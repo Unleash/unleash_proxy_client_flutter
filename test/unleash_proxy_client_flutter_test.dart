@@ -12,10 +12,9 @@ import 'package:fake_async/fake_async.dart';
 const mockData = '''{ 
      "toggles": [
       { "name": "flutter-on", "enabled": true, "impressionData": false, "variant": { "enabled": false, "name": "disabled" } }, 
-      { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "disabled" } }
+      { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": true, "name": "flutter-off-variant" } }
      ] 
   }''';
-var mockDataJson = jsonDecode(mockData);
 
 // todo: test rejecting invalid URLs
 
@@ -299,5 +298,19 @@ void main() {
     var variant = unleash.getVariant('non.existent.toggle');
 
     expect(variant, Variant(name: 'disabled', enabled: false));
+  });
+
+  test('can get variant', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+    await unleash.start();
+
+    var variant = unleash.getVariant('flutter-off');
+
+    expect(variant, Variant(name: 'flutter-off-variant', enabled: true));
   });
 }
