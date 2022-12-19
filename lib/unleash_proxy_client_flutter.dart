@@ -24,7 +24,7 @@ class ToggleConfig {
   }
 }
 
-Future<dynamic> get(Uri url, String clientKey) async {
+Future<http.Response> get(Uri url, String clientKey) async {
   var response = await http.get(url, headers: {
     'Accept': 'application/json',
     'Cache': 'no-cache',
@@ -37,7 +37,7 @@ Future<dynamic> get(Uri url, String clientKey) async {
     // Handle: 400 errors
   }
 
-  return response.body;
+  return response;
 }
 
 Map<String, ToggleConfig> parseToggleResponse(String body) {
@@ -86,7 +86,7 @@ class UnleashClient extends EventEmitter {
   final String clientKey;
   final String appName;
   final int refreshInterval;
-  final Future<dynamic> Function(Uri, String) fetcher;
+  final Future<http.Response> Function(Uri, String) fetcher;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   StorageProvider storageProvider;
@@ -101,10 +101,10 @@ class UnleashClient extends EventEmitter {
       }): storageProvider = storageProvider ?? InMemoryStorageProvider();
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
-    var body = await fetcher(Uri.parse(url), clientKey);
-    await storageProvider.save('unleash_repo', body);
+    var response = await fetcher(Uri.parse(url), clientKey);
+    await storageProvider.save('unleash_repo', response.body);
 
-    return parseToggleResponse(body);
+    return parseToggleResponse(response.body);
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {

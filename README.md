@@ -41,12 +41,15 @@ from the package authors, and more.
 ## TODO
 
 * (done) cache: in-memory storage
+* (done) cache: platform storage
 * Etag/304 handling
-* cache: platform storage
-* metrics/impressions
-* event emitting: update/error/initialized
 * toggle variant
+* read from cache
+* await on storage provider inside the client
+* event emitting: update/error/initialized
+* sessionId
+* metrics/impressions
 * set single context field
 * other/advanced options
-* sessionId
+* bootstrap - fallback values before we get server data
 * README

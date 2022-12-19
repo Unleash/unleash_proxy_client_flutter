@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unleash_proxy_client_flutter/in_memory_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
@@ -17,26 +18,22 @@ var mockData = '''{
 var mockDataJson = jsonDecode(mockData);
 
 // todo: test rejecting invalid URLs
-Future<dynamic> getMock(Uri url, String clientKey) async {
-  final completer = Completer<String>();
-
-  completer.complete(mockData);
-}
 
 class GetMock {
   var calledTimes = 0;
   var calledWith = [];
 
-  Future<dynamic> call(Uri url, String clientKey) async {
+  Future<Response> call(Uri url, String clientKey) async {
     calledTimes++;
     calledWith.add([url, clientKey]);
 
-    return mockData;
+    return Response(mockData, 200);
   }
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
   test('can fetch initial toggles with ready', () async {
     var getMock = new GetMock();
     final unleash = UnleashClient(
@@ -192,5 +189,21 @@ void main() {
       ]);
 
     });
+  });
+
+  test('can fetch initial toggles with await', () async {
+    var getMock = new GetMock();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    await unleash.start();
+    unleash.stop();
+
+    expect(unleash.isEnabled('flutter-on'), true);
+    expect(unleash.isEnabled('flutter-off'), false);
+    expect(getMock.calledTimes, 1);
   });
 }
