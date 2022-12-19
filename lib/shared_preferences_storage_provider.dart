@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 
-class SharedPreferencesStorageProvider implements StorageProvider {
+class SharedPreferencesStorageProvider extends StorageProvider {
   final SharedPreferences _sharedPreferences;
 
   static Future<StorageProvider> init() async {

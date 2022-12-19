@@ -1,6 +1,6 @@
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 
-class InMemoryStorageProvider implements StorageProvider {
+class InMemoryStorageProvider extends StorageProvider {
   final Map<String, String> store = {};
 
   InMemoryStorageProvider();
