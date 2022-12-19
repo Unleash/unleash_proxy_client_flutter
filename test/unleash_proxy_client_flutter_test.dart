@@ -1,20 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unleash_proxy_client_flutter/in_memory_storage_provider.dart';
+import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
+
+const mockData = '''{ 
+     "toggles": [
+      { "name": "flutter-on", "enabled": true, "impressionData": false }, 
+      { "name": "flutter-off", "enabled": false, "impressionData": false }
+     ] 
+  }''';
 
 // todo: test rejecting invalid URLs
 Future<dynamic> getMock(Uri url, String clientKey) async {
   final completer = Completer<String>();
 
-  var data = '''{ 
-     "toggles": [
-      { "name": "flutter-on", "enabled": true, "impressionData": false }, 
-      { "name": "flutter-off", "enabled": false, "impressionData": false }, 
-     ] 
-  }''';
-
-  completer.complete(data);
+  completer.complete(mockData);
 }
 
 class GetMock {
@@ -22,20 +25,15 @@ class GetMock {
   var calledWith = [];
 
   Future<dynamic> call(Uri url, String clientKey) async {
-    var data = '''{ 
-     "toggles": [
-      { "name": "flutter-on", "enabled": true, "impressionData": false }, 
-      { "name": "flutter-off", "enabled": false, "impressionData": false }
-     ] 
-  }''';
     calledTimes++;
     calledWith.add([url, clientKey]);
 
-    return data;
+    return mockData;
   }
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('can fetch initial toggles with ready', () async {
     var getMock = new GetMock();
     final unleash = UnleashClient(
@@ -90,10 +88,24 @@ void main() {
     await unleash.start();
     var result = await storageProvider.get('unleash_repo');
 
-    expect(result, {
-      'flutter-on':  ToggleConfig(enabled: true, impressionData: false),
-      'flutter-off':  ToggleConfig(enabled: false, impressionData: false)
-    });
+    expect(result, mockData);
+  });
+
+  test('can store toggles in shared preferences', () async {
+    SharedPreferences.setMockInitialValues({});
+    var getMock = new GetMock();
+    var storageProvider = await SharedPreferencesStorageProvider.init();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock,
+        storageProvider: storageProvider);
+
+    await unleash.start();
+    var result = await storageProvider.get('unleash_repo');
+
+    expect(result, mockData);
   });
 
   test('can refetch toggles at a regular interval', () async {

@@ -40,7 +40,7 @@ from the package authors, and more.
 
 ## TODO
 
-* cache: in-memory storage
+* (done) cache: in-memory storage
 * Etag/304 handling
 * cache: platform storage
 * metrics/impressions

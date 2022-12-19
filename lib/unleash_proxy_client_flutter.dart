@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:events_emitter/events_emitter.dart';
+import 'package:unleash_proxy_client_flutter/storage_provider.dart';
+
+import 'in_memory_storage_provider.dart';
 
 class ToggleConfig {
   final bool enabled;
@@ -76,26 +79,6 @@ class UnleashContext {
   }
 }
 
-abstract class StorageProvider {
-  Future<void> save(String name, dynamic data);
-  Future<dynamic> get(String name);
-}
-
-class InMemoryStorageProvider implements StorageProvider {
-  final Map<String, dynamic> store = {};
-
-  InMemoryStorageProvider();
-
-  Future<dynamic> get(String name) async {
-    return store[name];
-  }
-
-  Future<void> save(String name, dynamic data) async {
-    store[name] = data;
-  }
-
-}
-
 StorageProvider defaultProvider = InMemoryStorageProvider();
 
 class UnleashClient extends EventEmitter {
@@ -119,6 +102,7 @@ class UnleashClient extends EventEmitter {
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
     var body = await fetcher(Uri.parse(url), clientKey);
+    await storageProvider.save('unleash_repo', body);
 
     return parseToggleResponse(body);
   }
@@ -132,7 +116,7 @@ class UnleashClient extends EventEmitter {
 
   Future<void> start() async {
     toggles = await fetchToggles();
-    await storageProvider.save('unleash_repo', toggles);
+
     emit('ready', 'feature toggle ready');
     timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
       fetchToggles();
