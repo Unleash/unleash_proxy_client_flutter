@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:events_emitter/events_emitter.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
+import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
 
 import 'in_memory_storage_provider.dart';
@@ -30,41 +31,6 @@ Map<String, ToggleConfig> parseToggleResponse(String body) {
       key: (toggle) => toggle['name'],
       value: (toggle) => ToggleConfig.fromJson(toggle));
 }
-
-class UnleashContext {
-  String? userId;
-  String? sessionId;
-  String? remoteAddress;
-  Map<String, String> properties = {};
-
-  UnleashContext(
-      {this.userId,
-      this.sessionId,
-      this.remoteAddress,
-      this.properties = const {}});
-
-  Map<String, String> toSnapshot() {
-    final params = <String, String>{};
-
-    if (userId != null) {
-      params.putIfAbsent('userId', () => userId!);
-    }
-
-    if (remoteAddress != null) {
-      params.putIfAbsent('remoteAddress', () => remoteAddress!);
-    }
-
-    if (sessionId != null) {
-      params.putIfAbsent('sessionId', () => sessionId!);
-    }
-
-    params.addAll(properties ?? {});
-
-    return params;
-  }
-}
-
-StorageProvider defaultProvider = InMemoryStorageProvider();
 
 class UnleashClient extends EventEmitter {
   String url;

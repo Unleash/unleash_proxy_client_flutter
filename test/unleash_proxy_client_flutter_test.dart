@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unleash_proxy_client_flutter/in_memory_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
+import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
