@@ -126,9 +126,9 @@ void main() {
 
       unleash.start();
       expect(getMock.calledTimes, 1);
-      async.elapse(Duration(seconds: 9));
+      async.elapse(const Duration(seconds: 9));
       expect(getMock.calledTimes, 1);
-      async.elapse(Duration(seconds: 1));
+      async.elapse(const Duration(seconds: 1));
       expect(getMock.calledTimes, 2);
     });
   });
@@ -144,15 +144,15 @@ void main() {
           fetcher: getMock);
 
       unleash.start();
-      async.elapse(Duration(seconds: 10));
+      async.elapse(const Duration(seconds: 10));
       expect(getMock.calledTimes, 2);
       // first stop cancels the timer
       unleash.stop();
-      async.elapse(Duration(seconds: 10));
+      async.elapse(const Duration(seconds: 10));
       expect(getMock.calledTimes, 2);
       // second stop should be no-op
       unleash.stop();
-      async.elapse(Duration(seconds: 10));
+      async.elapse(const Duration(seconds: 10));
       expect(getMock.calledTimes, 2);
     });
   });
@@ -192,7 +192,7 @@ void main() {
 
       unleash.start();
       unleash.updateContext(UnleashContext(userId: '123'));
-      async.elapse(Duration(seconds: 10));
+      async.elapse(const Duration(seconds: 10));
       expect(getMock.calledWithUrls, [
         Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
         Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'),
@@ -213,7 +213,7 @@ void main() {
           fetcher: getMock);
 
       unleash.start();
-      async.elapse(Duration(seconds: 10));
+      async.elapse(const Duration(seconds: 10));
 
       expect(getMock.calledWith, [
         [
@@ -249,7 +249,7 @@ void main() {
           fetcher: getMock);
 
       unleash.start();
-      async.elapse(Duration(seconds: 10));
+      async.elapse(const Duration(seconds: 10));
 
       expect(getMock.calledWith, [
         [

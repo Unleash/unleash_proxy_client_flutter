@@ -10,11 +10,17 @@ class Variant {
     return Variant(name: json["name"], enabled: json["enabled"]);
   }
 
+  @override
   bool operator ==(Object other) {
     return other is Variant && (other.name == name && other.enabled == enabled);
   }
 
+  @override
   String toString() {
-    return '{name: ${name}, enabled: ${enabled}}';
+    return '{name: $name, enabled: $enabled}';
   }
+
+  @override
+  int get hashCode => Object.hash(name, enabled);
+
 }

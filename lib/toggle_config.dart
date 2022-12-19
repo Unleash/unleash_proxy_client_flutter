@@ -17,12 +17,18 @@ class ToggleConfig {
         variant: Variant.fromJson(json["variant"]));
   }
 
+  @override
   bool operator ==(Object other) {
     return other is ToggleConfig &&
         (other.enabled == enabled && other.impressionData == impressionData && other.variant == variant);
   }
 
+  @override
   String toString() {
-    return '{enabled: ${enabled}, impressionData: ${impressionData}, variant: ${variant}}';
+    return '{enabled: $enabled, impressionData: $impressionData, variant: $variant}';
   }
+
+  @override
+  int get hashCode => Object.hash(enabled, impressionData, variant);
+
 }

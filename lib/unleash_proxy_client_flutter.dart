@@ -2,35 +2,15 @@ library unleash_proxy_client_flutter;
 
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'dart:convert';
 import 'package:events_emitter/events_emitter.dart';
+import 'package:unleash_proxy_client_flutter/parse_toggles.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
 
+import 'http_toggle_client.dart';
 import 'in_memory_storage_provider.dart';
-
-Future<http.Response> get(http.Request request) async {
-  var response = await http.get(request.url, headers: request.headers);
-
-  if (response.statusCode != 200) {
-    // Do something else
-    // Remember: check 304 also
-    // Handle: 400 errors
-  }
-
-  return response;
-}
-
-Map<String, ToggleConfig> parseToggleResponse(String body) {
-  var data = jsonDecode(body)['toggles'];
-  // Check if there is anything to map over? Otherwise map might cause an error
-  // Write a test that checks if the
-  return Map.fromIterable(data,
-      key: (toggle) => toggle['name'],
-      value: (toggle) => ToggleConfig.fromJson(toggle));
-}
 
 class UnleashClient extends EventEmitter {
   String url;
@@ -78,7 +58,7 @@ class UnleashClient extends EventEmitter {
   Future<void> updateContext(UnleashContext unleashContext) async {
     var contextSnapshot = unleashContext.toSnapshot();
     var queryParams = Uri(queryParameters: contextSnapshot).query;
-    url = url + '?' + queryParams;
+    url = '$url?$queryParams';
     await fetchToggles();
   }
 

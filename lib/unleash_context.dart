@@ -25,7 +25,7 @@ class UnleashContext {
       params.putIfAbsent('sessionId', () => sessionId!);
     }
 
-    params.addAll(properties ?? {});
+    params.addAll(properties);
 
     return params;
   }
