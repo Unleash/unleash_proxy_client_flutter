@@ -90,6 +90,7 @@ class UnleashClient extends EventEmitter {
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   StorageProvider storageProvider;
+  String? etag;
 
   UnleashClient(
       {required this.url,
@@ -106,9 +107,18 @@ class UnleashClient extends EventEmitter {
       'Cache': 'no-cache',
       'Authorization': clientKey,
     };
+    var localEtag = etag;
+    if(localEtag != null) {
+      headers.putIfAbsent('If-None-Match', () => localEtag);
+    }
     var request = http.Request('GET', Uri.parse(url));
     request.headers.addAll(headers);
     var response = await fetcher(request);
+
+    if(response.headers.containsKey('ETag')) {
+      etag = response.headers['ETag'];
+    }
+
     await storageProvider.save('unleash_repo', response.body);
 
     return parseToggleResponse(response.body);
