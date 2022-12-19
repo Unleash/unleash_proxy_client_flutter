@@ -9,7 +9,7 @@ import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 
-var mockData = '''{ 
+const mockData = '''{ 
      "toggles": [
       { "name": "flutter-on", "enabled": true, "impressionData": false }, 
       { "name": "flutter-off", "enabled": false, "impressionData": false }
@@ -23,16 +23,18 @@ class GetMock {
   var calledTimes = 0;
   var calledWith = [];
   var calledWithUrls = [];
+  String body;
+  int status;
+  Map<String, String> headers;
+
+  GetMock({this.body = mockData, this.status = 200, this.headers = const {}});
 
   Future<Response> call(Request request) async {
     calledTimes++;
     calledWith.add([request.url, request.headers]);
     calledWithUrls.add(request.url);
 
-    var response =  Response(mockData, 200);
-    // response.headers.addAll({'ETag': '123'});
-
-    return response;
+    return Response(mockData, 200, headers: headers);
   }
 }
 
@@ -165,12 +167,18 @@ void main() {
         fetcher: getMock);
 
     await unleash.start();
-    await unleash.updateContext(UnleashContext(userId: '123', remoteAddress: 'address', sessionId: 'session', properties: {'customKey': 'customValue'}));
+    await unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
 
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWithUrls, [
       Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')]);
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+    ]);
   });
 
   test('interval should pick settings from update context', () async {
@@ -191,12 +199,12 @@ void main() {
         Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'),
         Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123')
       ]);
-
     });
   });
 
   test('can propagate ETag back to the server', () async {
-    var getMock = new GetMock();
+    var getMock =
+        new GetMock(body: mockData, status: 200, headers: {'ETag': '123'});
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
         clientKey: 'proxy-123',
@@ -204,10 +212,16 @@ void main() {
         fetcher: getMock);
 
     await unleash.start();
-    unleash.stop();
 
-    expect(unleash.isEnabled('flutter-on'), true);
-    expect(unleash.isEnabled('flutter-off'), false);
-    expect(getMock.calledTimes, 1);
+    expect(getMock.calledWith, [
+      [
+        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+        {
+          'Accept': 'application/json',
+          'Cache': 'no-cache',
+          'Authorization': 'proxy-123'
+        }
+      ]
+    ]);
   });
 }

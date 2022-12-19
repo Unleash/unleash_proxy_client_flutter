@@ -20,7 +20,8 @@ class ToggleConfig {
   }
 
   bool operator ==(Object other) {
-    return other is ToggleConfig && (other.enabled == enabled && other.impressionData == impressionData) ;
+    return other is ToggleConfig &&
+        (other.enabled == enabled && other.impressionData == impressionData);
   }
 }
 
@@ -46,12 +47,16 @@ Map<String, ToggleConfig> parseToggleResponse(String body) {
 }
 
 class UnleashContext {
-   String? userId;
-   String? sessionId;
-   String? remoteAddress;
-   Map<String, String> properties = {};
+  String? userId;
+  String? sessionId;
+  String? remoteAddress;
+  Map<String, String> properties = {};
 
-  UnleashContext({this.userId, this.sessionId, this.remoteAddress, this.properties = const {}});
+  UnleashContext(
+      {this.userId,
+      this.sessionId,
+      this.remoteAddress,
+      this.properties = const {}});
 
   Map<String, String> toSnapshot() {
     final params = <String, String>{};
@@ -67,7 +72,6 @@ class UnleashContext {
     if (sessionId != null) {
       params.putIfAbsent('sessionId', () => sessionId!);
     }
-
 
     params.addAll(properties ?? {});
 
@@ -93,8 +97,8 @@ class UnleashClient extends EventEmitter {
       required this.appName,
       this.refreshInterval = 30,
       this.fetcher = get,
-      storageProvider
-      }): storageProvider = storageProvider ?? InMemoryStorageProvider();
+      storageProvider})
+      : storageProvider = storageProvider ?? InMemoryStorageProvider();
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
     var headers = {
@@ -113,7 +117,7 @@ class UnleashClient extends EventEmitter {
   Future<void> updateContext(UnleashContext unleashContext) async {
     var contextSnapshot = unleashContext.toSnapshot();
     var queryParams = Uri(queryParameters: contextSnapshot).query;
-    url = url+'?'+queryParams;
+    url = url + '?' + queryParams;
     await fetchToggles();
   }
 
@@ -126,9 +130,9 @@ class UnleashClient extends EventEmitter {
     });
   }
 
-   stop() {
+  stop() {
     final Timer? localTimer = timer;
-    if(localTimer != null && localTimer.isActive) {
+    if (localTimer != null && localTimer.isActive) {
       localTimer.cancel();
     }
   }
