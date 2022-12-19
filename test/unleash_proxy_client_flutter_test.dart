@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unleash_proxy_client_flutter/in_memory_storage_provider.dart';
@@ -6,12 +8,13 @@ import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 
-const mockData = '''{ 
+var mockData = '''{ 
      "toggles": [
       { "name": "flutter-on", "enabled": true, "impressionData": false }, 
       { "name": "flutter-off", "enabled": false, "impressionData": false }
      ] 
   }''';
+var mockDataJson = jsonDecode(mockData);
 
 // todo: test rejecting invalid URLs
 Future<dynamic> getMock(Uri url, String clientKey) async {

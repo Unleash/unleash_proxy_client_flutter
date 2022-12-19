@@ -14,13 +14,11 @@ class SharedPreferencesStorageProvider implements StorageProvider {
   SharedPreferencesStorageProvider(this._sharedPreferences);
 
   // for shared preferences it doesn't have to be async
-  Future<dynamic> get(String name) async {
-    var result = _sharedPreferences.getString(name);
-    return result != null ? jsonDecode(result) : null;
+  Future<String?> get(String name) async {
+    return _sharedPreferences.getString(name);
   }
 
-  Future<void> save(String name, dynamic data) async {
-    var jsonEncoder = JsonEncoder();
-    await _sharedPreferences.setString(name, jsonEncoder.convert(data));
+  Future<void> save(String name, String data) async {
+    await _sharedPreferences.setString(name, data);
   }
 }

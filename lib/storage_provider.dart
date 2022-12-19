@@ -1,4 +1,4 @@
 abstract class StorageProvider {
-    Future<void> save(String name, dynamic data);
-    Future<dynamic> get(String name);
+    Future<void> save(String name, String data);
+    Future<String?> get(String name);
 }
