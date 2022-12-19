@@ -68,7 +68,7 @@ class UnleashClient extends EventEmitter {
     if(toggle != null) {
       return toggle.variant;
     } else {
-      return Variant.DEFAULT;
+      return Variant.defaultVariant;
     }
   }
 

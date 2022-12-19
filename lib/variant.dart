@@ -2,7 +2,7 @@ class Variant {
   final String name;
   final bool enabled;
 
-  static Variant DEFAULT = Variant(name: 'disabled', enabled: false);
+  static final defaultVariant = Variant(name: 'disabled', enabled: false);
 
   Variant({required this.name, required this.enabled});
 
