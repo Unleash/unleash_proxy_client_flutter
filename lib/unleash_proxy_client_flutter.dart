@@ -142,7 +142,7 @@ class UnleashClient extends EventEmitter {
     await fetchToggles();
   }
 
-  Variant getVariant() {
+  Variant getVariant(String toggleName) {
     return Variant(name: 'disabled', enabled: false);
   }
 
