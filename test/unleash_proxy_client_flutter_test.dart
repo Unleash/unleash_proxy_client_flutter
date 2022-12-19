@@ -77,6 +77,25 @@ void main() {
     expect(getMock.calledTimes, 1);
   });
 
+  test('can store toggles in memory storage', () async {
+    var getMock = new GetMock();
+    var storageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock,
+        storageProvider: storageProvider);
+
+    await unleash.start();
+    var result = await storageProvider.get('unleash_repo');
+
+    expect(result, {
+      'flutter-on':  ToggleConfig(enabled: true, impressionData: false),
+      'flutter-off':  ToggleConfig(enabled: false, impressionData: false)
+    });
+  });
+
   test('can refetch toggles at a regular interval', () async {
     fakeAsync((async) {
       var getMock = new GetMock();

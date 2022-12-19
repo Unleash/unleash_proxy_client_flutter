@@ -15,6 +15,10 @@ class ToggleConfig {
     return ToggleConfig(
         enabled: json["enabled"], impressionData: json["impressionData"]);
   }
+
+  bool operator ==(Object other) {
+    return other is ToggleConfig && (other.enabled == enabled && other.impressionData == impressionData) ;
+  }
 }
 
 Future<dynamic> get(Uri url, String clientKey) async {
@@ -72,6 +76,28 @@ class UnleashContext {
   }
 }
 
+abstract class StorageProvider {
+  Future<void> save(String name, dynamic data);
+  Future<dynamic> get(String name);
+}
+
+class InMemoryStorageProvider implements StorageProvider {
+  final Map<String, dynamic> store = {};
+
+  InMemoryStorageProvider();
+
+  Future<dynamic> get(String name) async {
+    return store[name];
+  }
+
+  Future<void> save(String name, dynamic data) async {
+    store[name] = data;
+  }
+
+}
+
+StorageProvider defaultProvider = InMemoryStorageProvider();
+
 class UnleashClient extends EventEmitter {
   String url;
   final String clientKey;
@@ -80,13 +106,16 @@ class UnleashClient extends EventEmitter {
   final Future<dynamic> Function(Uri, String) fetcher;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
+  StorageProvider storageProvider;
 
   UnleashClient(
       {required this.url,
       required this.clientKey,
       required this.appName,
       this.refreshInterval = 30,
-      this.fetcher = get});
+      this.fetcher = get,
+      storageProvider
+      }): storageProvider = storageProvider ?? InMemoryStorageProvider();
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
     var body = await fetcher(Uri.parse(url), clientKey);
@@ -103,6 +132,7 @@ class UnleashClient extends EventEmitter {
 
   Future<void> start() async {
     toggles = await fetchToggles();
+    await storageProvider.save('unleash_repo', toggles);
     emit('ready', 'feature toggle ready');
     timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
       fetchToggles();

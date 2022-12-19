@@ -37,3 +37,16 @@ const like = 'sample';
 TODO: Tell users more about the package: where to find more information, how to
 contribute to the package, how to file issues, what response they can expect
 from the package authors, and more.
+
+## TODO
+
+* cache: in-memory storage
+* Etag/304 handling
+* cache: platform storage
+* metrics/impressions
+* event emitting: update/error/initialized
+* toggle variant
+* set single context field
+* other/advanced options
+* sessionId
+* README
