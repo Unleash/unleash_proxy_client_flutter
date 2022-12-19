@@ -8,6 +8,17 @@ import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 
 import 'in_memory_storage_provider.dart';
 
+class Variant {
+  final String name;
+  final bool enabled;
+  Variant({required this.name, required this.enabled});
+
+  bool operator ==(Object other) {
+    return other is Variant &&
+        (other.name == name && other.enabled == enabled);
+  }
+}
+
 class ToggleConfig {
   final bool enabled;
   final bool impressionData;
@@ -129,6 +140,10 @@ class UnleashClient extends EventEmitter {
     var queryParams = Uri(queryParameters: contextSnapshot).query;
     url = url + '?' + queryParams;
     await fetchToggles();
+  }
+
+  Variant getVariant() {
+    return Variant(name: 'disabled', enabled: false);
   }
 
   Future<void> start() async {

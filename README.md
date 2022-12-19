@@ -42,7 +42,7 @@ from the package authors, and more.
 
 * (done) cache: in-memory storage
 * (done) cache: platform storage
-* Etag/304 handling
+* (done) Etag/304 handling
 * toggle variant
 * read from cache
 * await on storage provider inside the client

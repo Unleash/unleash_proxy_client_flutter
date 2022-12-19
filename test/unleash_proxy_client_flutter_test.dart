@@ -42,7 +42,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('can fetch initial toggles with ready', () async {
-    var getMock = new GetMock();
+    var getMock = GetMock();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
         clientKey: 'proxy-123',
@@ -67,7 +67,7 @@ void main() {
   });
 
   test('can fetch initial toggles with await', () async {
-    var getMock = new GetMock();
+    var getMock = GetMock();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
         clientKey: 'proxy-123',
@@ -83,7 +83,7 @@ void main() {
   });
 
   test('can store toggles in memory storage', () async {
-    var getMock = new GetMock();
+    var getMock = GetMock();
     var storageProvider = InMemoryStorageProvider();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
@@ -100,7 +100,7 @@ void main() {
 
   test('can store toggles in shared preferences', () async {
     SharedPreferences.setMockInitialValues({});
-    var getMock = new GetMock();
+    var getMock = GetMock();
     var storageProvider = await SharedPreferencesStorageProvider.init();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
@@ -117,7 +117,7 @@ void main() {
 
   test('can refetch toggles at a regular interval', () async {
     fakeAsync((async) {
-      var getMock = new GetMock();
+      var getMock = GetMock();
       final unleash = UnleashClient(
           url: 'https://app.unleash-hosted.com/demo/api/proxy',
           clientKey: 'proxy-123',
@@ -136,7 +136,7 @@ void main() {
 
   test('stopping client should cancel the timer', () async {
     fakeAsync((async) {
-      var getMock = new GetMock();
+      var getMock = GetMock();
       final unleash = UnleashClient(
           url: 'https://app.unleash-hosted.com/demo/api/proxy',
           clientKey: 'proxy-123',
@@ -159,7 +159,7 @@ void main() {
   });
 
   test('can update context', () async {
-    var getMock = new GetMock();
+    var getMock = GetMock();
     final unleash = UnleashClient(
         url: 'https://app.unleash-hosted.com/demo/api/proxy',
         clientKey: 'proxy-123',
@@ -183,7 +183,7 @@ void main() {
 
   test('interval should pick settings from update context', () async {
     fakeAsync((async) {
-      var getMock = new GetMock();
+      var getMock = GetMock();
       final unleash = UnleashClient(
           url: 'https://app.unleash-hosted.com/demo/api/proxy',
           clientKey: 'proxy-123',
@@ -204,7 +204,7 @@ void main() {
 
   test('should store ETag locally', () async {
     fakeAsync((async) {
-      var getMock = new GetMock(
+      var getMock = GetMock(
           body: mockData, status: 200, headers: {'ETag': 'ETagValue'});
       final unleash = UnleashClient(
           url: 'https://app.unleash-hosted.com/demo/api/proxy',
@@ -240,7 +240,7 @@ void main() {
 
   test('should not store ETag on codes other than 200', () async {
     fakeAsync((async) {
-      var getMock = new GetMock(
+      var getMock = GetMock(
           body: mockData, status: 500, headers: {'ETag': 'ETagValueIgnore'});
       final unleash = UnleashClient(
           url: 'https://app.unleash-hosted.com/demo/api/proxy',
@@ -271,5 +271,19 @@ void main() {
         ]
       ]);
     });
+  });
+
+  test('can get default variant', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+    await unleash.start();
+
+    var variant = unleash.getVariant();
+
+    expect(variant, Variant(name: 'disabled', enabled: false));
   });
 }
