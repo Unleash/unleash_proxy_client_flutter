@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +6,7 @@ import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
+import 'package:unleash_proxy_client_flutter/variant.dart';
 
 const mockData = '''{ 
      "toggles": [

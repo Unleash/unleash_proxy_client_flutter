@@ -43,7 +43,7 @@ from the package authors, and more.
 * (done) cache: in-memory storage
 * (done) cache: platform storage
 * (done) Etag/304 handling
-* toggle variant
+* (done) toggle variant
 * read from cache
 * await on storage provider inside the client
 * event emitting: update/error/initialized

@@ -5,54 +5,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:events_emitter/events_emitter.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
+import 'package:unleash_proxy_client_flutter/toggle_config.dart';
+import 'package:unleash_proxy_client_flutter/variant.dart';
 
 import 'in_memory_storage_provider.dart';
-
-class Variant {
-  final String name;
-  final bool enabled;
-
-  Variant({required this.name, required this.enabled});
-
-  factory Variant.fromJson(Map<String, dynamic> json) {
-    return Variant(name: json["name"], enabled: json["enabled"]);
-  }
-
-  bool operator ==(Object other) {
-    return other is Variant && (other.name == name && other.enabled == enabled);
-  }
-
-  String toString() {
-    return '{name: ${name}, enabled: ${enabled}}';
-  }
-}
-
-class ToggleConfig {
-  final bool enabled;
-  final bool impressionData;
-  final Variant variant;
-
-  ToggleConfig(
-      {required this.enabled,
-      required this.impressionData,
-      required this.variant});
-
-  factory ToggleConfig.fromJson(Map<String, dynamic> json) {
-    return ToggleConfig(
-        enabled: json["enabled"],
-        impressionData: json["impressionData"],
-        variant: Variant.fromJson(json["variant"]));
-  }
-
-  bool operator ==(Object other) {
-    return other is ToggleConfig &&
-        (other.enabled == enabled && other.impressionData == impressionData && other.variant == variant);
-  }
-
-  String toString() {
-    return '{enabled: ${enabled}, impressionData: ${impressionData}, variant: ${variant}}';
-  }
-}
 
 Future<http.Response> get(http.Request request) async {
   var response = await http.get(request.url, headers: request.headers);
@@ -166,7 +122,7 @@ class UnleashClient extends EventEmitter {
     if(toggle != null) {
       return toggle.variant;
     } else {
-      return Variant(name: 'disabled', enabled: false);
+      return Variant.DEFAULT;
     }
   }
 
