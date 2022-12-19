@@ -34,7 +34,7 @@ class GetMock {
     calledWith.add([request.url, request.headers]);
     calledWithUrls.add(request.url);
 
-    return Response(mockData, 200, headers: headers);
+    return Response(mockData, status, headers: headers);
   }
 }
 
@@ -232,6 +232,41 @@ void main() {
             'Cache': 'no-cache',
             'Authorization': 'proxy-123',
             'If-None-Match': 'ETagValue'
+          }
+        ]
+      ]);
+    });
+  });
+
+  test('should not store ETag on codes other than 200', () async {
+    fakeAsync((async) {
+      var getMock = new GetMock(
+          body: mockData, status: 500, headers: {'ETag': 'ETagValueIgnore'});
+      final unleash = UnleashClient(
+          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          fetcher: getMock);
+
+      unleash.start();
+      async.elapse(Duration(seconds: 10));
+
+      expect(getMock.calledWith, [
+        [
+          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+          {
+            'Accept': 'application/json',
+            'Cache': 'no-cache',
+            'Authorization': 'proxy-123',
+          }
+        ],
+        [
+          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+          {
+            'Accept': 'application/json',
+            'Cache': 'no-cache',
+            'Authorization': 'proxy-123',
           }
         ]
       ]);

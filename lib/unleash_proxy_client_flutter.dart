@@ -115,7 +115,7 @@ class UnleashClient extends EventEmitter {
     request.headers.addAll(headers);
     var response = await fetcher(request);
 
-    if(response.headers.containsKey('ETag')) {
+    if(response.headers.containsKey('ETag') && response.statusCode == 200) {
       etag = response.headers['ETag'];
     }
 
