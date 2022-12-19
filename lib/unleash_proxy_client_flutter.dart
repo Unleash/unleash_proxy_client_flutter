@@ -42,15 +42,6 @@ Map<String, ToggleConfig> parseToggleResponse(String body) {
       value: (toggle) => ToggleConfig.fromJson(toggle));
 }
 
-
-// interface IMutableContext {
-// userId?: string;
-// sessionId?: string;
-// remoteAddress?: string;
-// properties?: {
-// [key: string]: string;
-// };
-// }
 class UnleashContext {
    String? userId;
    String? sessionId;
