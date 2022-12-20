@@ -22,6 +22,7 @@ class UnleashClient extends EventEmitter {
   Map<String, ToggleConfig> toggles = {};
   StorageProvider storageProvider;
   String? etag;
+  late Future<void> ready = init();
 
   UnleashClient(
       {required this.url,
@@ -55,6 +56,24 @@ class UnleashClient extends EventEmitter {
     return parseToggleResponse(response.body);
   }
 
+  Future<void> init() async {
+    print('initializing started');
+    await fetchTogglesFromStorage();
+    print('fetched from storage');
+
+    emit('initialized', 'unleash client initialized');
+  }
+
+  Future<Map<String, ToggleConfig>> fetchTogglesFromStorage() async {
+    var toggles = await storageProvider.get('unleash_repo');
+
+    if(toggles == null) {
+      return {};
+    }
+
+    return parseToggleResponse(toggles);
+  }
+
   Future<void> updateContext(UnleashContext unleashContext) async {
     var contextSnapshot = unleashContext.toSnapshot();
     var queryParams = Uri(queryParameters: contextSnapshot).query;
@@ -65,7 +84,7 @@ class UnleashClient extends EventEmitter {
   Variant getVariant(String featureName) {
     var toggle = toggles[featureName];
 
-    if(toggle != null) {
+    if (toggle != null) {
       return toggle.variant;
     } else {
       return Variant.defaultVariant;

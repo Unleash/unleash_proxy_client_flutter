@@ -97,6 +97,29 @@ void main() {
     expect(result, mockData);
   });
 
+  test('can read initial toggles from in memory storage', () async {
+    var getMock = GetMock();
+    var storageProvider = InMemoryStorageProvider();
+    await storageProvider.save('unleash_repo', mockData);
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock,
+        storageProvider: storageProvider);
+
+    expect(unleash.isEnabled('flutter-on'), false);
+
+    final completer = Completer<void>();
+    unleash.on('initialized', (String message) {
+      completer.complete();
+    });
+    await completer.future;
+
+    expect(unleash.isEnabled('flutter-on'), true);
+    expect(getMock.calledTimes, 0);
+  });
+
   test('can store toggles in shared preferences', () async {
     SharedPreferences.setMockInitialValues({});
     var getMock = GetMock();

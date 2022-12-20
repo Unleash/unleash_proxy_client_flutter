@@ -44,12 +44,16 @@ from the package authors, and more.
 * (done) cache: platform storage
 * (done) Etag/304 handling
 * (done) toggle variant
-* read from cache
+* read from storage provider
+* URI encode query params
 * await on storage provider inside the client
 * event emitting: update/error/initialized
 * sessionId
 * metrics/impressions
 * set single context field
 * other/advanced options
+* dynamic headers
 * bootstrap - fallback values before we get server data
 * README
+* sample app using the client
+* GH action and publish
