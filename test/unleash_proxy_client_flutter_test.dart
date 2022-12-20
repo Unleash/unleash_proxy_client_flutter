@@ -269,7 +269,7 @@ void main() {
       });
 
       unleash.start();
-      expect(getMock.calledTimes, 1);
+      expect(getMock.calledTimes, 0);
       async.elapse(const Duration(seconds: 9));
       expect(getMock.calledTimes, 1);
       async.elapse(const Duration(seconds: 1));

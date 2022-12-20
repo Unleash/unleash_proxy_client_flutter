@@ -82,11 +82,17 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  String resolveSessionId() {
+  Future<String> resolveSessionId() async {
     return sessionIdGenerator();
   }
 
   Future<void> init() async {
+    var currentSessionId = context.sessionId;
+    if(currentSessionId == null) {
+      var sessionId = await resolveSessionId();
+      context.sessionId = sessionId;
+    }
+
     toggles = await fetchTogglesFromStorage();
     emit('initialized');
     clientState = ClientState.initialized;
@@ -103,6 +109,17 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
+    if (clientState == ClientState.ready) {
+      updateContextField(unleashContext);
+      await fetchToggles();
+    } else {
+      await waitForEvent('ready');
+      updateContextField(unleashContext);
+      await fetchToggles();
+    }
+  }
+
+  void updateContextField(UnleashContext unleashContext) {
     if(unleashContext.sessionId == null) {
       var oldSessionId = context.sessionId;
       context = unleashContext;
@@ -110,23 +127,16 @@ class UnleashClient extends EventEmitter {
     } else {
       context = unleashContext;
     }
-
-    if (clientState == ClientState.ready) {
-      await fetchToggles();
-    } else {
-      await waitForEvent('ready');
-    }
   }
 
   Future<void> waitForEvent(String eventName) async {
     final completer = Completer<void>();
     void listener(dynamic value) async {
-      await fetchToggles();
-      off(type: 'ready', callback: listener);
+      off(type: eventName, callback: listener);
       completer.complete();
     }
 
-    once('ready', listener);
+    once(eventName, listener);
     await completer.future;
   }
 
@@ -141,10 +151,8 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> start() async {
-    var currentSessionId = context.sessionId;
-    if(currentSessionId == null) {
-      var sessionId = resolveSessionId();
-      context.sessionId = sessionId;
+    if(clientState == ClientState.initializing) {
+      await waitForEvent('initialized');
     }
 
     await fetchToggles();
