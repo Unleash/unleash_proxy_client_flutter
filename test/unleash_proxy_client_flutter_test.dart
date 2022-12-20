@@ -37,6 +37,10 @@ class GetMock {
   }
 }
 
+String generateSessionId() {
+  return '1234';
+}
+
 class FailingGetMock {
   Exception error;
 
@@ -304,6 +308,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
         fetcher: getMock);
 
     await unleash.start();
@@ -315,7 +320,7 @@ void main() {
 
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
     ]);
@@ -327,6 +332,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
         fetcher: getMock);
 
     unleash.start();
@@ -338,7 +344,7 @@ void main() {
 
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
     ]);
@@ -367,6 +373,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
         fetcher: getMock);
 
     await unleash.start();
@@ -377,7 +384,7 @@ void main() {
         properties: {'custom?Key': 'customValue?'}));
 
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&custom%3FKey=customValue%3F')
     ]);
@@ -391,15 +398,16 @@ void main() {
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
+          sessionIdGenerator: generateSessionId,
           fetcher: getMock);
 
       unleash.start();
       unleash.updateContext(UnleashContext(userId: '123'));
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledWithUrls, [
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123'),
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123')
+        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
+        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234')
       ]);
     });
   });
@@ -413,6 +421,7 @@ void main() {
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
+          sessionIdGenerator: generateSessionId,
           fetcher: getMock);
 
       unleash.start();
@@ -420,7 +429,7 @@ void main() {
 
       expect(getMock.calledWith, [
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -428,7 +437,7 @@ void main() {
           }
         ],
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -449,6 +458,7 @@ void main() {
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
+          sessionIdGenerator: generateSessionId,
           fetcher: getMock);
 
       unleash.start();
@@ -456,7 +466,7 @@ void main() {
 
       expect(getMock.calledWith, [
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -464,7 +474,7 @@ void main() {
           }
         ],
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:events_emitter/events_emitter.dart';
 import 'package:unleash_proxy_client_flutter/parse_toggles.dart';
+import 'package:unleash_proxy_client_flutter/session_id_generator.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
@@ -24,6 +25,7 @@ class UnleashClient extends EventEmitter {
   final String appName;
   final int refreshInterval;
   final Future<http.Response> Function(http.Request) fetcher;
+  final String Function() sessionIdGenerator;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   StorageProvider storageProvider;
@@ -39,6 +41,7 @@ class UnleashClient extends EventEmitter {
     required this.appName,
     this.refreshInterval = 30,
     this.fetcher = get,
+    this.sessionIdGenerator = generateSessionId,
     storageProvider,
   }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
     ready = init();
@@ -79,6 +82,10 @@ class UnleashClient extends EventEmitter {
     }
   }
 
+  String resolveSessionId() {
+    return sessionIdGenerator();
+  }
+
   Future<void> init() async {
     toggles = await fetchTogglesFromStorage();
     emit('initialized');
@@ -96,7 +103,13 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
-    context = unleashContext;
+    if(unleashContext.sessionId == null) {
+      var oldSessionId = context.sessionId;
+      context = unleashContext;
+      context.sessionId = oldSessionId;
+    } else {
+      context = unleashContext;
+    }
 
     if (clientState == ClientState.ready) {
       await fetchToggles();
@@ -124,6 +137,12 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> start() async {
+    var currentSessionId = context.sessionId;
+    if(currentSessionId == null) {
+      var sessionId = resolveSessionId();
+      context.sessionId = sessionId;
+    }
+
     await fetchToggles();
 
     if (clientState != ClientState.ready) {
