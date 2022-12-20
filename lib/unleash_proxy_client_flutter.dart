@@ -31,6 +31,7 @@ class UnleashClient extends EventEmitter {
   late Future<void> ready;
   late bool readyEventEmitted = false;
   ClientState clientState = ClientState.initializing;
+  UnleashContext context = UnleashContext();
 
   UnleashClient({
     required this.url,
@@ -54,7 +55,8 @@ class UnleashClient extends EventEmitter {
       if (localEtag != null) {
         headers.putIfAbsent('If-None-Match', () => localEtag);
       }
-      var request = http.Request('GET', url);
+
+      var request = http.Request('GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
       request.headers.addAll(headers);
       var response = await fetcher(request);
 
@@ -94,9 +96,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
-    var contextSnapshot = unleashContext.toSnapshot();
-    var queryParams = Uri(queryParameters: contextSnapshot).query;
-    url = Uri.parse('${url.toString()}?$queryParams');
+    context = unleashContext;
 
     if (clientState == ClientState.ready) {
       await fetchToggles();

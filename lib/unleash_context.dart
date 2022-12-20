@@ -10,6 +10,11 @@ class UnleashContext {
         this.remoteAddress,
         this.properties = const {}});
 
+  String toQueryParams() {
+    var result = Uri(queryParameters: toSnapshot()).query;
+    return result.isNotEmpty ? '?$result' : '';
+  }
+
   Map<String, String> toSnapshot() {
     final params = <String, String>{};
 

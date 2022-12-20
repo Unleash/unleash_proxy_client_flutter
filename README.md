@@ -48,7 +48,7 @@ from the package authors, and more.
 * (done) URI encode query params
 * (moved to client responsibility, default to in-memory) await on storage provider inside the client
 * (done) event emitting: update/error
-* update context waiting on start
+* (done) update context waiting on start
 * sessionId
 * metrics/impressions
 * set single context field
