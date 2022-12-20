@@ -187,12 +187,18 @@ void main() {
           refreshInterval: 10,
           fetcher: getMock);
 
+      var updateEventCount = 0;
+      unleash.on('update', (String message) {
+        updateEventCount += 1;
+      });
+
       unleash.start();
       expect(getMock.calledTimes, 1);
       async.elapse(const Duration(seconds: 9));
       expect(getMock.calledTimes, 1);
       async.elapse(const Duration(seconds: 1));
       expect(getMock.calledTimes, 2);
+      expect(updateEventCount, 2);
     });
   });
 
