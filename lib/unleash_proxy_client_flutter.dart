@@ -114,16 +114,20 @@ class UnleashClient extends EventEmitter {
     if (clientState == ClientState.ready) {
       await fetchToggles();
     } else {
-      final completer = Completer<void>();
-      void listener(dynamic value) async {
-        await fetchToggles();
-        off(type: 'ready', callback: listener);
-        completer.complete();
-      }
-
-      once('ready', listener);
-      await completer.future;
+      await waitForEvent('ready');
     }
+  }
+
+  Future<void> waitForEvent(String eventName) async {
+    final completer = Completer<void>();
+    void listener(dynamic value) async {
+      await fetchToggles();
+      off(type: 'ready', callback: listener);
+      completer.complete();
+    }
+
+    once('ready', listener);
+    await completer.future;
   }
 
   Variant getVariant(String featureName) {
