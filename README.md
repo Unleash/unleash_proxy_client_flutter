@@ -47,7 +47,8 @@ from the package authors, and more.
 * (done) read from storage provider
 * (done) URI encode query params
 * (moved to client responsibility, default to in-memory) await on storage provider inside the client
-* event emitting: update/error
+* (done) event emitting: update/error
+* update context waiting on start
 * sessionId
 * metrics/impressions
 * set single context field
@@ -57,4 +58,4 @@ from the package authors, and more.
 * README
 * sample app using the client
 * GH action and publish
-* update context returns different toggles
+* test: update context returns different toggles

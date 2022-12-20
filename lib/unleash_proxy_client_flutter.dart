@@ -97,7 +97,20 @@ class UnleashClient extends EventEmitter {
     var contextSnapshot = unleashContext.toSnapshot();
     var queryParams = Uri(queryParameters: contextSnapshot).query;
     url = Uri.parse('${url.toString()}?$queryParams');
-    await fetchToggles();
+
+    if (clientState == ClientState.ready) {
+      await fetchToggles();
+    } else {
+      final completer = Completer<void>();
+      void listener(dynamic value) async {
+        await fetchToggles();
+        off(type: 'ready', callback: listener);
+        completer.complete();
+      }
+
+      once('ready', listener);
+      await completer.future;
+    }
   }
 
   Variant getVariant(String featureName) {

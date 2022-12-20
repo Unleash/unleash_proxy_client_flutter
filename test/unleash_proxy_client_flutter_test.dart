@@ -321,6 +321,46 @@ void main() {
     ]);
   });
 
+  test('update context should wait on asynchronous start', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    unleash.start();
+    await unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
+
+    expect(getMock.calledTimes, 2);
+    expect(getMock.calledWithUrls, [
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+    ]);
+  });
+
+  test('update context should not invoke HTTP without start', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
+
+    expect(getMock.calledTimes, 0);
+  });
+
   test('should encode query parameters', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
