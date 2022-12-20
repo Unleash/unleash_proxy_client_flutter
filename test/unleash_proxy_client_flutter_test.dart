@@ -37,6 +37,16 @@ class GetMock {
   }
 }
 
+class FailingGetMock {
+  Exception error;
+
+  FailingGetMock(this.error);
+
+  Future<Response> call(Request request) async {
+    throw error;
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   var url = Uri.parse('https://app.unleash-hosted.com/demo/api/proxy');
@@ -124,6 +134,27 @@ void main() {
       'type': 'HttpError',
       'code': 400,
     });
+  });
+
+  test('should emit error on failing HTTP client', () async {
+    var exception = Exception('unexpected exception');
+    var getMock = FailingGetMock(exception);
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    final completer = Completer<dynamic>();
+    unleash.on('error', (dynamic event) {
+      completer.complete(event);
+    });
+
+    unleash.start();
+
+    var value = await completer.future;
+
+    expect(value, exception);
   });
 
   test('should only call ready event once', () async {

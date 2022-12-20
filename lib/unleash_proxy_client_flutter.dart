@@ -43,36 +43,38 @@ class UnleashClient extends EventEmitter {
     ready = init();
   }
 
-  Future<Map<String, ToggleConfig>> fetchToggles() async {
-    var headers = {
-      'Accept': 'application/json',
-      'Cache': 'no-cache',
-      'Authorization': clientKey,
-    };
-    var localEtag = etag;
-    if (localEtag != null) {
-      headers.putIfAbsent('If-None-Match', () => localEtag);
-    }
-    var request = http.Request('GET', url);
-    request.headers.addAll(headers);
-    var response = await fetcher(request);
+  Future<void> fetchToggles() async {
+    try {
+      var headers = {
+        'Accept': 'application/json',
+        'Cache': 'no-cache',
+        'Authorization': clientKey,
+      };
+      var localEtag = etag;
+      if (localEtag != null) {
+        headers.putIfAbsent('If-None-Match', () => localEtag);
+      }
+      var request = http.Request('GET', url);
+      request.headers.addAll(headers);
+      var response = await fetcher(request);
 
-    if (response.headers.containsKey('ETag') && response.statusCode == 200) {
-      etag = response.headers['ETag'];
+      if (response.headers.containsKey('ETag') && response.statusCode == 200) {
+        etag = response.headers['ETag'];
+      }
+      if (response.statusCode == 200) {
+        await storageProvider.save('unleash_repo', response.body);
+        toggles = parseToggleResponse(response.body);
+        emit('update');
+      }
+      if (response.statusCode > 399) {
+        emit('error', {
+          "type": 'HttpError',
+          "code": response.statusCode,
+        });
+      }
+    } catch (e) {
+      emit('error', e);
     }
-    if(response.statusCode == 200) {
-      await storageProvider.save('unleash_repo', response.body);
-      toggles = parseToggleResponse(response.body);
-      emit('update');
-    }
-    if(response.statusCode > 399) {
-      emit('error', {
-        "type": 'HttpError',
-        "code": response.statusCode,
-      });
-    }
-
-    return toggles;
   }
 
   Future<void> init() async {
