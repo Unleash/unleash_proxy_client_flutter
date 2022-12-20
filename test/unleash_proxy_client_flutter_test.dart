@@ -39,11 +39,12 @@ class GetMock {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  var url = Uri.parse('https://app.unleash-hosted.com/demo/api/proxy');
 
   test('can fetch initial toggles with ready', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock);
@@ -68,7 +69,7 @@ void main() {
   test('can fetch initial toggles with await', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock);
@@ -85,7 +86,7 @@ void main() {
     var getMock = GetMock();
     var storageProvider = InMemoryStorageProvider();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock,
@@ -102,7 +103,7 @@ void main() {
     var storageProvider = InMemoryStorageProvider();
     await storageProvider.save('unleash_repo', mockData);
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock,
@@ -125,7 +126,7 @@ void main() {
     var getMock = GetMock();
     var storageProvider = await SharedPreferencesStorageProvider.init();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock,
@@ -141,7 +142,7 @@ void main() {
     fakeAsync((async) {
       var getMock = GetMock();
       final unleash = UnleashClient(
-          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          url: url,
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
@@ -160,7 +161,7 @@ void main() {
     fakeAsync((async) {
       var getMock = GetMock();
       final unleash = UnleashClient(
-          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          url: url,
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
@@ -183,7 +184,7 @@ void main() {
   test('can update context', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock);
@@ -206,7 +207,7 @@ void main() {
   test('should encode query parameters', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock);
@@ -229,7 +230,7 @@ void main() {
     fakeAsync((async) {
       var getMock = GetMock();
       final unleash = UnleashClient(
-          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          url: url,
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
@@ -251,7 +252,7 @@ void main() {
       var getMock =
           GetMock(body: mockData, status: 200, headers: {'ETag': 'ETagValue'});
       final unleash = UnleashClient(
-          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          url: url,
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
@@ -287,7 +288,7 @@ void main() {
       var getMock = GetMock(
           body: mockData, status: 500, headers: {'ETag': 'ETagValueIgnore'});
       final unleash = UnleashClient(
-          url: 'https://app.unleash-hosted.com/demo/api/proxy',
+          url: url,
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
@@ -320,7 +321,7 @@ void main() {
   test('can get default variant from API', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock);
@@ -334,7 +335,7 @@ void main() {
   test('can get default variant for non-existent toggle', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock);
@@ -348,7 +349,7 @@ void main() {
   test('can get variant', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
-        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         fetcher: getMock);
