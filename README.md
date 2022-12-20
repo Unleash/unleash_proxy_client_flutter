@@ -44,10 +44,10 @@ from the package authors, and more.
 * (done) cache: platform storage
 * (done) Etag/304 handling
 * (done) toggle variant
-* read from storage provider
+* (done) read from storage provider
 * URI encode query params
 * await on storage provider inside the client
-* event emitting: update/error/initialized
+* event emitting: update/error
 * sessionId
 * metrics/impressions
 * set single context field
