@@ -203,6 +203,28 @@ void main() {
     ]);
   });
 
+  test('should encode query parameters', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: 'https://app.unleash-hosted.com/demo/api/proxy',
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    await unleash.start();
+    await unleash.updateContext(UnleashContext(
+        userId: '123??',
+        remoteAddress: '192.168.0.10',
+        sessionId: 'session',
+        properties: {'custom?Key': 'customValue?'}));
+
+    expect(getMock.calledWithUrls, [
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&custom%3FKey=customValue%3F')
+    ]);
+  });
+
   test('interval should pick settings from update context', () async {
     fakeAsync((async) {
       var getMock = GetMock();
@@ -226,8 +248,8 @@ void main() {
 
   test('should store ETag locally', () async {
     fakeAsync((async) {
-      var getMock = GetMock(
-          body: mockData, status: 200, headers: {'ETag': 'ETagValue'});
+      var getMock =
+          GetMock(body: mockData, status: 200, headers: {'ETag': 'ETagValue'});
       final unleash = UnleashClient(
           url: 'https://app.unleash-hosted.com/demo/api/proxy',
           clientKey: 'proxy-123',
