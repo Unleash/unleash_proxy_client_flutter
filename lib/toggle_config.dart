@@ -7,8 +7,8 @@ class ToggleConfig {
 
   ToggleConfig(
       {required this.enabled,
-        required this.impressionData,
-        required this.variant});
+      required this.impressionData,
+      required this.variant});
 
   factory ToggleConfig.fromJson(Map<String, dynamic> json) {
     return ToggleConfig(
@@ -20,7 +20,9 @@ class ToggleConfig {
   @override
   bool operator ==(Object other) {
     return other is ToggleConfig &&
-        (other.enabled == enabled && other.impressionData == impressionData && other.variant == variant);
+        (other.enabled == enabled &&
+            other.impressionData == impressionData &&
+            other.variant == variant);
   }
 
   @override
@@ -30,5 +32,4 @@ class ToggleConfig {
 
   @override
   int get hashCode => Object.hash(enabled, impressionData, variant);
-
 }

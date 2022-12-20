@@ -22,16 +22,18 @@ class UnleashClient extends EventEmitter {
   Map<String, ToggleConfig> toggles = {};
   StorageProvider storageProvider;
   String? etag;
-  late Future<void> ready = init();
+  late Future<void> ready;
 
-  UnleashClient(
-      {required this.url,
-      required this.clientKey,
-      required this.appName,
-      this.refreshInterval = 30,
-      this.fetcher = get,
-      storageProvider})
-      : storageProvider = storageProvider ?? InMemoryStorageProvider();
+  UnleashClient({
+    required this.url,
+    required this.clientKey,
+    required this.appName,
+    this.refreshInterval = 30,
+    this.fetcher = get,
+    storageProvider,
+  }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
+    ready = init();
+  }
 
   Future<Map<String, ToggleConfig>> fetchToggles() async {
     var headers = {
@@ -57,17 +59,14 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> init() async {
-    print('initializing started');
-    await fetchTogglesFromStorage();
-    print('fetched from storage');
-
+    toggles = await fetchTogglesFromStorage();
     emit('initialized', 'unleash client initialized');
   }
 
   Future<Map<String, ToggleConfig>> fetchTogglesFromStorage() async {
     var toggles = await storageProvider.get('unleash_repo');
 
-    if(toggles == null) {
+    if (toggles == null) {
       return {};
     }
 
