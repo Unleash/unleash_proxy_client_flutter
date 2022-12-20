@@ -83,7 +83,18 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<String> resolveSessionId() async {
-    return sessionIdGenerator();
+    var sessionId = context.sessionId;
+    if(sessionId != null) {
+      return sessionId;
+    } else {
+      var existingSessionId = await storageProvider.get('sessionId');
+      if(existingSessionId == null) {
+        var newSessionId = sessionIdGenerator();
+        await storageProvider.save('sessionId', newSessionId);
+        return newSessionId;
+      }
+      return existingSessionId;
+    }
   }
 
   Future<void> init() async {

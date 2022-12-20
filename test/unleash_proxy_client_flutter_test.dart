@@ -99,6 +99,42 @@ void main() {
     expect(count, 1);
   });
 
+  test('store session id in storage', () async {
+    var getMock = GetMock();
+    var storageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: storageProvider,
+        sessionIdGenerator: generateSessionId,
+        fetcher: getMock);
+
+    await unleash.start();
+
+    var sessionId = await storageProvider.get('sessionId');
+    expect(sessionId, '1234');
+  });
+
+  test('get session id from storage', () async {
+    var getMock = GetMock();
+    var storageProvider = InMemoryStorageProvider();
+    await storageProvider.save('sessionId', '5678');
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: storageProvider,
+        sessionIdGenerator: generateSessionId,
+        fetcher: getMock);
+
+    await unleash.start();
+
+    expect(getMock.calledWithUrls, [
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=5678')
+    ]);
+  });
+
   test('should not emit update on 304', () async {
     var getMock = GetMock(status: 304);
     final unleash = UnleashClient(
