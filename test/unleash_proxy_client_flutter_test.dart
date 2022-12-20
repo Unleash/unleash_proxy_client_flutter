@@ -85,6 +85,24 @@ void main() {
     expect(count, 1);
   });
 
+  test('should not emit update on 304', () async {
+    var getMock = GetMock(status: 304);
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    var count = 0;
+    unleash.on('update', (String message) {
+      count += 1;
+    });
+
+    await unleash.start();
+
+    expect(count, 0);
+  });
+
   test('should only call ready event once', () async {
     var count = 0;
     var getMock = GetMock();

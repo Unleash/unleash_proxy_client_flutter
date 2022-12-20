@@ -60,10 +60,11 @@ class UnleashClient extends EventEmitter {
     if (response.headers.containsKey('ETag') && response.statusCode == 200) {
       etag = response.headers['ETag'];
     }
-
-    await storageProvider.save('unleash_repo', response.body);
-    toggles = parseToggleResponse(response.body);
-    emit('update', 'toggles updated');
+    if(response.statusCode == 200) {
+      await storageProvider.save('unleash_repo', response.body);
+      toggles = parseToggleResponse(response.body);
+      emit('update', 'toggles updated');
+    }
 
     return toggles;
   }
