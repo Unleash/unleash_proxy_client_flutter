@@ -54,7 +54,7 @@ void main() {
 
     final completer = Completer<void>();
     // Ready should be registered before we start the client.
-    unleash.on('ready', (String message) {
+    unleash.on('ready', (dynamic _) {
       completer.complete();
     });
 
@@ -76,7 +76,7 @@ void main() {
         fetcher: getMock);
 
     var count = 0;
-    unleash.on('update', (String message) {
+    unleash.on('update', (dynamic _) {
       count += 1;
     });
 
@@ -94,13 +94,36 @@ void main() {
         fetcher: getMock);
 
     var count = 0;
-    unleash.on('update', (String message) {
+    unleash.on('update', (dynamic _) {
       count += 1;
     });
 
     await unleash.start();
 
     expect(count, 0);
+  });
+
+  test('should emit error on error HTTP codes', () async {
+    var getMock = GetMock(status: 400);
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    final completer = Completer<dynamic>();
+    unleash.on('error', (dynamic event) {
+      completer.complete(event);
+    });
+
+    unleash.start();
+
+    var value = await completer.future;
+
+    expect(value, {
+      'type': 'HttpError',
+      'code': 400,
+    });
   });
 
   test('should only call ready event once', () async {
@@ -113,7 +136,7 @@ void main() {
         fetcher: getMock);
 
     // Ready should be registered before we start the client.
-    unleash.on('ready', (String message) {
+    unleash.on('ready', (dynamic _) {
       count += 1;
     });
 
@@ -169,7 +192,7 @@ void main() {
     expect(unleash.isEnabled('flutter-on'), false);
 
     final completer = Completer<void>();
-    unleash.on('initialized', (String message) {
+    unleash.on('initialized', (dynamic _) {
       completer.complete();
     });
     await completer.future;
@@ -206,7 +229,7 @@ void main() {
           fetcher: getMock);
 
       var updateEventCount = 0;
-      unleash.on('update', (String message) {
+      unleash.on('update', (dynamic _) {
         updateEventCount += 1;
       });
 

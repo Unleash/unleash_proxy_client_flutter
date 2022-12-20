@@ -63,7 +63,13 @@ class UnleashClient extends EventEmitter {
     if(response.statusCode == 200) {
       await storageProvider.save('unleash_repo', response.body);
       toggles = parseToggleResponse(response.body);
-      emit('update', 'toggles updated');
+      emit('update');
+    }
+    if(response.statusCode > 399) {
+      emit('error', {
+        "type": 'HttpError',
+        "code": response.statusCode,
+      });
     }
 
     return toggles;
@@ -71,7 +77,7 @@ class UnleashClient extends EventEmitter {
 
   Future<void> init() async {
     toggles = await fetchTogglesFromStorage();
-    emit('initialized', 'unleash client initialized');
+    emit('initialized');
     clientState = ClientState.initialized;
   }
 
@@ -106,7 +112,7 @@ class UnleashClient extends EventEmitter {
     await fetchToggles();
 
     if (clientState != ClientState.ready) {
-      emit('ready', 'feature toggle ready');
+      emit('ready');
       clientState = ClientState.ready;
     }
 
