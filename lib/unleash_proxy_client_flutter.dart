@@ -12,6 +12,12 @@ import 'package:unleash_proxy_client_flutter/variant.dart';
 import 'http_toggle_client.dart';
 import 'in_memory_storage_provider.dart';
 
+enum ClientState {
+  initializing,
+  initialized,
+  ready,
+}
+
 class UnleashClient extends EventEmitter {
   Uri url;
   final String clientKey;
@@ -23,6 +29,8 @@ class UnleashClient extends EventEmitter {
   StorageProvider storageProvider;
   String? etag;
   late Future<void> ready;
+  late bool readyEventEmitted = false;
+  ClientState clientState = ClientState.initializing;
 
   UnleashClient({
     required this.url,
@@ -60,8 +68,8 @@ class UnleashClient extends EventEmitter {
 
   Future<void> init() async {
     toggles = await fetchTogglesFromStorage();
-
     emit('initialized', 'unleash client initialized');
+    clientState = ClientState.initialized;
   }
 
   Future<Map<String, ToggleConfig>> fetchTogglesFromStorage() async {
@@ -94,7 +102,11 @@ class UnleashClient extends EventEmitter {
   Future<void> start() async {
     toggles = await fetchToggles();
 
-    emit('ready', 'feature toggle ready');
+    if (clientState != ClientState.ready) {
+      emit('ready', 'feature toggle ready');
+      clientState = ClientState.ready;
+    }
+
     timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
       fetchToggles();
     });

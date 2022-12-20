@@ -53,6 +53,7 @@ void main() {
     expect(unleash.isEnabled('flutter-off'), false);
 
     final completer = Completer<void>();
+    // Ready should be registered before we start the client.
     unleash.on('ready', (String message) {
       completer.complete();
     });
@@ -64,6 +65,26 @@ void main() {
     expect(unleash.isEnabled('flutter-on'), true);
     expect(unleash.isEnabled('flutter-off'), false);
     expect(getMock.calledTimes, 1);
+  });
+
+  test('should only call ready event once', () async {
+    var count = 0;
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    // Ready should be registered before we start the client.
+    unleash.on('ready', (String message) {
+      count += 1;
+    });
+
+    await unleash.start();
+    await unleash.start();
+
+    expect(count, 1);
   });
 
   test('can fetch initial toggles with await', () async {
