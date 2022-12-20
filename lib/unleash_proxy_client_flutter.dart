@@ -62,8 +62,10 @@ class UnleashClient extends EventEmitter {
     }
 
     await storageProvider.save('unleash_repo', response.body);
+    toggles = parseToggleResponse(response.body);
+    emit('update', 'toggles updated');
 
-    return parseToggleResponse(response.body);
+    return toggles;
   }
 
   Future<void> init() async {
@@ -100,7 +102,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> start() async {
-    toggles = await fetchToggles();
+    await fetchToggles();
 
     if (clientState != ClientState.ready) {
       emit('ready', 'feature toggle ready');

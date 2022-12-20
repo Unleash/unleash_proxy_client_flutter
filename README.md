@@ -45,8 +45,8 @@ from the package authors, and more.
 * (done) Etag/304 handling
 * (done) toggle variant
 * (done) read from storage provider
-* URI encode query params
-* await on storage provider inside the client
+* (done) URI encode query params
+* (moved to client responsibility, default to in-memory) await on storage provider inside the client
 * event emitting: update/error
 * sessionId
 * metrics/impressions
@@ -57,3 +57,4 @@ from the package authors, and more.
 * README
 * sample app using the client
 * GH action and publish
+* update context returns different toggles

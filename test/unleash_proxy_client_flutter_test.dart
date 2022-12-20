@@ -67,6 +67,24 @@ void main() {
     expect(getMock.calledTimes, 1);
   });
 
+  test('emits update event on initial data fetch', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        fetcher: getMock);
+
+    var count = 0;
+    unleash.on('update', (String message) {
+      count += 1;
+    });
+
+    await unleash.start();
+
+    expect(count, 1);
+  });
+
   test('should only call ready event once', () async {
     var count = 0;
     var getMock = GetMock();
