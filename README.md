@@ -49,9 +49,9 @@ from the package authors, and more.
 * (moved to client responsibility, default to in-memory) await on storage provider inside the client
 * (done) event emitting: update/error
 * (done) update context waiting on start
-* sessionId
+* (done) sessionId
+* (done) set single context field
 * metrics/impressions
-* set single context field
 * other/advanced options
 * dynamic headers
 * bootstrap - fallback values before we get server data
@@ -59,3 +59,4 @@ from the package authors, and more.
 * sample app using the client
 * GH action and publish
 * test: update context returns different toggles
+* storage names private

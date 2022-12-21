@@ -44,10 +44,10 @@ class UnleashClient extends EventEmitter {
     this.sessionIdGenerator = generateSessionId,
     storageProvider,
   }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
-    ready = init();
+    ready = _init();
   }
 
-  Future<void> fetchToggles() async {
+  Future<void> _fetchToggles() async {
     try {
       var headers = {
         'Accept': 'application/json',
@@ -59,7 +59,8 @@ class UnleashClient extends EventEmitter {
         headers.putIfAbsent('If-None-Match', () => localEtag);
       }
 
-      var request = http.Request('GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
+      var request = http.Request(
+          'GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
       request.headers.addAll(headers);
       var response = await fetcher(request);
 
@@ -82,13 +83,13 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  Future<String> resolveSessionId() async {
+  Future<String> _resolveSessionId() async {
     var sessionId = context.sessionId;
-    if(sessionId != null) {
+    if (sessionId != null) {
       return sessionId;
     } else {
       var existingSessionId = await storageProvider.get('sessionId');
-      if(existingSessionId == null) {
+      if (existingSessionId == null) {
         var newSessionId = sessionIdGenerator();
         await storageProvider.save('sessionId', newSessionId);
         return newSessionId;
@@ -97,19 +98,19 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  Future<void> init() async {
+  Future<void> _init() async {
     var currentSessionId = context.sessionId;
-    if(currentSessionId == null) {
-      var sessionId = await resolveSessionId();
+    if (currentSessionId == null) {
+      var sessionId = await _resolveSessionId();
       context.sessionId = sessionId;
     }
 
-    toggles = await fetchTogglesFromStorage();
+    toggles = await _fetchTogglesFromStorage();
     emit('initialized');
     clientState = ClientState.initialized;
   }
 
-  Future<Map<String, ToggleConfig>> fetchTogglesFromStorage() async {
+  Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {
     var toggles = await storageProvider.get('unleash_repo');
 
     if (toggles == null) {
@@ -121,17 +122,17 @@ class UnleashClient extends EventEmitter {
 
   Future<void> updateContext(UnleashContext unleashContext) async {
     if (clientState == ClientState.ready) {
-      updateContextField(unleashContext);
-      await fetchToggles();
+      _updateContextFields(unleashContext);
+      await _fetchToggles();
     } else {
-      await waitForEvent('ready');
-      updateContextField(unleashContext);
-      await fetchToggles();
+      await _waitForEvent('ready');
+      _updateContextFields(unleashContext);
+      await _fetchToggles();
     }
   }
 
-  void updateContextField(UnleashContext unleashContext) {
-    if(unleashContext.sessionId == null) {
+  void _updateContextFields(UnleashContext unleashContext) {
+    if (unleashContext.sessionId == null) {
       var oldSessionId = context.sessionId;
       context = unleashContext;
       context.sessionId = oldSessionId;
@@ -140,7 +141,30 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  Future<void> waitForEvent(String eventName) async {
+  Future<void> setContextField(String field, String value) async {
+    if (clientState == ClientState.ready) {
+      _updateContextField(field, value);
+      await _fetchToggles();
+    } else {
+      await _waitForEvent('ready');
+      _updateContextField(field, value);
+      await _fetchToggles();
+    }
+  }
+
+  void _updateContextField(String field, String value) {
+    if (field == 'userId') {
+      context.userId = value;
+    } else if (field == 'sessionId') {
+      context.sessionId = value;
+    } else if (field == 'remoteAddress') {
+      context.remoteAddress = value;
+    } else {
+      context.properties[field] = value;
+    }
+  }
+
+  Future<void> _waitForEvent(String eventName) async {
     final completer = Completer<void>();
     void listener(dynamic value) async {
       off(type: eventName, callback: listener);
@@ -162,11 +186,11 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> start() async {
-    if(clientState == ClientState.initializing) {
-      await waitForEvent('initialized');
+    if (clientState == ClientState.initializing) {
+      await _waitForEvent('initialized');
     }
 
-    await fetchToggles();
+    await _fetchToggles();
 
     if (clientState != ClientState.ready) {
       emit('ready');
@@ -174,7 +198,7 @@ class UnleashClient extends EventEmitter {
     }
 
     timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
-      fetchToggles();
+      _fetchToggles();
     });
   }
 

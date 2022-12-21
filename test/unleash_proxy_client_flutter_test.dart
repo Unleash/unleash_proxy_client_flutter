@@ -353,12 +353,19 @@ void main() {
         remoteAddress: 'address',
         sessionId: 'session',
         properties: {'customKey': 'customValue'}));
+    await unleash.setContextField('userId', '456');
+    await unleash.setContextField('anotherCustomKey', 'anotherCustomValue');
 
-    expect(getMock.calledTimes, 2);
+    expect(getMock.calledTimes, 4);
     expect(getMock.calledWithUrls, [
       Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&customKey=customValue'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&customKey=customValue&anotherCustomKey=anotherCustomValue')
+
     ]);
   });
 
@@ -383,6 +390,26 @@ void main() {
       Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+    ]);
+  });
+
+  test('set context field should wait on asynchronous start', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
+        fetcher: getMock);
+
+    unleash.start();
+    await unleash.setContextField('userId', '456');
+
+    expect(getMock.calledTimes, 2);
+    expect(getMock.calledWithUrls, [
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&sessionId=1234')
     ]);
   });
 
