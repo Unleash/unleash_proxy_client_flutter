@@ -36,7 +36,7 @@ class UnleashClient extends EventEmitter {
   StorageProvider storageProvider;
   String? etag;
   late Future<void> ready;
-  late bool readyEventEmitted = false;
+  bool readyEventEmitted = false;
   ClientState clientState = ClientState.initializing;
   UnleashContext context = UnleashContext();
 
