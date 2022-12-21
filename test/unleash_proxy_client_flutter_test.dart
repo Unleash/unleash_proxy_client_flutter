@@ -674,18 +674,18 @@ void main() {
         },
         fetcher: getMock);
 
-    expect(unleash.isEnabled('flutter-on'), false);
+    expect(unleash.getVariant('flutter-on'), Variant(enabled: false, name: 'variant-name'));
 
     await unleash.start();
 
-    expect(unleash.isEnabled('flutter-on'), true);
+    expect(unleash.getVariant('flutter-on'), Variant(enabled: false, name: 'disabled'));
   });
 
   test('by default bootstrap overrides local storage', () async {
     var getMock = GetMock();
     var storageProvider = InMemoryStorageProvider();
     await storageProvider.save(storageKey,
-        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true}}]}');
+        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"storage-variant-name","enabled":true}}]}');
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -695,7 +695,7 @@ void main() {
           'flutter-on': ToggleConfig(
               enabled: false,
               impressionData: false,
-              variant: Variant(enabled: true, name: 'variant-name'))
+              variant: Variant(enabled: true, name: 'bootstrap-variant-name'))
         },
         fetcher: getMock);
 
@@ -705,14 +705,14 @@ void main() {
     });
     await initialized.future;
 
-    expect(unleash.isEnabled('flutter-on'), false);
+    expect(unleash.getVariant('flutter-on').name, 'bootstrap-variant-name');
   });
 
   test('prevent bootstrap overrides on non-empty storage', () async {
     var getMock = GetMock();
     var storageProvider = InMemoryStorageProvider();
     await storageProvider.save(storageKey,
-        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true}}]}');
+        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"storage-variant-name","enabled":true}}]}');
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -723,7 +723,7 @@ void main() {
           'flutter-on': ToggleConfig(
               enabled: false,
               impressionData: false,
-              variant: Variant(enabled: true, name: 'variant-name'))
+              variant: Variant(enabled: true, name: 'bootstrap-variant-name'))
         },
         fetcher: getMock);
 
@@ -733,7 +733,7 @@ void main() {
     });
     await initialized.future;
 
-    expect(unleash.isEnabled('flutter-on'), true);
+    expect(unleash.getVariant('flutter-on').name, 'storage-variant-name');
   });
 
   test('bootstrap overrides on empty storage', () async {
@@ -761,6 +761,6 @@ void main() {
     });
     await initialized.future;
 
-    expect(unleash.isEnabled('flutter-on'), true);
+    expect(unleash.getVariant('flutter-on').name, 'variant-name');
   });
 }
