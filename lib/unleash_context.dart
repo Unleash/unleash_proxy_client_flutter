@@ -8,23 +8,26 @@ class UnleashContext {
       : properties = properties ?? {};
 
   String toQueryParams() {
-    var result = Uri(queryParameters: toSnapshot()).query;
+    final result = Uri(queryParameters: toSnapshot()).query;
     return result.isNotEmpty ? '?$result' : '';
   }
 
   Map<String, String> toSnapshot() {
     final params = <String, String>{};
 
-    if (userId != null) {
-      params.putIfAbsent('userId', () => userId!);
+    final localUserId = userId;
+    if (localUserId != null) {
+      params['userId'] = localUserId;
     }
 
-    if (remoteAddress != null) {
-      params.putIfAbsent('remoteAddress', () => remoteAddress!);
+    final localRemoteAddress = remoteAddress;
+    if (localRemoteAddress != null) {
+      params['remoteAddress'] = localRemoteAddress;
     }
 
-    if (sessionId != null) {
-      params.putIfAbsent('sessionId', () => sessionId!);
+    final localSessionId = sessionId;
+    if (localSessionId != null) {
+      params['sessionId'] = localSessionId;
     }
 
     params.addAll(properties);

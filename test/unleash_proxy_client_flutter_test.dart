@@ -21,8 +21,8 @@ const mockData = '''{
 
 class GetMock {
   var calledTimes = 0;
-  var calledWith = [];
-  var calledWithUrls = [];
+  final calledWith = [];
+  final calledWithUrls = [];
   String body;
   int status;
   Map<String, String> headers;
@@ -55,10 +55,10 @@ class FailingGetMock {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  var url = Uri.parse('https://app.unleash-hosted.com/demo/api/proxy');
+  final url = Uri.parse('https://app.unleash-hosted.com/demo/api/proxy');
 
   test('can fetch initial toggles with ready', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -85,7 +85,7 @@ void main() {
   });
 
   test('emits update event on initial data fetch', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -104,8 +104,8 @@ void main() {
   });
 
   test('store session id in storage', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -116,13 +116,13 @@ void main() {
 
     await unleash.start();
 
-    var sessionId = await storageProvider.get(sessionStorageKey);
+    final sessionId = await storageProvider.get(sessionStorageKey);
     expect(sessionId, '1234');
   });
 
   test('get session id from storage', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     await storageProvider.save(sessionStorageKey, '5678');
     final unleash = UnleashClient(
         url: url,
@@ -140,7 +140,7 @@ void main() {
   });
 
   test('can set custom headers', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -172,7 +172,7 @@ void main() {
   });
 
   test('can set custom client id header', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -198,7 +198,7 @@ void main() {
   });
 
   test('should not emit update on 304', () async {
-    var getMock = GetMock(status: 304);
+    final getMock = GetMock(status: 304);
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -217,7 +217,7 @@ void main() {
   });
 
   test('should emit error on error HTTP codes', () async {
-    var getMock = GetMock(status: 400);
+    final getMock = GetMock(status: 400);
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -232,7 +232,7 @@ void main() {
 
     unleash.start();
 
-    var value = await completer.future;
+    final value = await completer.future;
 
     expect(value, {
       'type': 'HttpError',
@@ -241,8 +241,8 @@ void main() {
   });
 
   test('should emit error on failing HTTP client', () async {
-    var exception = Exception('unexpected exception');
-    var getMock = FailingGetMock(exception);
+    final exception = Exception('unexpected exception');
+    final getMock = FailingGetMock(exception);
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -257,14 +257,14 @@ void main() {
 
     unleash.start();
 
-    var value = await completer.future;
+    final value = await completer.future;
 
     expect(value, exception);
   });
 
   test('should only call ready event once', () async {
     var count = 0;
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -284,7 +284,7 @@ void main() {
   });
 
   test('can fetch initial toggles with await', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -301,8 +301,8 @@ void main() {
   });
 
   test('can store toggles in memory storage', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -311,14 +311,14 @@ void main() {
         storageProvider: storageProvider);
 
     await unleash.start();
-    var result = await storageProvider.get(storageKey);
+    final result = await storageProvider.get(storageKey);
 
     expect(result, mockData);
   });
 
   test('can read initial toggles from in memory storage', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     await storageProvider.save(storageKey, mockData);
     final unleash = UnleashClient(
         url: url,
@@ -340,12 +340,12 @@ void main() {
   });
 
   test('can store toggles in shared preferences by default', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     SharedPreferences.setMockInitialValues({});
     addTearDown(() {
       SharedPreferences.setMockInitialValues({});
     });
-    var storageProvider = await SharedPreferencesStorageProvider.init();
+    final storageProvider = await SharedPreferencesStorageProvider.init();
     final unleash = UnleashClient(
       url: url,
       clientKey: 'proxy-123',
@@ -355,8 +355,8 @@ void main() {
     );
 
     await unleash.start();
-    var result = await storageProvider.get(storageKey);
-    var sessionId = await storageProvider.get(sessionStorageKey);
+    final result = await storageProvider.get(storageKey);
+    final sessionId = await storageProvider.get(sessionStorageKey);
 
     expect(result, mockData);
     expect(sessionId, '1234');
@@ -364,7 +364,7 @@ void main() {
 
   test('can refetch toggles at a regular interval', () async {
     fakeAsync((async) {
-      var getMock = GetMock();
+      final getMock = GetMock();
       final unleash = UnleashClient(
           url: url,
           clientKey: 'proxy-123',
@@ -390,7 +390,7 @@ void main() {
 
   test('can disable refresh at a regular interval', () async {
     fakeAsync((async) {
-      var getMock = GetMock();
+      final getMock = GetMock();
       final unleash = UnleashClient(
           url: url,
           clientKey: 'proxy-123',
@@ -417,7 +417,7 @@ void main() {
 
   test('stopping client should cancel the timer', () async {
     fakeAsync((async) {
-      var getMock = GetMock();
+      final getMock = GetMock();
       final unleash = UnleashClient(
           url: url,
           clientKey: 'proxy-123',
@@ -441,7 +441,7 @@ void main() {
   });
 
   test('can update context', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -472,7 +472,7 @@ void main() {
   });
 
   test('can update single context fields', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -502,7 +502,7 @@ void main() {
   });
 
   test('update context should wait on asynchronous start', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -527,7 +527,7 @@ void main() {
   });
 
   test('set context field should wait on asynchronous start', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -548,7 +548,7 @@ void main() {
   });
 
   test('update context should not invoke HTTP without start', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -566,7 +566,7 @@ void main() {
   });
 
   test('should encode query parameters', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -591,7 +591,7 @@ void main() {
 
   test('interval should pick settings from update context', () async {
     fakeAsync((async) {
-      var getMock = GetMock();
+      final getMock = GetMock();
       final unleash = UnleashClient(
           url: url,
           clientKey: 'proxy-123',
@@ -617,7 +617,7 @@ void main() {
 
   test('should store ETag locally', () async {
     fakeAsync((async) {
-      var getMock =
+      final getMock =
           GetMock(body: mockData, status: 200, headers: {'ETag': 'ETagValue'});
       final unleash = UnleashClient(
           url: url,
@@ -657,7 +657,7 @@ void main() {
 
   test('should not store ETag on codes other than 200', () async {
     fakeAsync((async) {
-      var getMock = GetMock(
+      final getMock = GetMock(
           body: mockData, status: 500, headers: {'ETag': 'ETagValueIgnore'});
       final unleash = UnleashClient(
           url: url,
@@ -695,7 +695,7 @@ void main() {
   });
 
   test('can get default variant from API', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -704,13 +704,13 @@ void main() {
         fetcher: getMock);
     await unleash.start();
 
-    var variant = unleash.getVariant('flutter.on');
+    final variant = unleash.getVariant('flutter.on');
 
     expect(variant, Variant(name: 'disabled', enabled: false));
   });
 
   test('can get default variant for non-existent toggle', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -719,13 +719,13 @@ void main() {
         fetcher: getMock);
     await unleash.start();
 
-    var variant = unleash.getVariant('non.existent.toggle');
+    final variant = unleash.getVariant('non.existent.toggle');
 
     expect(variant, Variant(name: 'disabled', enabled: false));
   });
 
   test('can get variant', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -734,14 +734,14 @@ void main() {
         fetcher: getMock);
     await unleash.start();
 
-    var variant = unleash.getVariant('flutter-off');
+    final variant = unleash.getVariant('flutter-off');
 
     expect(variant, Variant(name: 'flutter-off-variant', enabled: true));
   });
 
   test('can provide initial bootstrap', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -758,7 +758,7 @@ void main() {
     expect(unleash.isEnabled('flutter-on'), true);
     expect(unleash.isEnabled('flutter-off'), false);
 
-    var events = [];
+    final events = [];
     final initialized = Completer<void>();
     unleash.on('initialized', (dynamic _) {
       events.add('initialized');
@@ -771,7 +771,7 @@ void main() {
     });
 
     await Future.wait([initialized.future, ready.future]);
-    var storageToggles = await storageProvider.get(storageKey);
+    final storageToggles = await storageProvider.get(storageKey);
 
     expect(events, ['initialized', 'ready']);
     expect(storageToggles,
@@ -779,7 +779,7 @@ void main() {
   });
 
   test('should not emit ready event twice when using bootstrap', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -804,7 +804,7 @@ void main() {
   });
 
   test('API should override bootstrap after fetching data', () async {
-    var getMock = GetMock();
+    final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -828,8 +828,8 @@ void main() {
   });
 
   test('by default bootstrap overrides local storage', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     await storageProvider.save(storageKey,
         '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"storage-variant-name","enabled":true}}]}');
     final unleash = UnleashClient(
@@ -855,8 +855,8 @@ void main() {
   });
 
   test('prevent bootstrap overrides on non-empty storage', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     await storageProvider.save(storageKey,
         '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"storage-variant-name","enabled":true}}]}');
     final unleash = UnleashClient(
@@ -883,8 +883,8 @@ void main() {
   });
 
   test('bootstrap overrides on empty storage', () async {
-    var getMock = GetMock();
-    var storageProvider = InMemoryStorageProvider();
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
     await storageProvider.save(storageKey, '{"toggles":[]}');
     final unleash = UnleashClient(
         url: url,

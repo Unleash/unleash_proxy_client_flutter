@@ -58,7 +58,7 @@ class UnleashClient extends EventEmitter {
       this.headerName = 'Authorization',
       this.customHeaders = const {}}) {
     ready = _init();
-    var localBootstrap = bootstrap;
+    final localBootstrap = bootstrap;
     if (localBootstrap != null) {
       toggles = localBootstrap;
     }
@@ -68,14 +68,14 @@ class UnleashClient extends EventEmitter {
     actualStorageProvider =
         storageProvider ?? await SharedPreferencesStorageProvider.init();
 
-    var currentSessionId = context.sessionId;
+    final currentSessionId = context.sessionId;
     if (currentSessionId == null) {
-      var sessionId = await _resolveSessionId();
+      final sessionId = await _resolveSessionId();
       context.sessionId = sessionId;
     }
 
-    var togglesInStorage = await _fetchTogglesFromStorage();
-    var localBootstrap = bootstrap;
+    final togglesInStorage = await _fetchTogglesFromStorage();
+    final localBootstrap = bootstrap;
     if (localBootstrap != null && bootstrapOverride) {
       toggles = localBootstrap;
     } else {
@@ -97,22 +97,22 @@ class UnleashClient extends EventEmitter {
 
   Future<void> _fetchToggles() async {
     try {
-      var headers = {
+      final headers = {
         'Accept': 'application/json',
         'Cache': 'no-cache',
       };
       headers[headerName] = clientKey;
       headers.addAll(customHeaders);
 
-      var localEtag = etag;
+      final localEtag = etag;
       if (localEtag != null) {
         headers.putIfAbsent('If-None-Match', () => localEtag);
       }
 
-      var request = http.Request(
+      final request = http.Request(
           'GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
       request.headers.addAll(headers);
-      var response = await fetcher(request);
+      final response = await fetcher(request);
 
       if (response.headers.containsKey('ETag') && response.statusCode == 200) {
         etag = response.headers['ETag'];
@@ -134,14 +134,14 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<String> _resolveSessionId() async {
-    var sessionId = context.sessionId;
+    final sessionId = context.sessionId;
     if (sessionId != null) {
       return sessionId;
     } else {
-      var existingSessionId =
+      final existingSessionId =
           await actualStorageProvider.get(sessionStorageKey);
       if (existingSessionId == null) {
-        var newSessionId = sessionIdGenerator();
+        final newSessionId = sessionIdGenerator();
         await actualStorageProvider.save(sessionStorageKey, newSessionId);
         return newSessionId;
       }
@@ -150,7 +150,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {
-    var toggles = await actualStorageProvider.get(storageKey);
+    final toggles = await actualStorageProvider.get(storageKey);
 
     if (toggles == null) {
       return {};
@@ -172,7 +172,7 @@ class UnleashClient extends EventEmitter {
 
   void _updateContextFields(UnleashContext unleashContext) {
     if (unleashContext.sessionId == null) {
-      var oldSessionId = context.sessionId;
+      final oldSessionId = context.sessionId;
       context = unleashContext;
       context.sessionId = oldSessionId;
     } else {
@@ -215,7 +215,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Variant getVariant(String featureName) {
-    var toggle = toggles[featureName];
+    final toggle = toggles[featureName];
 
     if (toggle != null) {
       return toggle.variant;
