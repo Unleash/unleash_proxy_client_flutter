@@ -33,6 +33,7 @@ class UnleashClient extends EventEmitter {
   Map<String, ToggleConfig> toggles = {};
   Map<String, ToggleConfig>? bootstrap;
   bool bootstrapOverride;
+  bool disableRefresh;
   late StorageProvider actualStorageProvider;
   StorageProvider? storageProvider;
   String? etag;
@@ -50,7 +51,8 @@ class UnleashClient extends EventEmitter {
       this.sessionIdGenerator = generateSessionId,
       this.storageProvider,
       this.bootstrap,
-      this.bootstrapOverride = true}) {
+      this.bootstrapOverride = true,
+      this.disableRefresh = false}) {
     ready = _init();
     var localBootstrap = bootstrap;
     if (localBootstrap != null) {
@@ -59,7 +61,8 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> _init() async {
-    actualStorageProvider = storageProvider ?? await SharedPreferencesStorageProvider.init();
+    actualStorageProvider =
+        storageProvider ?? await SharedPreferencesStorageProvider.init();
 
     var currentSessionId = context.sessionId;
     if (currentSessionId == null) {
@@ -80,7 +83,8 @@ class UnleashClient extends EventEmitter {
 
     if (localBootstrap != null &&
         (bootstrapOverride || togglesInStorage.isEmpty)) {
-      await actualStorageProvider.save(storageKey, stringifyToggles(localBootstrap));
+      await actualStorageProvider.save(
+          storageKey, stringifyToggles(localBootstrap));
       toggles = localBootstrap;
       emit('ready');
       clientState = ClientState.ready;
@@ -128,7 +132,8 @@ class UnleashClient extends EventEmitter {
     if (sessionId != null) {
       return sessionId;
     } else {
-      var existingSessionId = await actualStorageProvider.get(sessionStorageKey);
+      var existingSessionId =
+          await actualStorageProvider.get(sessionStorageKey);
       if (existingSessionId == null) {
         var newSessionId = sessionIdGenerator();
         await actualStorageProvider.save(sessionStorageKey, newSessionId);
@@ -225,9 +230,11 @@ class UnleashClient extends EventEmitter {
       clientState = ClientState.ready;
     }
 
-    timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
-      _fetchToggles();
-    });
+    if (!disableRefresh) {
+      timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
+        _fetchToggles();
+      });
+    }
   }
 
   stop() {

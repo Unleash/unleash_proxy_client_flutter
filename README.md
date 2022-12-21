@@ -79,6 +79,7 @@ The Unleash SDK takes the following options:
 | clientKey         | yes | n/a | The Unleash Proxy Secret to be used                                                                                                             | 
 | appName           | yes | n/a | The name of the application using this SDK. Will be used as part of the metrics sent to Unleash Proxy. Will also be part of the Unleash Context. | 
 | refreshInterval   | no | 30 | How often, in seconds, the SDK should check for updated toggle configuration. If set to 0 will disable checking for updates                 |
+| disableRefresh    | no | false | If set to true, the client will not check for updated toggle configuration                                                                |
 | storageProvider   | no | `InMemoryStorageProvider` | Allows you to inject a custom storeProvider                                                                              |
 | bootstrap         | no | `[]` | Allows you to bootstrap the cached feature toggle configuration.                                                                               | 
 | bootstrapOverride | no| `true` | Should the bootstrap automatically override cached data in the local-storage. Will only be used if bootstrap is not an empty array.     | 

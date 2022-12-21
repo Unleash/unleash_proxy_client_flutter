@@ -330,6 +330,33 @@ void main() {
     });
   });
 
+  test('can disable refresh at a regular interval', () async {
+    fakeAsync((async) {
+      var getMock = GetMock();
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          disableRefresh: true,
+          storageProvider: InMemoryStorageProvider(),
+          fetcher: getMock);
+
+      var updateEventCount = 0;
+      unleash.on('update', (dynamic _) {
+        updateEventCount += 1;
+      });
+
+      unleash.start();
+      expect(getMock.calledTimes, 0);
+      async.elapse(const Duration(seconds: 1));
+      expect(getMock.calledTimes, 1);
+      async.elapse(const Duration(seconds: 100));
+      expect(getMock.calledTimes, 1);
+      expect(updateEventCount, 1);
+    });
+  });
+
   test('stopping client should cancel the timer', () async {
     fakeAsync((async) {
       var getMock = GetMock();
