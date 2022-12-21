@@ -1,14 +1,19 @@
 import 'package:http/http.dart' as http;
 import 'package:clock/clock.dart';
 import 'dart:async';
+import 'dart:convert';
 
 class Bucket {
-  DateTime start = DateTime.now();
+  DateTime start = clock.now();
   late DateTime stop;
   Map<String, ToggleMetrics> toggles = {};
 
   void closeBucket() {
     stop = clock.now();
+  }
+
+  bool isEmpty() {
+    return toggles.isEmpty;
   }
 
   Map<String, dynamic> toJson() => {
@@ -74,17 +79,21 @@ class Metrics {
 
   void sendMetrics() async {
     bucket.closeBucket();
+    if (bucket.isEmpty()) {
+      return;
+    }
+
     var localBucket = bucket;
     // For now, accept that a failing request will lose the metrics.
     bucket = Bucket();
 
     try {
-      var body = localBucket.toJson();
-      print('PAYLOAD ${body.toString()}');
-      var request = createRequest(body.toString());
+      var jsonPayload = json.encode(localBucket);
+      var request = createRequest(jsonPayload);
       await poster(request);
     } catch (e) {
       // emit an error
+      print(e);
     }
   }
 
