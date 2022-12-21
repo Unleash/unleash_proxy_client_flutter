@@ -5,13 +5,13 @@ import 'dart:async';
 import 'package:events_emitter/events_emitter.dart';
 import 'package:unleash_proxy_client_flutter/parse_stringify_toggles.dart';
 import 'package:unleash_proxy_client_flutter/session_id_generator.dart';
+import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
 
 import 'http_toggle_client.dart';
-import 'in_memory_storage_provider.dart';
 
 enum ClientState {
   initializing,
@@ -33,7 +33,8 @@ class UnleashClient extends EventEmitter {
   Map<String, ToggleConfig> toggles = {};
   Map<String, ToggleConfig>? bootstrap;
   bool bootstrapOverride;
-  StorageProvider storageProvider;
+  late StorageProvider actualStorageProvider;
+  StorageProvider? storageProvider;
   String? etag;
   late Future<void> ready;
   bool readyEventEmitted = false;
@@ -47,14 +48,42 @@ class UnleashClient extends EventEmitter {
       this.refreshInterval = 30,
       this.fetcher = get,
       this.sessionIdGenerator = generateSessionId,
-      storageProvider,
+      this.storageProvider,
       this.bootstrap,
-      this.bootstrapOverride = true})
-      : storageProvider = storageProvider ?? InMemoryStorageProvider() {
+      this.bootstrapOverride = true}) {
     ready = _init();
     var localBootstrap = bootstrap;
     if (localBootstrap != null) {
       toggles = localBootstrap;
+    }
+  }
+
+  Future<void> _init() async {
+    actualStorageProvider = storageProvider ?? await SharedPreferencesStorageProvider.init();
+
+    var currentSessionId = context.sessionId;
+    if (currentSessionId == null) {
+      var sessionId = await _resolveSessionId();
+      context.sessionId = sessionId;
+    }
+
+    var togglesInStorage = await _fetchTogglesFromStorage();
+    var localBootstrap = bootstrap;
+    if (localBootstrap != null && bootstrapOverride) {
+      toggles = localBootstrap;
+    } else {
+      toggles = togglesInStorage;
+    }
+
+    emit('initialized');
+    clientState = ClientState.initialized;
+
+    if (localBootstrap != null &&
+        (bootstrapOverride || togglesInStorage.isEmpty)) {
+      await actualStorageProvider.save(storageKey, stringifyToggles(localBootstrap));
+      toggles = localBootstrap;
+      emit('ready');
+      clientState = ClientState.ready;
     }
   }
 
@@ -79,7 +108,7 @@ class UnleashClient extends EventEmitter {
         etag = response.headers['ETag'];
       }
       if (response.statusCode == 200) {
-        await storageProvider.save(storageKey, response.body);
+        await actualStorageProvider.save(storageKey, response.body);
         toggles = parseToggles(response.body);
         emit('update');
       }
@@ -99,45 +128,18 @@ class UnleashClient extends EventEmitter {
     if (sessionId != null) {
       return sessionId;
     } else {
-      var existingSessionId = await storageProvider.get(sessionStorageKey);
+      var existingSessionId = await actualStorageProvider.get(sessionStorageKey);
       if (existingSessionId == null) {
         var newSessionId = sessionIdGenerator();
-        await storageProvider.save(sessionStorageKey, newSessionId);
+        await actualStorageProvider.save(sessionStorageKey, newSessionId);
         return newSessionId;
       }
       return existingSessionId;
     }
   }
 
-  Future<void> _init() async {
-    var currentSessionId = context.sessionId;
-    if (currentSessionId == null) {
-      var sessionId = await _resolveSessionId();
-      context.sessionId = sessionId;
-    }
-
-    var togglesInStorage = await _fetchTogglesFromStorage();
-    var localBootstrap = bootstrap;
-    if (localBootstrap != null && bootstrapOverride) {
-      toggles = localBootstrap;
-    } else {
-      toggles = togglesInStorage;
-    }
-
-    emit('initialized');
-    clientState = ClientState.initialized;
-
-    if (localBootstrap != null &&
-        (bootstrapOverride || togglesInStorage.isEmpty)) {
-      await storageProvider.save(storageKey, stringifyToggles(localBootstrap));
-      toggles = localBootstrap;
-      emit('ready');
-      clientState = ClientState.ready;
-    }
-  }
-
   Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {
-    var toggles = await storageProvider.get(storageKey);
+    var toggles = await actualStorageProvider.get(storageKey);
 
     if (toggles == null) {
       return {};

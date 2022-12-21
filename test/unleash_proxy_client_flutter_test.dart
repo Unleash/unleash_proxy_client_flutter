@@ -54,6 +54,7 @@ class FailingGetMock {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
   var url = Uri.parse('https://app.unleash-hosted.com/demo/api/proxy');
 
   test('can fetch initial toggles with ready', () async {
@@ -62,6 +63,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     expect(unleash.isEnabled('flutter-on'), false);
@@ -88,6 +90,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     var count = 0;
@@ -142,6 +145,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     var count = 0;
@@ -160,6 +164,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     final completer = Completer<dynamic>();
@@ -184,6 +189,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     final completer = Completer<dynamic>();
@@ -205,6 +211,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     // Ready should be registered before we start the client.
@@ -224,6 +231,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     await unleash.start();
@@ -273,21 +281,27 @@ void main() {
     expect(getMock.calledTimes, 0);
   });
 
-  test('can store toggles in shared preferences', () async {
-    SharedPreferences.setMockInitialValues({});
+  test('can store toggles in shared preferences by default', () async {
     var getMock = GetMock();
+    SharedPreferences.setMockInitialValues({});
+    addTearDown(() {
+      SharedPreferences.setMockInitialValues({});
+    });
     var storageProvider = await SharedPreferencesStorageProvider.init();
     final unleash = UnleashClient(
-        url: url,
-        clientKey: 'proxy-123',
-        appName: 'flutter-test',
-        fetcher: getMock,
-        storageProvider: storageProvider);
+      url: url,
+      clientKey: 'proxy-123',
+      appName: 'flutter-test',
+      sessionIdGenerator: generateSessionId,
+      fetcher: getMock,
+    );
 
     await unleash.start();
     var result = await storageProvider.get(storageKey);
+    var sessionId = await storageProvider.get(sessionStorageKey);
 
     expect(result, mockData);
+    expect(sessionId, '1234');
   });
 
   test('can refetch toggles at a regular interval', () async {
@@ -298,6 +312,7 @@ void main() {
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
+          storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
       var updateEventCount = 0;
@@ -323,6 +338,7 @@ void main() {
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
+          storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
       unleash.start();
@@ -346,6 +362,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     await unleash.start();
@@ -376,6 +393,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     await unleash.start();
@@ -405,6 +423,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     unleash.start();
@@ -429,6 +448,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     unleash.start();
@@ -448,6 +468,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     unleash.updateContext(UnleashContext(
@@ -466,6 +487,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     await unleash.start();
@@ -491,6 +513,7 @@ void main() {
           appName: 'flutter-test',
           refreshInterval: 10,
           sessionIdGenerator: generateSessionId,
+          storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
       unleash.start();
@@ -517,6 +540,7 @@ void main() {
           appName: 'flutter-test',
           refreshInterval: 10,
           sessionIdGenerator: generateSessionId,
+          storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
       unleash.start();
@@ -556,6 +580,7 @@ void main() {
           appName: 'flutter-test',
           refreshInterval: 10,
           sessionIdGenerator: generateSessionId,
+          storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
       unleash.start();
@@ -590,6 +615,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
     await unleash.start();
 
@@ -604,6 +630,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
     await unleash.start();
 
@@ -618,6 +645,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
     await unleash.start();
 
@@ -677,6 +705,7 @@ void main() {
               impressionData: false,
               variant: Variant(enabled: true, name: 'variant-name'))
         },
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     var count = 0;
@@ -701,6 +730,7 @@ void main() {
               impressionData: true,
               variant: Variant(enabled: false, name: 'variant-name'))
         },
+        storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
 
     expect(unleash.getVariant('flutter-on'),
