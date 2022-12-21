@@ -34,6 +34,7 @@ class UnleashClient extends EventEmitter {
   Map<String, ToggleConfig>? bootstrap;
   bool bootstrapOverride;
   bool disableRefresh;
+  String headerName;
   late StorageProvider actualStorageProvider;
   StorageProvider? storageProvider;
   String? etag;
@@ -52,7 +53,8 @@ class UnleashClient extends EventEmitter {
       this.storageProvider,
       this.bootstrap,
       this.bootstrapOverride = true,
-      this.disableRefresh = false}) {
+      this.disableRefresh = false,
+      this.headerName = 'Authorization'}) {
     ready = _init();
     var localBootstrap = bootstrap;
     if (localBootstrap != null) {
@@ -96,8 +98,9 @@ class UnleashClient extends EventEmitter {
       var headers = {
         'Accept': 'application/json',
         'Cache': 'no-cache',
-        'Authorization': clientKey,
       };
+      headers[headerName] = clientKey;
+
       var localEtag = etag;
       if (localEtag != null) {
         headers.putIfAbsent('If-None-Match', () => localEtag);

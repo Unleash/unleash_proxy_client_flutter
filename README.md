@@ -144,3 +144,9 @@ var unleash = UnleashClient(
 **NOTES: ⚠️**
 If `bootstrapOverride` is `true` (by default), any local cached data will be overridden with the bootstrap specified.   
 If `bootstrapOverride` is `false` any local cached data will not be overridden unless the local cache is empty.
+
+
+## Local development
+
+* `flutter test`
+* `flutter format lib test`
