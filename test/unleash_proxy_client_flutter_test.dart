@@ -635,4 +635,49 @@ void main() {
     expect(storageToggles,
         '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true}}]}');
   });
+
+  test('should not emit ready event twice when using bootstrap', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: true,
+              impressionData: false,
+              variant: Variant(enabled: true, name: 'variant-name'))
+        },
+        fetcher: getMock);
+
+    var count = 0;
+    unleash.on('ready', (dynamic _) {
+      count += 1;
+    });
+
+    await unleash.start();
+
+    expect(count, 1);
+  });
+
+  test('API should override bootstrap after fetching data', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: false,
+              impressionData: true,
+              variant: Variant(enabled: false, name: 'variant-name'))
+        },
+        fetcher: getMock);
+
+    expect(unleash.isEnabled('flutter-on'), false);
+
+    await unleash.start();
+
+    expect(unleash.isEnabled('flutter-on'), true);
+  });
 }
