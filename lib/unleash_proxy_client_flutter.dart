@@ -118,7 +118,7 @@ class UnleashClient extends EventEmitter {
 
     var togglesInStorage = await _fetchTogglesFromStorage();
     var localBootstrap = bootstrap;
-    if(localBootstrap != null && bootstrapOverride) {
+    if (localBootstrap != null && bootstrapOverride) {
       toggles = localBootstrap;
     } else {
       toggles = togglesInStorage;
@@ -127,7 +127,8 @@ class UnleashClient extends EventEmitter {
     emit('initialized');
     clientState = ClientState.initialized;
 
-    if (localBootstrap != null && (bootstrapOverride || togglesInStorage.isEmpty)) {
+    if (localBootstrap != null &&
+        (bootstrapOverride || togglesInStorage.isEmpty)) {
       await storageProvider.save(storageKey, stringifyToggles(localBootstrap));
       toggles = localBootstrap;
       emit('ready');

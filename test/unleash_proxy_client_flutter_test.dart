@@ -674,11 +674,13 @@ void main() {
         },
         fetcher: getMock);
 
-    expect(unleash.getVariant('flutter-on'), Variant(enabled: false, name: 'variant-name'));
+    expect(unleash.getVariant('flutter-on'),
+        Variant(enabled: false, name: 'variant-name'));
 
     await unleash.start();
 
-    expect(unleash.getVariant('flutter-on'), Variant(enabled: false, name: 'disabled'));
+    expect(unleash.getVariant('flutter-on'),
+        Variant(enabled: false, name: 'disabled'));
   });
 
   test('by default bootstrap overrides local storage', () async {
@@ -739,8 +741,7 @@ void main() {
   test('bootstrap overrides on empty storage', () async {
     var getMock = GetMock();
     var storageProvider = InMemoryStorageProvider();
-    await storageProvider.save(storageKey,
-        '{"toggles":[]}');
+    await storageProvider.save(storageKey, '{"toggles":[]}');
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',

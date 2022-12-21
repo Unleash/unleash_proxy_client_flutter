@@ -6,7 +6,9 @@ Map<String, ToggleConfig> parseToggles(String body) {
   var data = jsonDecode(body)['toggles'];
   // Check if there is anything to map over? Otherwise map might cause an error
   // Write a test that checks if the
-  return { for (var toggle in data) toggle['name'] : ToggleConfig.fromJson(toggle) };
+  return {
+    for (var toggle in data) toggle['name']: ToggleConfig.fromJson(toggle)
+  };
 }
 
 Map<String, dynamic> toJSON(String toggleName, ToggleConfig toggle) {

@@ -18,7 +18,11 @@ class ToggleConfig {
   }
 
   Map<String, dynamic> serialize() {
-    return {'enabled': enabled, 'impressionData': impressionData, 'variant': variant.serialize()};
+    return {
+      'enabled': enabled,
+      'impressionData': impressionData,
+      'variant': variant.serialize()
+    };
   }
 
   @override

@@ -26,5 +26,4 @@ class Variant {
 
   @override
   int get hashCode => Object.hash(name, enabled);
-
 }
