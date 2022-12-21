@@ -707,4 +707,60 @@ void main() {
 
     expect(unleash.isEnabled('flutter-on'), false);
   });
+
+  test('prevent bootstrap overrides on non-empty storage', () async {
+    var getMock = GetMock();
+    var storageProvider = InMemoryStorageProvider();
+    await storageProvider.save(storageKey,
+        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true}}]}');
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: storageProvider,
+        bootstrapOverride: false,
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: false,
+              impressionData: false,
+              variant: Variant(enabled: true, name: 'variant-name'))
+        },
+        fetcher: getMock);
+
+    final initialized = Completer<void>();
+    unleash.on('initialized', (dynamic _) {
+      initialized.complete();
+    });
+    await initialized.future;
+
+    expect(unleash.isEnabled('flutter-on'), true);
+  });
+
+  test('bootstrap overrides on empty storage', () async {
+    var getMock = GetMock();
+    var storageProvider = InMemoryStorageProvider();
+    await storageProvider.save(storageKey,
+        '{"toggles":[]}');
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: storageProvider,
+        bootstrapOverride: false,
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: true,
+              impressionData: false,
+              variant: Variant(enabled: true, name: 'variant-name'))
+        },
+        fetcher: getMock);
+
+    final initialized = Completer<void>();
+    unleash.on('ready', (dynamic _) {
+      initialized.complete();
+    });
+    await initialized.future;
+
+    expect(unleash.isEnabled('flutter-on'), true);
+  });
 }

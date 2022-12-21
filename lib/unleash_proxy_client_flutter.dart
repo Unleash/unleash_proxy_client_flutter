@@ -116,17 +116,18 @@ class UnleashClient extends EventEmitter {
       context.sessionId = sessionId;
     }
 
+    var togglesInStorage = await _fetchTogglesFromStorage();
     var localBootstrap = bootstrap;
     if(localBootstrap != null && bootstrapOverride) {
       toggles = localBootstrap;
     } else {
-      toggles = await _fetchTogglesFromStorage();
+      toggles = togglesInStorage;
     }
 
     emit('initialized');
     clientState = ClientState.initialized;
 
-    if (localBootstrap != null && bootstrapOverride) {
+    if (localBootstrap != null && (bootstrapOverride || togglesInStorage.isEmpty)) {
       await storageProvider.save(storageKey, stringifyToggles(localBootstrap));
       toggles = localBootstrap;
       emit('ready');
