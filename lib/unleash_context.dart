@@ -4,11 +4,8 @@ class UnleashContext {
   String? remoteAddress;
   Map<String, String> properties;
 
-  UnleashContext(
-      {this.userId,
-      this.sessionId,
-      this.remoteAddress,
-      properties}): properties = properties ?? {};
+  UnleashContext({this.userId, this.sessionId, this.remoteAddress, properties})
+      : properties = properties ?? {};
 
   String toQueryParams() {
     var result = Uri(queryParameters: toSnapshot()).query;
