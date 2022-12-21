@@ -37,6 +37,25 @@ class GetMock {
   }
 }
 
+class PostMock {
+  var calledTimes = 0;
+  var calledWith = [];
+  var calledWithUrls = [];
+  String payload;
+  int status;
+  Map<String, String> headers;
+
+  PostMock({required this.payload, this.status = 200, this.headers = const {}});
+
+  Future<Response> call(Request request) async {
+    calledTimes++;
+    calledWith.add([request.url, request.headers, request.body]);
+    calledWithUrls.add(request.url);
+
+    return Response(payload, status, headers: headers);
+  }
+}
+
 String generateSessionId() {
   return '1234';
 }
@@ -441,9 +460,12 @@ void main() {
       unleash.updateContext(UnleashContext(userId: '123'));
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledWithUrls, [
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234')
+        Uri.parse(
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+        Uri.parse(
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
+        Uri.parse(
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234')
       ]);
     });
   });
@@ -465,7 +487,8 @@ void main() {
 
       expect(getMock.calledWith, [
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -473,7 +496,8 @@ void main() {
           }
         ],
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -502,7 +526,8 @@ void main() {
 
       expect(getMock.calledWith, [
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -510,7 +535,8 @@ void main() {
           }
         ],
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -561,5 +587,50 @@ void main() {
     var variant = unleash.getVariant('flutter-off');
 
     expect(variant, Variant(name: 'flutter-off-variant', enabled: true));
+  });
+
+  test('should fetch metrics on an interval', () async {
+    fakeAsync((async) {
+      var payload = '''{
+        "bucket": {
+          "start": "2022-12-21T08:33:07.100Z",
+          "stop": "2022-12-21T08:33:37.103Z",
+          "toggles": {
+            "demoApp.step1": {"yes": 0, "no": 5},
+            "demoApp.step2": {"yes": 0, "no": 5},
+            "demoApp.step3": {"yes": 0, "no": 5},
+            "demoApp.step4": {"yes": 10, "no": 0}
+          }
+        },
+        "appName": "react-app",
+        "instanceId": "browser"
+      }''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 200, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          sessionIdGenerator: generateSessionId,
+          fetcher: getMock,
+          poster: postMock);
+
+      unleash.start();
+      async.elapse(const Duration(seconds: 10));
+
+      expect(postMock.calledTimes, 1);
+      expect(postMock.calledWith, [
+        [
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy/client/metrics'),
+          {},
+          payload
+        ],
+      ]);
+    });
   });
 }

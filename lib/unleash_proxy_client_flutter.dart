@@ -9,6 +9,7 @@ import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
+import 'package:unleash_proxy_client_flutter/metrics.dart';
 
 import 'http_toggle_client.dart';
 import 'in_memory_storage_provider.dart';
@@ -24,7 +25,9 @@ class UnleashClient extends EventEmitter {
   final String clientKey;
   final String appName;
   final int refreshInterval;
+  final int metricsInterval;
   final Future<http.Response> Function(http.Request) fetcher;
+  final Future<http.Response> Function(http.Request) poster;
   final String Function() sessionIdGenerator;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
@@ -34,16 +37,25 @@ class UnleashClient extends EventEmitter {
   late bool readyEventEmitted = false;
   ClientState clientState = ClientState.initializing;
   UnleashContext context = UnleashContext();
+  late Metrics metrics;
 
   UnleashClient({
     required this.url,
     required this.clientKey,
     required this.appName,
+    this.metricsInterval = 30,
     this.refreshInterval = 30,
     this.fetcher = get,
+    this.poster = post,
     this.sessionIdGenerator = generateSessionId,
     storageProvider,
   }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
+    metrics = Metrics(
+      appName: appName,
+      poster: poster,
+      url: url,
+      metricsInterval: metricsInterval,
+    );
     ready = init();
   }
 
@@ -59,7 +71,8 @@ class UnleashClient extends EventEmitter {
         headers.putIfAbsent('If-None-Match', () => localEtag);
       }
 
-      var request = http.Request('GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
+      var request = http.Request(
+          'GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
       request.headers.addAll(headers);
       var response = await fetcher(request);
 
@@ -84,11 +97,11 @@ class UnleashClient extends EventEmitter {
 
   Future<String> resolveSessionId() async {
     var sessionId = context.sessionId;
-    if(sessionId != null) {
+    if (sessionId != null) {
       return sessionId;
     } else {
       var existingSessionId = await storageProvider.get('sessionId');
-      if(existingSessionId == null) {
+      if (existingSessionId == null) {
         var newSessionId = sessionIdGenerator();
         await storageProvider.save('sessionId', newSessionId);
         return newSessionId;
@@ -99,7 +112,7 @@ class UnleashClient extends EventEmitter {
 
   Future<void> init() async {
     var currentSessionId = context.sessionId;
-    if(currentSessionId == null) {
+    if (currentSessionId == null) {
       var sessionId = await resolveSessionId();
       context.sessionId = sessionId;
     }
@@ -131,7 +144,7 @@ class UnleashClient extends EventEmitter {
   }
 
   void updateContextField(UnleashContext unleashContext) {
-    if(unleashContext.sessionId == null) {
+    if (unleashContext.sessionId == null) {
       var oldSessionId = context.sessionId;
       context = unleashContext;
       context.sessionId = oldSessionId;
@@ -162,10 +175,11 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> start() async {
-    if(clientState == ClientState.initializing) {
+    if (clientState == ClientState.initializing) {
       await waitForEvent('initialized');
     }
 
+    metrics.start();
     await fetchToggles();
 
     if (clientState != ClientState.ready) {
@@ -186,6 +200,8 @@ class UnleashClient extends EventEmitter {
   }
 
   bool isEnabled(String featureName) {
-    return toggles[featureName]?.enabled ?? false;
+    var enabled = toggles[featureName]?.enabled ?? false;
+    metrics.count(featureName, enabled);
+    return enabled;
   }
 }

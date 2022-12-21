@@ -11,3 +11,10 @@ Future<http.Response> get(http.Request request) async {
 
   return response;
 }
+
+Future<http.Response> post(http.Request request) async {
+  var response = await http.post(request.url,
+      headers: request.headers, body: request.body);
+
+  return response;
+}
