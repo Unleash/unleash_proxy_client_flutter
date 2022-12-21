@@ -628,7 +628,7 @@ void main() {
       ready.complete();
     });
 
-    await Future.wait([ready.future, initialized.future]);
+    await Future.wait([initialized.future, ready.future]);
     var storageToggles = await storageProvider.get(storageKey);
 
     expect(events, ['initialized', 'ready']);
@@ -679,5 +679,32 @@ void main() {
     await unleash.start();
 
     expect(unleash.isEnabled('flutter-on'), true);
+  });
+
+  test('by default bootstrap overrides local storage', () async {
+    var getMock = GetMock();
+    var storageProvider = InMemoryStorageProvider();
+    await storageProvider.save(storageKey,
+        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true}}]}');
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: storageProvider,
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: false,
+              impressionData: false,
+              variant: Variant(enabled: true, name: 'variant-name'))
+        },
+        fetcher: getMock);
+
+    final initialized = Completer<void>();
+    unleash.on('initialized', (dynamic _) {
+      initialized.complete();
+    });
+    await initialized.future;
+
+    expect(unleash.isEnabled('flutter-on'), false);
   });
 }

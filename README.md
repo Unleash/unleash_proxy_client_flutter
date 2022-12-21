@@ -51,7 +51,7 @@ from the package authors, and more.
 * (done) update context waiting on start
 * (done) sessionId
 * (done) set single context field
-* bootstrap - fallback values before we get server data
+* (done) bootstrap - fallback values before we get server data
 * metrics/impressions
 * other/advanced options
 * dynamic headers
@@ -59,4 +59,3 @@ from the package authors, and more.
 * sample app using the client
 * GH action and publish
 * test: update context returns different toggles
-* storage names private

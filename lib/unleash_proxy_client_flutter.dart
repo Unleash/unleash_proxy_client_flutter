@@ -32,6 +32,7 @@ class UnleashClient extends EventEmitter {
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   Map<String, ToggleConfig>? bootstrap;
+  bool bootstrapOverride;
   StorageProvider storageProvider;
   String? etag;
   late Future<void> ready;
@@ -39,19 +40,20 @@ class UnleashClient extends EventEmitter {
   ClientState clientState = ClientState.initializing;
   UnleashContext context = UnleashContext();
 
-  UnleashClient({
-    required this.url,
-    required this.clientKey,
-    required this.appName,
-    this.refreshInterval = 30,
-    this.fetcher = get,
-    this.sessionIdGenerator = generateSessionId,
-    storageProvider,
-    this.bootstrap
-  }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
+  UnleashClient(
+      {required this.url,
+      required this.clientKey,
+      required this.appName,
+      this.refreshInterval = 30,
+      this.fetcher = get,
+      this.sessionIdGenerator = generateSessionId,
+      storageProvider,
+      this.bootstrap,
+      this.bootstrapOverride = true})
+      : storageProvider = storageProvider ?? InMemoryStorageProvider() {
     ready = _init();
     var localBootstrap = bootstrap;
-    if(localBootstrap != null) {
+    if (localBootstrap != null) {
       toggles = localBootstrap;
     }
   }
@@ -114,14 +116,19 @@ class UnleashClient extends EventEmitter {
       context.sessionId = sessionId;
     }
 
-    toggles = await _fetchTogglesFromStorage();
+    var localBootstrap = bootstrap;
+    if(localBootstrap != null && bootstrapOverride) {
+      toggles = localBootstrap;
+    } else {
+      toggles = await _fetchTogglesFromStorage();
+    }
 
     emit('initialized');
     clientState = ClientState.initialized;
 
-    var localBootstrap = bootstrap;
-    if(localBootstrap != null && toggles.isEmpty) {
+    if (localBootstrap != null && bootstrapOverride) {
       await storageProvider.save(storageKey, stringifyToggles(localBootstrap));
+      toggles = localBootstrap;
       emit('ready');
       clientState = ClientState.ready;
     }
