@@ -139,6 +139,38 @@ void main() {
     ]);
   });
 
+  test('can set custom headers', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        headerName: 'CustomHeader',
+        customHeaders: {
+          'CustomHeader': 'CustomHeaderValue',
+          'Accept': 'AcceptType',
+          'X-Custom': 'CustomExtension'
+        },
+        storageProvider: InMemoryStorageProvider(),
+        sessionIdGenerator: generateSessionId,
+        fetcher: getMock);
+
+    await unleash.start();
+
+    expect(getMock.calledWith, [
+      [
+        Uri.parse(
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+        {
+          'Accept': 'AcceptType',
+          'Cache': 'no-cache',
+          'CustomHeader': 'CustomHeaderValue',
+          'X-Custom': 'CustomExtension'
+        }
+      ]
+    ]);
+  });
+
   test('can set custom client id header', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(

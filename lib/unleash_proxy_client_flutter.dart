@@ -35,6 +35,7 @@ class UnleashClient extends EventEmitter {
   bool bootstrapOverride;
   bool disableRefresh;
   String headerName;
+  Map<String, String> customHeaders;
   late StorageProvider actualStorageProvider;
   StorageProvider? storageProvider;
   String? etag;
@@ -54,7 +55,8 @@ class UnleashClient extends EventEmitter {
       this.bootstrap,
       this.bootstrapOverride = true,
       this.disableRefresh = false,
-      this.headerName = 'Authorization'}) {
+      this.headerName = 'Authorization',
+      this.customHeaders = const {}}) {
     ready = _init();
     var localBootstrap = bootstrap;
     if (localBootstrap != null) {
@@ -100,6 +102,7 @@ class UnleashClient extends EventEmitter {
         'Cache': 'no-cache',
       };
       headers[headerName] = clientKey;
+      headers.addAll(customHeaders);
 
       var localEtag = etag;
       if (localEtag != null) {
