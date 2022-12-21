@@ -112,8 +112,14 @@ class UnleashClient extends EventEmitter {
     }
 
     toggles = await _fetchTogglesFromStorage();
+
     emit('initialized');
     clientState = ClientState.initialized;
+
+    if(bootstrap != null && toggles.length == 0) {
+      emit('ready');
+      clientState = ClientState.ready;
+    }
   }
 
   Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {

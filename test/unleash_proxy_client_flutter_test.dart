@@ -613,5 +613,21 @@ void main() {
 
     expect(unleash.isEnabled('flutter-on'), true);
     expect(unleash.isEnabled('flutter-off'), false);
+
+    var events = [];
+    final initialized = Completer<void>();
+    unleash.on('initialized', (dynamic _) {
+      events.add('initialized');
+      initialized.complete();
+    });
+    final ready = Completer<void>();
+    unleash.on('ready', (dynamic _) {
+      events.add('ready');
+      ready.complete();
+    });
+
+    await Future.wait([ready.future, initialized.future]);
+
+    expect(events, ['initialized', 'ready']);
   });
 }
