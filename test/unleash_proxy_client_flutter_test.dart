@@ -369,6 +369,35 @@ void main() {
     ]);
   });
 
+  test('can update single context fields', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
+        fetcher: getMock);
+
+    await unleash.start();
+    await unleash.setContextField('userId', '123');
+    await unleash.setContextField('sessionId', 'session');
+    await unleash.setContextField('remoteAddress', 'address');
+    await unleash.setContextField('anotherCustomKey', 'anotherCustomValue');
+
+    expect(getMock.calledTimes, 5);
+    expect(getMock.calledWithUrls, [
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=session'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&anotherCustomKey=anotherCustomValue')
+    ]);
+  });
+
   test('update context should wait on asynchronous start', () async {
     var getMock = GetMock();
     final unleash = UnleashClient(
