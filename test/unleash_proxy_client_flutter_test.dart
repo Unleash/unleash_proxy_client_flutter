@@ -599,10 +599,12 @@ void main() {
 
   test('can provide initial bootstrap', () async {
     var getMock = GetMock();
+    var storageProvider = InMemoryStorageProvider();
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        storageProvider: storageProvider,
         bootstrap: {
           'flutter-on': ToggleConfig(
               enabled: true,
@@ -627,7 +629,10 @@ void main() {
     });
 
     await Future.wait([ready.future, initialized.future]);
+    var storageToggles = await storageProvider.get('unleash_repo');
 
     expect(events, ['initialized', 'ready']);
+    expect(storageToggles,
+        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true}}]}');
   });
 }

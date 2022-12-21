@@ -17,6 +17,10 @@ class ToggleConfig {
         variant: Variant.fromJson(json["variant"]));
   }
 
+  Map<String, dynamic> serialize() {
+    return {'enabled': enabled, 'impressionData': impressionData, 'variant': variant.serialize()};
+  }
+
   @override
   bool operator ==(Object other) {
     return other is ToggleConfig &&

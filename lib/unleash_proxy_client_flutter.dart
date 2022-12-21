@@ -3,7 +3,7 @@ library unleash_proxy_client_flutter;
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:events_emitter/events_emitter.dart';
-import 'package:unleash_proxy_client_flutter/parse_toggles.dart';
+import 'package:unleash_proxy_client_flutter/parse_stringify_toggles.dart';
 import 'package:unleash_proxy_client_flutter/session_id_generator.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
@@ -75,7 +75,7 @@ class UnleashClient extends EventEmitter {
       }
       if (response.statusCode == 200) {
         await storageProvider.save('unleash_repo', response.body);
-        toggles = parseToggleResponse(response.body);
+        toggles = parseToggles(response.body);
         emit('update');
       }
       if (response.statusCode > 399) {
@@ -116,7 +116,9 @@ class UnleashClient extends EventEmitter {
     emit('initialized');
     clientState = ClientState.initialized;
 
-    if(bootstrap != null && toggles.length == 0) {
+    var localBootstrap = bootstrap;
+    if(localBootstrap != null && toggles.isEmpty) {
+      await storageProvider.save('unleash_repo', stringifyToggles(localBootstrap));
       emit('ready');
       clientState = ClientState.ready;
     }
@@ -129,7 +131,7 @@ class UnleashClient extends EventEmitter {
       return {};
     }
 
-    return parseToggleResponse(toggles);
+    return parseToggles(toggles);
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
