@@ -5,9 +5,10 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   semantic_pull_request:
