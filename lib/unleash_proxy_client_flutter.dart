@@ -19,6 +19,9 @@ enum ClientState {
   ready,
 }
 
+const storageKey = '_unleash_repo';
+const sessionStorageKey = '_unleash_sessionId';
+
 class UnleashClient extends EventEmitter {
   Uri url;
   final String clientKey;
@@ -74,7 +77,7 @@ class UnleashClient extends EventEmitter {
         etag = response.headers['ETag'];
       }
       if (response.statusCode == 200) {
-        await storageProvider.save('unleash_repo', response.body);
+        await storageProvider.save(storageKey, response.body);
         toggles = parseToggles(response.body);
         emit('update');
       }
@@ -94,10 +97,10 @@ class UnleashClient extends EventEmitter {
     if (sessionId != null) {
       return sessionId;
     } else {
-      var existingSessionId = await storageProvider.get('sessionId');
+      var existingSessionId = await storageProvider.get(sessionStorageKey);
       if (existingSessionId == null) {
         var newSessionId = sessionIdGenerator();
-        await storageProvider.save('sessionId', newSessionId);
+        await storageProvider.save(sessionStorageKey, newSessionId);
         return newSessionId;
       }
       return existingSessionId;
@@ -118,14 +121,14 @@ class UnleashClient extends EventEmitter {
 
     var localBootstrap = bootstrap;
     if(localBootstrap != null && toggles.isEmpty) {
-      await storageProvider.save('unleash_repo', stringifyToggles(localBootstrap));
+      await storageProvider.save(storageKey, stringifyToggles(localBootstrap));
       emit('ready');
       clientState = ClientState.ready;
     }
   }
 
   Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {
-    var toggles = await storageProvider.get('unleash_repo');
+    var toggles = await storageProvider.get(storageKey);
 
     if (toggles == null) {
       return {};

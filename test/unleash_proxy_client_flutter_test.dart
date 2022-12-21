@@ -113,14 +113,14 @@ void main() {
 
     await unleash.start();
 
-    var sessionId = await storageProvider.get('sessionId');
+    var sessionId = await storageProvider.get(sessionStorageKey);
     expect(sessionId, '1234');
   });
 
   test('get session id from storage', () async {
     var getMock = GetMock();
     var storageProvider = InMemoryStorageProvider();
-    await storageProvider.save('sessionId', '5678');
+    await storageProvider.save(sessionStorageKey, '5678');
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -245,7 +245,7 @@ void main() {
         storageProvider: storageProvider);
 
     await unleash.start();
-    var result = await storageProvider.get('unleash_repo');
+    var result = await storageProvider.get(storageKey);
 
     expect(result, mockData);
   });
@@ -253,7 +253,7 @@ void main() {
   test('can read initial toggles from in memory storage', () async {
     var getMock = GetMock();
     var storageProvider = InMemoryStorageProvider();
-    await storageProvider.save('unleash_repo', mockData);
+    await storageProvider.save(storageKey, mockData);
     final unleash = UnleashClient(
         url: url,
         clientKey: 'proxy-123',
@@ -285,7 +285,7 @@ void main() {
         storageProvider: storageProvider);
 
     await unleash.start();
-    var result = await storageProvider.get('unleash_repo');
+    var result = await storageProvider.get(storageKey);
 
     expect(result, mockData);
   });
@@ -629,7 +629,7 @@ void main() {
     });
 
     await Future.wait([ready.future, initialized.future]);
-    var storageToggles = await storageProvider.get('unleash_repo');
+    var storageToggles = await storageProvider.get(storageKey);
 
     expect(events, ['initialized', 'ready']);
     expect(storageToggles,
