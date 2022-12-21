@@ -51,10 +51,10 @@ from the package authors, and more.
 * (done) update context waiting on start
 * (done) sessionId
 * (done) set single context field
+* bootstrap - fallback values before we get server data
 * metrics/impressions
 * other/advanced options
 * dynamic headers
-* bootstrap - fallback values before we get server data
 * README
 * sample app using the client
 * GH action and publish

@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unleash_proxy_client_flutter/in_memory_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
+import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 import 'dart:async';
@@ -365,7 +366,6 @@ void main() {
           'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&customKey=customValue'),
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&customKey=customValue&anotherCustomKey=anotherCustomValue')
-
     ]);
   });
 
@@ -468,9 +468,12 @@ void main() {
       unleash.updateContext(UnleashContext(userId: '123'));
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledWithUrls, [
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
-        Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234')
+        Uri.parse(
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+        Uri.parse(
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
+        Uri.parse(
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234')
       ]);
     });
   });
@@ -492,7 +495,8 @@ void main() {
 
       expect(getMock.calledWith, [
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -500,7 +504,8 @@ void main() {
           }
         ],
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -529,7 +534,8 @@ void main() {
 
       expect(getMock.calledWith, [
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -537,7 +543,8 @@ void main() {
           }
         ],
         [
-          Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -588,5 +595,23 @@ void main() {
     var variant = unleash.getVariant('flutter-off');
 
     expect(variant, Variant(name: 'flutter-off-variant', enabled: true));
+  });
+
+  test('can provide initial bootstrap', () async {
+    var getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: true,
+              impressionData: false,
+              variant: Variant(enabled: true, name: 'variant-name'))
+        },
+        fetcher: getMock);
+
+    expect(unleash.isEnabled('flutter-on'), true);
+    expect(unleash.isEnabled('flutter-off'), false);
   });
 }

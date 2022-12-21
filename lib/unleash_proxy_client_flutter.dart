@@ -28,6 +28,7 @@ class UnleashClient extends EventEmitter {
   final String Function() sessionIdGenerator;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
+  Map<String, ToggleConfig>? bootstrap;
   StorageProvider storageProvider;
   String? etag;
   late Future<void> ready;
@@ -43,8 +44,13 @@ class UnleashClient extends EventEmitter {
     this.fetcher = get,
     this.sessionIdGenerator = generateSessionId,
     storageProvider,
+    this.bootstrap
   }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
     ready = _init();
+    var localBootstrap = bootstrap;
+    if(localBootstrap != null) {
+      toggles = localBootstrap;
+    }
   }
 
   Future<void> _fetchToggles() async {
