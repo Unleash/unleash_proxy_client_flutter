@@ -13,7 +13,7 @@ import 'package:unleash_proxy_client_flutter/variant.dart';
 
 const mockData = '''{ 
      "toggles": [
-      { "name": "flutter-on", "enabled": true, "impressionData": false, "variant": { "enabled": true, "name": "disabled" } }, 
+      { "name": "flutter-on", "enabled": true, "impressionData": false, "variant": { "enabled": false, "name": "disabled" } }, 
       { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
       { "name": "flutter-variant", "enabled": true, "impressionData": false, "variant": { "enabled": true, "name": "flutter-variant" } }
      ] 
@@ -671,7 +671,7 @@ void main() {
         Clock.fixed(DateTime(2000)),
         () {
           var payload =
-              '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-on":{"yes":2,"no":0}}}}''';
+              '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-variant":{"yes":3,"no":0}}}}''';
 
           var getMock = GetMock(body: mockData, status: 200, headers: {});
           var postMock = PostMock(payload: payload, status: 200, headers: {});
@@ -690,8 +690,9 @@ void main() {
 
           async.elapse(new Duration(
               seconds: 0)); // call elapse to execute the async function call.
-          expect(unleash.isEnabled('flutter-on'), true);
-          expect(unleash.getVariant('flutter-on').enabled, true);
+          expect(unleash.isEnabled('flutter-variant'), true);
+          expect(unleash.getVariant('flutter-variant').enabled, true);
+          expect(unleash.getVariant('flutter-variant').enabled, true);
 
           async.elapse(const Duration(seconds: 10));
 
