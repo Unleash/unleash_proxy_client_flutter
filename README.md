@@ -25,7 +25,7 @@ You need to have a Unleash-hosted instance, and the proxy need to be enabled. In
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 
 var unleash = UnleashClient(
-    url: 'https://app.unleash-hosted.com/demo/api/proxy',
+    url: Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
     clientKey: 'proxy-123',
     appName: 'my-app');
 ```
@@ -132,7 +132,7 @@ There's also a `bootstrapOverride` attribute which is by default is `true`.
 
 ```dart
 var unleash = UnleashClient(
-    url: 'https://app.unleash-hosted.com/demo/api/proxy',
+    url: Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
     clientKey: 'proxy-123',
     appName: 'my-app',
     bootstrapOverride: false,
