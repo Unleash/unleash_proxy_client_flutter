@@ -814,7 +814,7 @@ void main() {
   test('should send metrics on interval if metrics are observed', () {
     fakeAsync((async) {
       var payload =
-          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-on":{"yes":1,"no":0}}}}''';
+          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000Z","stop":"2000-01-01T00:00:00.000Z","toggles":{"flutter-on":{"yes":1,"no":0}}}}''';
 
       var getMock = GetMock(body: mockData, status: 200, headers: {});
       var postMock = PostMock(payload: payload, status: 200, headers: {});
@@ -827,7 +827,7 @@ void main() {
           metricsInterval: 10,
           sessionIdGenerator: generateSessionId,
           storageProvider: InMemoryStorageProvider(),
-          clock: () => DateTime(2000),
+          clock: () => DateTime.utc(2000),
           fetcher: getMock,
           poster: postMock);
 
@@ -856,7 +856,7 @@ void main() {
   test('should record metrics for getVariant', () {
     fakeAsync((async) {
       var payload =
-          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-variant":{"yes":3,"no":0}}}}''';
+          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000Z","stop":"2000-01-01T00:00:00.000Z","toggles":{"flutter-variant":{"yes":3,"no":0}}}}''';
 
       var getMock = GetMock(body: mockData, status: 200, headers: {});
       var postMock = PostMock(payload: payload, status: 200, headers: {});
@@ -867,7 +867,7 @@ void main() {
           appName: 'flutter-test',
           refreshInterval: 10,
           metricsInterval: 10,
-          clock: () => DateTime(2000),
+          clock: () => DateTime.utc(2000),
           sessionIdGenerator: generateSessionId,
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock,
@@ -903,7 +903,7 @@ void main() {
   test('should emit an error posting and getting a status code above 399', () {
     fakeAsync((async) {
       var payload =
-          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+          '''{start: 2022-12-21T14:18:38.953834Z, stop: 2022-12-21T14:18:48.953834Z, toggles: {}}''';
 
       var getMock = GetMock(body: mockData, status: 200, headers: {});
       var postMock = PostMock(payload: payload, status: 400, headers: {});

@@ -19,8 +19,8 @@ class Bucket {
   }
 
   Map<String, dynamic> toJson() => {
-        'start': start.toIso8601String(),
-        'stop': stop.toIso8601String(),
+        'start': start.toUtc().toIso8601String(),
+        'stop': stop.toUtc().toIso8601String(),
         'toggles': toggles.map((key, value) => MapEntry(key, value.toJson())),
       };
 }
