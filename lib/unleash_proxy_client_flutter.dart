@@ -23,7 +23,7 @@ const storageKey = '_unleash_repo';
 const sessionStorageKey = '_unleash_sessionId';
 
 class UnleashClient extends EventEmitter {
-  Uri url;
+  final Uri url;
   final String clientKey;
   final String appName;
   final int refreshInterval;
@@ -32,17 +32,17 @@ class UnleashClient extends EventEmitter {
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   Map<String, ToggleConfig>? bootstrap;
-  bool bootstrapOverride;
-  bool disableRefresh;
-  String headerName;
-  Map<String, String> customHeaders;
+  final bool bootstrapOverride;
+  final bool disableRefresh;
+  final String headerName;
+  final Map<String, String> customHeaders;
   late StorageProvider actualStorageProvider;
   StorageProvider? storageProvider;
   String? etag;
   late Future<void> ready;
-  bool readyEventEmitted = false;
-  ClientState clientState = ClientState.initializing;
-  UnleashContext context = UnleashContext();
+  var readyEventEmitted = false;
+  var clientState = ClientState.initializing;
+  var context = UnleashContext();
 
   UnleashClient(
       {required this.url,
