@@ -73,6 +73,9 @@ class FailingGetMock {
   }
 }
 
+const storageKey = 'flutter-test._unleash_repo';
+const sessionStorageKey = 'flutter-test._unleash_sessionId';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
