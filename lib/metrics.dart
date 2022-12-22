@@ -107,16 +107,16 @@ class Metrics {
       return;
     }
 
-    var localBucket = bucket;
+    final localBucket = bucket;
     // For now, accept that a failing request will lose the metrics.
     bucket = Bucket(clock);
 
     try {
-      var payload = MetricsPayload(
+      final payload = MetricsPayload(
           appName: appName, instanceId: 'flutter', bucket: localBucket);
-      var jsonPayload = json.encode(payload);
-      var request = createRequest(jsonPayload);
-      var response = await poster(request);
+      final jsonPayload = json.encode(payload);
+      final request = createRequest(jsonPayload);
+      final response = await poster(request);
       if (response.statusCode > 399) {
         emit('error', {
           "type": 'HttpError',
@@ -129,14 +129,14 @@ class Metrics {
   }
 
   http.Request createRequest(String payload) {
-    var headers = {
+    final headers = {
       'Accept': 'application/json',
       'Cache': 'no-cache',
       'Content-Type': 'application/json',
       'Authorization': clientKey,
     };
 
-    var request =
+    final request =
         http.Request('POST', Uri.parse('${url.toString()}/client/metrics'));
     request.body = payload;
     request.headers.addAll(headers);

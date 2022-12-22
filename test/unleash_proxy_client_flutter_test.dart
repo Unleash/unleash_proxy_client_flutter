@@ -6,7 +6,6 @@ import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
-import 'package:clock/clock.dart';
 
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
