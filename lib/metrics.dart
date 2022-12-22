@@ -33,9 +33,25 @@ class ToggleMetrics {
       };
 }
 
+class MetricsPayload {
+  final String appName;
+  final String instanceId;
+  final Bucket bucket;
+
+  MetricsPayload(
+      {required this.appName, required this.instanceId, required this.bucket});
+
+  Map<String, dynamic> toJson() => {
+        'appName': appName,
+        'instanceId': instanceId,
+        'bucket': bucket.toJson(),
+      };
+}
+
 class Metrics {
   final String appName;
   final int metricsInterval;
+  final String clientKey;
   final Future<http.Response> Function(http.Request) poster;
   bool disableMetrics;
   Timer? timer;
@@ -47,7 +63,8 @@ class Metrics {
       required this.metricsInterval,
       this.disableMetrics = false,
       required this.poster,
-      required this.url});
+      required this.url,
+      required this.clientKey});
 
   Future<void> start() async {
     if (disableMetrics) {
@@ -88,7 +105,9 @@ class Metrics {
     bucket = Bucket();
 
     try {
-      var jsonPayload = json.encode(localBucket);
+      var payload = MetricsPayload(
+          appName: appName, instanceId: 'flutter', bucket: localBucket);
+      var jsonPayload = json.encode(payload);
       var request = createRequest(jsonPayload);
       await poster(request);
     } catch (e) {
@@ -102,6 +121,7 @@ class Metrics {
       'Accept': 'application/json',
       'Cache': 'no-cache',
       'Content-Type': 'application/json',
+      'Authorization': clientKey,
     };
 
     var request =

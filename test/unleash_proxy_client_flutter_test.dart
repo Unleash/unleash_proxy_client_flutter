@@ -13,8 +13,9 @@ import 'package:unleash_proxy_client_flutter/variant.dart';
 
 const mockData = '''{ 
      "toggles": [
-      { "name": "flutter-on", "enabled": true, "impressionData": false, "variant": { "enabled": false, "name": "disabled" } }, 
-      { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": true, "name": "flutter-off-variant" } }
+      { "name": "flutter-on", "enabled": true, "impressionData": false, "variant": { "enabled": true, "name": "disabled" } }, 
+      { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
+      { "name": "flutter-variant", "enabled": true, "impressionData": false, "variant": { "enabled": true, "name": "flutter-variant" } }
      ] 
   }''';
 
@@ -586,9 +587,9 @@ void main() {
         fetcher: getMock);
     await unleash.start();
 
-    var variant = unleash.getVariant('flutter-off');
+    var variant = unleash.getVariant('flutter-variant');
 
-    expect(variant, Variant(name: 'flutter-off-variant', enabled: true));
+    expect(variant, Variant(name: 'flutter-variant', enabled: true));
   });
 
   test('should not send metrics on an interval if bucket is empty', () async {
@@ -622,7 +623,7 @@ void main() {
         Clock.fixed(DateTime(2000)),
         () {
           var payload =
-              '''{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-on":{"yes":1,"no":0}}}''';
+              '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-on":{"yes":1,"no":0}}}}''';
 
           var getMock = GetMock(body: mockData, status: 200, headers: {});
           var postMock = PostMock(payload: payload, status: 200, headers: {});
@@ -653,7 +654,57 @@ void main() {
               {
                 'content-type': 'application/json',
                 'Accept': 'application/json',
-                'Cache': 'no-cache'
+                'Cache': 'no-cache',
+                'Authorization': 'proxy-123'
+              },
+              payload
+            ],
+          ]);
+        },
+      );
+    });
+  });
+
+  test('should record metrics for getVariant', () async {
+    fakeAsync((async) {
+      withClock(
+        Clock.fixed(DateTime(2000)),
+        () {
+          var payload =
+              '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-on":{"yes":2,"no":0}}}}''';
+
+          var getMock = GetMock(body: mockData, status: 200, headers: {});
+          var postMock = PostMock(payload: payload, status: 200, headers: {});
+
+          final unleash = UnleashClient(
+              url: url,
+              clientKey: 'proxy-123',
+              appName: 'flutter-test',
+              refreshInterval: 10,
+              metricsInterval: 10,
+              sessionIdGenerator: generateSessionId,
+              fetcher: getMock,
+              poster: postMock);
+
+          unleash.start();
+
+          async.elapse(new Duration(
+              seconds: 0)); // call elapse to execute the async function call.
+          expect(unleash.isEnabled('flutter-on'), true);
+          expect(unleash.getVariant('flutter-on').enabled, true);
+
+          async.elapse(const Duration(seconds: 10));
+
+          expect(postMock.calledTimes, 1);
+          expect(postMock.calledWith, [
+            [
+              Uri.parse(
+                  'https://app.unleash-hosted.com/demo/api/proxy/client/metrics'),
+              {
+                'content-type': 'application/json',
+                'Accept': 'application/json',
+                'Cache': 'no-cache',
+                'Authorization': 'proxy-123'
               },
               payload
             ],

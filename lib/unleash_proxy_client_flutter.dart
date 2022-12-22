@@ -55,6 +55,7 @@ class UnleashClient extends EventEmitter {
       poster: poster,
       url: url,
       metricsInterval: metricsInterval,
+      clientKey: clientKey,
     );
     ready = init();
   }
@@ -168,6 +169,7 @@ class UnleashClient extends EventEmitter {
     var toggle = toggles[featureName];
 
     if (toggle != null) {
+      metrics.count(featureName, toggle.enabled);
       return toggle.variant;
     } else {
       return Variant.defaultVariant;
