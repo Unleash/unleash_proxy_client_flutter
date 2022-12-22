@@ -29,6 +29,7 @@ class UnleashClient extends EventEmitter {
   final Future<http.Response> Function(http.Request) fetcher;
   final Future<http.Response> Function(http.Request) poster;
   final String Function() sessionIdGenerator;
+  final bool disableMetrics;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   StorageProvider storageProvider;
@@ -48,15 +49,16 @@ class UnleashClient extends EventEmitter {
     this.fetcher = get,
     this.poster = post,
     this.sessionIdGenerator = generateSessionId,
+    this.disableMetrics = false,
     storageProvider,
   }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
     metrics = Metrics(
-      appName: appName,
-      poster: poster,
-      url: url,
-      metricsInterval: metricsInterval,
-      clientKey: clientKey,
-    );
+        appName: appName,
+        poster: poster,
+        url: url,
+        metricsInterval: metricsInterval,
+        clientKey: clientKey,
+        disableMetrics: disableMetrics);
     ready = init();
   }
 

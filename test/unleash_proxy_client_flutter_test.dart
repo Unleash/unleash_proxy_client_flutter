@@ -617,6 +617,33 @@ void main() {
     });
   });
 
+  test('should not send metrics on an interval if disableMetrics is set',
+      () async {
+    fakeAsync((async) {
+      var payload =
+          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 200, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          disableMetrics: true,
+          sessionIdGenerator: generateSessionId,
+          fetcher: getMock,
+          poster: postMock);
+
+      unleash.start();
+      async.elapse(const Duration(seconds: 50));
+
+      expect(postMock.calledTimes, 0);
+    });
+  });
+
   test('should send metrics on interval if metrics are observed', () async {
     fakeAsync((async) {
       withClock(
