@@ -15,19 +15,19 @@ class UnleashContext {
   Map<String, String> toSnapshot() {
     final params = <String, String>{};
 
-    final localUserId = userId;
-    if (localUserId != null) {
-      params['userId'] = localUserId;
+    final userId = this.userId;
+    if (userId != null) {
+      params['userId'] = userId;
     }
 
-    final localRemoteAddress = remoteAddress;
-    if (localRemoteAddress != null) {
-      params['remoteAddress'] = localRemoteAddress;
+    final remoteAddress = this.remoteAddress;
+    if (remoteAddress != null) {
+      params['remoteAddress'] = remoteAddress;
     }
 
-    final localSessionId = sessionId;
-    if (localSessionId != null) {
-      params['sessionId'] = localSessionId;
+    final sessionId = this.sessionId;
+    if (sessionId != null) {
+      params['sessionId'] = sessionId;
     }
 
     params.addAll(properties);

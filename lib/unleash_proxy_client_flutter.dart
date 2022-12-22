@@ -58,9 +58,9 @@ class UnleashClient extends EventEmitter {
       this.headerName = 'Authorization',
       this.customHeaders = const {}}) {
     ready = _init();
-    final localBootstrap = bootstrap;
-    if (localBootstrap != null) {
-      toggles = localBootstrap;
+    final bootstrap = this.bootstrap;
+    if (bootstrap != null) {
+      toggles = bootstrap;
     }
   }
 
@@ -75,9 +75,9 @@ class UnleashClient extends EventEmitter {
     }
 
     final togglesInStorage = await _fetchTogglesFromStorage();
-    final localBootstrap = bootstrap;
-    if (localBootstrap != null && bootstrapOverride) {
-      toggles = localBootstrap;
+    final bootstrap = this.bootstrap;
+    if (bootstrap != null && bootstrapOverride) {
+      toggles = bootstrap;
     } else {
       toggles = togglesInStorage;
     }
@@ -85,11 +85,9 @@ class UnleashClient extends EventEmitter {
     emit('initialized');
     clientState = ClientState.initialized;
 
-    if (localBootstrap != null &&
-        (bootstrapOverride || togglesInStorage.isEmpty)) {
-      await actualStorageProvider.save(
-          storageKey, stringifyToggles(localBootstrap));
-      toggles = localBootstrap;
+    if (bootstrap != null && (bootstrapOverride || togglesInStorage.isEmpty)) {
+      await actualStorageProvider.save(storageKey, stringifyToggles(bootstrap));
+      toggles = bootstrap;
       emit('ready');
       clientState = ClientState.ready;
     }
@@ -104,9 +102,9 @@ class UnleashClient extends EventEmitter {
       headers[headerName] = clientKey;
       headers.addAll(customHeaders);
 
-      final localEtag = etag;
-      if (localEtag != null) {
-        headers.putIfAbsent('If-None-Match', () => localEtag);
+      final etag = this.etag;
+      if (etag != null) {
+        headers.putIfAbsent('If-None-Match', () => etag);
       }
 
       final request = http.Request(
@@ -115,7 +113,7 @@ class UnleashClient extends EventEmitter {
       final response = await fetcher(request);
 
       if (response.headers.containsKey('ETag') && response.statusCode == 200) {
-        etag = response.headers['ETag'];
+        this.etag = response.headers['ETag'];
       }
       if (response.statusCode == 200) {
         await actualStorageProvider.save(storageKey, response.body);
@@ -244,9 +242,9 @@ class UnleashClient extends EventEmitter {
   }
 
   stop() {
-    final Timer? localTimer = timer;
-    if (localTimer != null && localTimer.isActive) {
-      localTimer.cancel();
+    final Timer? timer = this.timer;
+    if (timer != null && timer.isActive) {
+      timer.cancel();
     }
   }
 
