@@ -104,7 +104,7 @@ class UnleashClient extends EventEmitter {
 
       final etag = this.etag;
       if (etag != null) {
-        headers.putIfAbsent('If-None-Match', () => etag);
+        headers['If-None-Match'] = etag;
       }
 
       final request = http.Request(
