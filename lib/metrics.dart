@@ -1,6 +1,5 @@
 import 'package:http/http.dart' as http;
 import 'package:clock/clock.dart';
-import 'package:events_emitter/events_emitter.dart';
 import 'dart:async';
 import 'dart:convert';
 

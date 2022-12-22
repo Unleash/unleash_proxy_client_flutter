@@ -836,7 +836,7 @@ void main() {
 
           unleash.start();
 
-          async.elapse(new Duration(
+          async.elapse(const Duration(
               seconds: 0)); // call elapse to execute the async function call.
           expect(unleash.isEnabled('flutter-on'), true);
 
@@ -884,7 +884,7 @@ void main() {
 
           unleash.start();
 
-          async.elapse(new Duration(
+          async.elapse(const Duration(
               seconds: 0)); // call elapse to execute the async function call.
           expect(unleash.isEnabled('flutter-variant'), true);
           expect(unleash.getVariant('flutter-variant').enabled, true);
@@ -930,8 +930,8 @@ void main() {
           fetcher: getMock,
           poster: postMock);
 
-      var value;
-      unleash.on('error', (dynamic payload) {
+      dynamic value;
+      unleash.on('error', (payload) {
         value = payload;
       });
 
