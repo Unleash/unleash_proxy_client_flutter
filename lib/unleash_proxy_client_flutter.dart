@@ -3,8 +3,9 @@ library unleash_proxy_client_flutter;
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:events_emitter/events_emitter.dart';
-import 'package:unleash_proxy_client_flutter/parse_toggles.dart';
+import 'package:unleash_proxy_client_flutter/parse_stringify_toggles.dart';
 import 'package:unleash_proxy_client_flutter/session_id_generator.dart';
+import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
@@ -12,7 +13,6 @@ import 'package:unleash_proxy_client_flutter/variant.dart';
 import 'package:unleash_proxy_client_flutter/metrics.dart';
 
 import 'http_toggle_client.dart';
-import 'in_memory_storage_provider.dart';
 
 enum ClientState {
   initializing,
@@ -20,8 +20,11 @@ enum ClientState {
   ready,
 }
 
+const storageKey = '_unleash_repo';
+const sessionStorageKey = '_unleash_sessionId';
+
 class UnleashClient extends EventEmitter {
-  Uri url;
+  final Uri url;
   final String clientKey;
   final String appName;
   final int refreshInterval;
@@ -32,26 +35,37 @@ class UnleashClient extends EventEmitter {
   final bool disableMetrics;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
-  StorageProvider storageProvider;
+  Map<String, ToggleConfig>? bootstrap;
+  final bool bootstrapOverride;
+  final bool disableRefresh;
+  final String headerName;
+  final Map<String, String> customHeaders;
+  late StorageProvider actualStorageProvider;
+  StorageProvider? storageProvider;
   String? etag;
   late Future<void> ready;
-  late bool readyEventEmitted = false;
-  ClientState clientState = ClientState.initializing;
-  UnleashContext context = UnleashContext();
+  var readyEventEmitted = false;
+  var clientState = ClientState.initializing;
+  var context = UnleashContext();
   late Metrics metrics;
 
-  UnleashClient({
-    required this.url,
-    required this.clientKey,
-    required this.appName,
-    this.metricsInterval = 30,
-    this.refreshInterval = 30,
-    this.fetcher = get,
-    this.poster = post,
-    this.sessionIdGenerator = generateSessionId,
-    this.disableMetrics = false,
-    storageProvider,
-  }) : storageProvider = storageProvider ?? InMemoryStorageProvider() {
+  UnleashClient(
+      {required this.url,
+      required this.clientKey,
+      required this.appName,
+      this.metricsInterval = 30,
+      this.refreshInterval = 30,
+      this.fetcher = get,
+      this.poster = post,
+      this.sessionIdGenerator = generateSessionId,
+      this.disableMetrics = false,
+      this.storageProvider,
+      this.bootstrap,
+      this.bootstrapOverride = true,
+      this.disableRefresh = false,
+      this.headerName = 'Authorization',
+      this.customHeaders = const {}}) {
+    ready = _init();
     metrics = Metrics(
         appName: appName,
         poster: poster,
@@ -60,32 +74,66 @@ class UnleashClient extends EventEmitter {
         clientKey: clientKey,
         disableMetrics: disableMetrics,
         emit: emit);
-    ready = init();
+    final bootstrap = this.bootstrap;
+    if (bootstrap != null) {
+      toggles = bootstrap;
+    }
   }
 
-  Future<void> fetchToggles() async {
+  Future<void> _init() async {
+    actualStorageProvider =
+        storageProvider ?? await SharedPreferencesStorageProvider.init();
+
+    final currentSessionId = context.sessionId;
+    if (currentSessionId == null) {
+      final sessionId = await _resolveSessionId();
+      context.sessionId = sessionId;
+    }
+
+    final togglesInStorage = await _fetchTogglesFromStorage();
+    final bootstrap = this.bootstrap;
+    if (bootstrap != null && bootstrapOverride) {
+      toggles = bootstrap;
+    } else {
+      toggles = togglesInStorage;
+    }
+
+    emit('initialized');
+    clientState = ClientState.initialized;
+
+    if (bootstrap != null && (bootstrapOverride || togglesInStorage.isEmpty)) {
+      await actualStorageProvider.save(storageKey, stringifyToggles(bootstrap));
+      toggles = bootstrap;
+      emit('ready');
+      clientState = ClientState.ready;
+    }
+  }
+
+  Future<void> _fetchToggles() async {
     try {
-      var headers = {
+      final headers = {
         'Accept': 'application/json',
         'Cache': 'no-cache',
-        'Authorization': clientKey,
       };
-      var localEtag = etag;
-      if (localEtag != null) {
-        headers.putIfAbsent('If-None-Match', () => localEtag);
+      headers[headerName] = clientKey;
+      headers.addAll(customHeaders);
+
+      final etag = this.etag;
+      if (etag != null) {
+        headers['If-None-Match'] = etag;
       }
 
-      var request = http.Request(
+      final request = http.Request(
           'GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
       request.headers.addAll(headers);
-      var response = await fetcher(request);
+      final response = await fetcher(request);
 
       if (response.headers.containsKey('ETag') && response.statusCode == 200) {
-        etag = response.headers['ETag'];
+        this.etag = response.headers['ETag'];
       }
       if (response.statusCode == 200) {
-        await storageProvider.save('unleash_repo', response.body);
-        toggles = parseToggleResponse(response.body);
+        await actualStorageProvider.save(storageKey, response.body);
+        toggles = parseToggles(response.body);
         emit('update');
       }
       if (response.statusCode > 399) {
@@ -99,57 +147,46 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  Future<String> resolveSessionId() async {
-    var sessionId = context.sessionId;
+  Future<String> _resolveSessionId() async {
+    final sessionId = context.sessionId;
     if (sessionId != null) {
       return sessionId;
     } else {
-      var existingSessionId = await storageProvider.get('sessionId');
+      final existingSessionId =
+          await actualStorageProvider.get(sessionStorageKey);
       if (existingSessionId == null) {
-        var newSessionId = sessionIdGenerator();
-        await storageProvider.save('sessionId', newSessionId);
+        final newSessionId = sessionIdGenerator();
+        await actualStorageProvider.save(sessionStorageKey, newSessionId);
         return newSessionId;
       }
       return existingSessionId;
     }
   }
 
-  Future<void> init() async {
-    var currentSessionId = context.sessionId;
-    if (currentSessionId == null) {
-      var sessionId = await resolveSessionId();
-      context.sessionId = sessionId;
-    }
-
-    toggles = await fetchTogglesFromStorage();
-    emit('initialized');
-    clientState = ClientState.initialized;
-  }
-
-  Future<Map<String, ToggleConfig>> fetchTogglesFromStorage() async {
-    var toggles = await storageProvider.get('unleash_repo');
+  Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {
+    final toggles = await actualStorageProvider.get(storageKey);
 
     if (toggles == null) {
       return {};
     }
 
-    return parseToggleResponse(toggles);
+    return parseToggles(toggles);
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
     if (clientState == ClientState.ready) {
-      updateContextField(unleashContext);
-      await fetchToggles();
+      _updateContextFields(unleashContext);
+      await _fetchToggles();
     } else {
-      await waitForEvent('ready');
-      updateContextField(unleashContext);
-      await fetchToggles();
+      await _waitForEvent('ready');
+      _updateContextFields(unleashContext);
+      await _fetchToggles();
     }
   }
 
-  void updateContextField(UnleashContext unleashContext) {
+  void _updateContextFields(UnleashContext unleashContext) {
     if (unleashContext.sessionId == null) {
-      var oldSessionId = context.sessionId;
+      final oldSessionId = context.sessionId;
       context = unleashContext;
       context.sessionId = oldSessionId;
     } else {
@@ -157,7 +194,30 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  Future<void> waitForEvent(String eventName) async {
+  Future<void> setContextField(String field, String value) async {
+    if (clientState == ClientState.ready) {
+      _updateContextField(field, value);
+      await _fetchToggles();
+    } else {
+      await _waitForEvent('ready');
+      _updateContextField(field, value);
+      await _fetchToggles();
+    }
+  }
+
+  void _updateContextField(String field, String value) {
+    if (field == 'userId') {
+      context.userId = value;
+    } else if (field == 'sessionId') {
+      context.sessionId = value;
+    } else if (field == 'remoteAddress') {
+      context.remoteAddress = value;
+    } else {
+      context.properties[field] = value;
+    }
+  }
+
+  Future<void> _waitForEvent(String eventName) async {
     final completer = Completer<void>();
     void listener(dynamic value) async {
       off(type: eventName, callback: listener);
@@ -169,7 +229,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Variant getVariant(String featureName) {
-    var toggle = toggles[featureName];
+    final toggle = toggles[featureName];
 
     if (toggle != null) {
       metrics.count(featureName, toggle.enabled);
@@ -181,26 +241,28 @@ class UnleashClient extends EventEmitter {
 
   Future<void> start() async {
     if (clientState == ClientState.initializing) {
-      await waitForEvent('initialized');
+      await _waitForEvent('initialized');
     }
 
     metrics.start();
-    await fetchToggles();
+    await _fetchToggles();
 
     if (clientState != ClientState.ready) {
       emit('ready');
       clientState = ClientState.ready;
     }
 
-    timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
-      fetchToggles();
-    });
+    if (!disableRefresh) {
+      timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
+        _fetchToggles();
+      });
+    }
   }
 
   stop() {
-    final Timer? localTimer = timer;
-    if (localTimer != null && localTimer.isActive) {
-      localTimer.cancel();
+    final Timer? timer = this.timer;
+    if (timer != null && timer.isActive) {
+      timer.cancel();
     }
   }
 

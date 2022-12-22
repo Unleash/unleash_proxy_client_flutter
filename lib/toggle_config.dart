@@ -17,6 +17,14 @@ class ToggleConfig {
         variant: Variant.fromJson(json["variant"]));
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'enabled': enabled,
+      'impressionData': impressionData,
+      'variant': variant.toMap()
+    };
+  }
+
   @override
   bool operator ==(Object other) {
     return other is ToggleConfig &&

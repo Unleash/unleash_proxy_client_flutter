@@ -10,6 +10,10 @@ class Variant {
     return Variant(name: json["name"], enabled: json["enabled"]);
   }
 
+  Map<String, dynamic> toMap() {
+    return {'name': name, 'enabled': enabled};
+  }
+
   @override
   bool operator ==(Object other) {
     return other is Variant && (other.name == name && other.enabled == enabled);
