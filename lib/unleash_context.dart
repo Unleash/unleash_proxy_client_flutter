@@ -6,9 +6,9 @@ class UnleashContext {
 
   UnleashContext(
       {this.userId,
-        this.sessionId,
-        this.remoteAddress,
-        this.properties = const {}});
+      this.sessionId,
+      this.remoteAddress,
+      this.properties = const {}});
 
   String toQueryParams() {
     var result = Uri(queryParameters: toSnapshot()).query;
