@@ -73,18 +73,20 @@ if(variant.name == 'blue') {
 
 The Unleash SDK takes the following options:
 
-| option            | required | default | description                                                                                                                                      |
-|-------------------|----------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| url               | yes | n/a | The Unleash Proxy URL to connect to. E.g.: `https://examples.com/proxy`                                                                         |
-| clientKey         | yes | n/a | The Unleash Proxy Secret to be used                                                                                                             | 
-| appName           | yes | n/a | The name of the application using this SDK. Will be used as part of the metrics sent to Unleash Proxy. Will also be part of the Unleash Context. | 
-| refreshInterval   | no | 30 | How often, in seconds, the SDK should check for updated toggle configuration. If set to 0 will disable checking for updates                 |
-| disableRefresh    | no | false | If set to true, the client will not check for updated toggle configuration                                                                |
+| option            | required | default                   | description                                                                                                                                      |
+|-------------------|----------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| url               | yes | n/a                       | The Unleash Proxy URL to connect to. E.g.: `https://examples.com/proxy`                                                                         |
+| clientKey         | yes | n/a                       | The Unleash Proxy Secret to be used                                                                                                             | 
+| appName           | yes | n/a                       | The name of the application using this SDK. Will be used as part of the metrics sent to Unleash Proxy. Will also be part of the Unleash Context. | 
+| refreshInterval   | no | 30                        | How often, in seconds, the SDK should check for updated toggle configuration. If set to 0 will disable checking for updates                 |
+| disableRefresh    | no | false                     | If set to true, the client will not check for updated toggle configuration                                                                |
+| metricsInterval   | no | 30                        | How often, in seconds, the SDK should send usage metrics back to Unleash Proxy                                                              | 
+| disableMetrics    | no | false                     | Set this option to `true` if you want to disable usage metrics
 | storageProvider   | no | `InMemoryStorageProvider` | Allows you to inject a custom storeProvider                                                                              |
-| bootstrap         | no | `[]` | Allows you to bootstrap the cached feature toggle configuration.                                                                               | 
-| bootstrapOverride | no| `true` | Should the bootstrap automatically override cached data in the local-storage. Will only be used if bootstrap is not an empty array.     |
-| headerName        | no| `Authorization` | Provides possiblity to specify custom header that is passed to Unleash / Unleash Proxy with the `clientKey` |
-| customHeaders     | no| `{}` | Additional headers to use when making HTTP requests to the Unleash proxy. In case of name collisions with the default headers, the `customHeaders` value will be used. |
+| bootstrap         | no | `[]`                      | Allows you to bootstrap the cached feature toggle configuration.                                                                               | 
+| bootstrapOverride | no| `true`                    | Should the bootstrap automatically override cached data in the local-storage. Will only be used if bootstrap is not an empty array.     |
+| headerName        | no| `Authorization`           | Provides possiblity to specify custom header that is passed to Unleash / Unleash Proxy with the `clientKey` |
+| customHeaders     | no| `{}`                      | Additional headers to use when making HTTP requests to the Unleash proxy. In case of name collisions with the default headers, the `customHeaders` value will be used. |
 
 ### Listen for updates via the events_emitter
 
