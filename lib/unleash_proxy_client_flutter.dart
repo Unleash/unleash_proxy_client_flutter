@@ -10,6 +10,7 @@ import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
+import 'package:unleash_proxy_client_flutter/metrics.dart';
 
 import 'http_toggle_client.dart';
 
@@ -27,8 +28,12 @@ class UnleashClient extends EventEmitter {
   final String clientKey;
   final String appName;
   final int refreshInterval;
+  final int metricsInterval;
   final Future<http.Response> Function(http.Request) fetcher;
+  final Future<http.Response> Function(http.Request) poster;
   final String Function() sessionIdGenerator;
+  final DateTime Function() clock;
+  final bool disableMetrics;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
   Map<String, ToggleConfig>? bootstrap;
@@ -43,14 +48,19 @@ class UnleashClient extends EventEmitter {
   var readyEventEmitted = false;
   var clientState = ClientState.initializing;
   var context = UnleashContext();
+  late Metrics metrics;
 
   UnleashClient(
       {required this.url,
       required this.clientKey,
       required this.appName,
+      this.metricsInterval = 30,
       this.refreshInterval = 30,
       this.fetcher = get,
+      this.poster = post,
       this.sessionIdGenerator = generateSessionId,
+      this.clock = DateTime.now,
+      this.disableMetrics = false,
       this.storageProvider,
       this.bootstrap,
       this.bootstrapOverride = true,
@@ -58,6 +68,15 @@ class UnleashClient extends EventEmitter {
       this.headerName = 'Authorization',
       this.customHeaders = const {}}) {
     ready = _init();
+    metrics = Metrics(
+        appName: appName,
+        poster: poster,
+        url: url,
+        metricsInterval: metricsInterval,
+        clientKey: clientKey,
+        disableMetrics: disableMetrics,
+        clock: clock,
+        emit: emit);
     final bootstrap = this.bootstrap;
     if (bootstrap != null) {
       toggles = bootstrap;
@@ -216,6 +235,7 @@ class UnleashClient extends EventEmitter {
     final toggle = toggles[featureName];
 
     if (toggle != null) {
+      metrics.count(featureName, toggle.enabled);
       return toggle.variant;
     } else {
       return Variant.defaultVariant;
@@ -227,6 +247,7 @@ class UnleashClient extends EventEmitter {
       await _waitForEvent('initialized');
     }
 
+    metrics.start();
     await _fetchToggles();
 
     if (clientState != ClientState.ready) {
@@ -249,6 +270,8 @@ class UnleashClient extends EventEmitter {
   }
 
   bool isEnabled(String featureName) {
-    return toggles[featureName]?.enabled ?? false;
+    var enabled = toggles[featureName]?.enabled ?? false;
+    metrics.count(featureName, enabled);
+    return enabled;
   }
 }

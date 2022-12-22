@@ -6,6 +6,7 @@ import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
+
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
@@ -13,7 +14,8 @@ import 'package:unleash_proxy_client_flutter/variant.dart';
 const mockData = '''{ 
      "toggles": [
       { "name": "flutter-on", "enabled": true, "impressionData": false, "variant": { "enabled": false, "name": "disabled" } }, 
-      { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": true, "name": "flutter-off-variant" } }
+      { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
+      { "name": "flutter-variant", "enabled": true, "impressionData": false, "variant": { "enabled": true, "name": "flutter-variant" } }
      ] 
   }''';
 
@@ -35,6 +37,25 @@ class GetMock {
     calledWithUrls.add(request.url);
 
     return Response(mockData, status, headers: headers);
+  }
+}
+
+class PostMock {
+  var calledTimes = 0;
+  var calledWith = [];
+  var calledWithUrls = [];
+  String payload;
+  int status;
+  Map<String, String> headers;
+
+  PostMock({required this.payload, this.status = 200, this.headers = const {}});
+
+  Future<Response> call(Request request) async {
+    calledTimes++;
+    calledWith.add([request.url, request.headers, request.body]);
+    calledWithUrls.add(request.url);
+
+    return Response(payload, status, headers: headers);
   }
 }
 
@@ -362,7 +383,7 @@ void main() {
     expect(sessionId, '1234');
   });
 
-  test('can refetch toggles at a regular interval', () async {
+  test('can refetch toggles at a regular interval', () {
     fakeAsync((async) {
       final getMock = GetMock();
       final unleash = UnleashClient(
@@ -388,7 +409,7 @@ void main() {
     });
   });
 
-  test('can disable refresh at a regular interval', () async {
+  test('can disable refresh at a regular interval', () {
     fakeAsync((async) {
       final getMock = GetMock();
       final unleash = UnleashClient(
@@ -415,7 +436,7 @@ void main() {
     });
   });
 
-  test('stopping client should cancel the timer', () async {
+  test('stopping client should cancel the timer', () {
     fakeAsync((async) {
       final getMock = GetMock();
       final unleash = UnleashClient(
@@ -589,7 +610,7 @@ void main() {
     ]);
   });
 
-  test('interval should pick settings from update context', () async {
+  test('interval should pick settings from update context', () {
     fakeAsync((async) {
       final getMock = GetMock();
       final unleash = UnleashClient(
@@ -615,7 +636,7 @@ void main() {
     });
   });
 
-  test('should store ETag locally', () async {
+  test('should store ETag locally', () {
     fakeAsync((async) {
       final getMock =
           GetMock(body: mockData, status: 200, headers: {'ETag': 'ETagValue'});
@@ -655,7 +676,7 @@ void main() {
     });
   });
 
-  test('should not store ETag on codes other than 200', () async {
+  test('should not store ETag on codes other than 200', () {
     fakeAsync((async) {
       final getMock = GetMock(
           body: mockData, status: 500, headers: {'ETag': 'ETagValueIgnore'});
@@ -734,9 +755,185 @@ void main() {
         fetcher: getMock);
     await unleash.start();
 
-    final variant = unleash.getVariant('flutter-off');
+    final variant = unleash.getVariant('flutter-variant');
 
-    expect(variant, Variant(name: 'flutter-off-variant', enabled: true));
+    expect(variant, Variant(name: 'flutter-variant', enabled: true));
+  });
+
+  test('should not send metrics on an interval if bucket is empty', () {
+    fakeAsync((async) {
+      var payload =
+          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 200, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          sessionIdGenerator: generateSessionId,
+          fetcher: getMock,
+          poster: postMock);
+
+      unleash.start();
+      async.elapse(const Duration(seconds: 10));
+
+      expect(postMock.calledTimes, 0);
+    });
+  });
+
+  test('should not send metrics on an interval if disableMetrics is set', () {
+    fakeAsync((async) {
+      var payload =
+          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 200, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          disableMetrics: true,
+          sessionIdGenerator: generateSessionId,
+          fetcher: getMock,
+          poster: postMock);
+
+      unleash.start();
+      async.elapse(const Duration(seconds: 50));
+
+      expect(postMock.calledTimes, 0);
+    });
+  });
+
+  test('should send metrics on interval if metrics are observed', () {
+    fakeAsync((async) {
+      var payload =
+          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-on":{"yes":1,"no":0}}}}''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 200, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          sessionIdGenerator: generateSessionId,
+          storageProvider: InMemoryStorageProvider(),
+          clock: () => DateTime(2000),
+          fetcher: getMock,
+          poster: postMock);
+
+      unleash.start();
+      async.elapse(const Duration(seconds: 1));
+      expect(unleash.isEnabled('flutter-on'), true);
+      async.elapse(const Duration(seconds: 10));
+
+      expect(postMock.calledTimes, 1);
+      expect(postMock.calledWith, [
+        [
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy/client/metrics'),
+          {
+            'content-type': 'application/json',
+            'Accept': 'application/json',
+            'Cache': 'no-cache',
+            'Authorization': 'proxy-123'
+          },
+          payload
+        ],
+      ]);
+    });
+  });
+
+  test('should record metrics for getVariant', () {
+    fakeAsync((async) {
+      var payload =
+          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000","stop":"2000-01-01T00:00:00.000","toggles":{"flutter-variant":{"yes":3,"no":0}}}}''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 200, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          clock: () => DateTime(2000),
+          sessionIdGenerator: generateSessionId,
+          storageProvider: InMemoryStorageProvider(),
+          fetcher: getMock,
+          poster: postMock);
+
+      unleash.start();
+
+      async.elapse(const Duration(
+          seconds: 0)); // call elapse to execute the async function call.
+      expect(unleash.isEnabled('flutter-variant'), true);
+      expect(unleash.getVariant('flutter-variant').enabled, true);
+      expect(unleash.getVariant('flutter-variant').enabled, true);
+
+      async.elapse(const Duration(seconds: 10));
+
+      expect(postMock.calledTimes, 1);
+      expect(postMock.calledWith, [
+        [
+          Uri.parse(
+              'https://app.unleash-hosted.com/demo/api/proxy/client/metrics'),
+          {
+            'content-type': 'application/json',
+            'Accept': 'application/json',
+            'Cache': 'no-cache',
+            'Authorization': 'proxy-123'
+          },
+          payload
+        ],
+      ]);
+    });
+  });
+
+  test('should emit an error posting and getting a status code above 399', () {
+    fakeAsync((async) {
+      var payload =
+          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 400, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          sessionIdGenerator: generateSessionId,
+          storageProvider: InMemoryStorageProvider(),
+          fetcher: getMock,
+          poster: postMock);
+
+      dynamic value;
+      unleash.on('error', (payload) {
+        value = payload;
+      });
+
+      unleash.start();
+      async.elapse(const Duration(seconds: 0));
+      expect(unleash.isEnabled('flutter-variant'), true);
+      async.elapse(const Duration(seconds: 10));
+      expect(postMock.calledTimes, 1);
+      expect(value, {
+        "type": 'HttpError',
+        "code": 400,
+      });
+    });
   });
 
   test('can provide initial bootstrap', () async {

@@ -152,3 +152,4 @@ If `bootstrapOverride` is `false` any local cached data will not be overridden u
 
 * `flutter test`
 * `flutter format lib test`
+* `flutter analyze lib test`
