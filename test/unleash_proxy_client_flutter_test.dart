@@ -71,7 +71,7 @@ void main() {
 
     final completer = Completer<void>();
     // Ready should be registered before we start the client.
-    unleash.on('ready', (dynamic _) {
+    unleash.on('ready', (_) {
       completer.complete();
     });
 
@@ -94,7 +94,7 @@ void main() {
         fetcher: getMock);
 
     var count = 0;
-    unleash.on('update', (dynamic _) {
+    unleash.on('update', (_) {
       count += 1;
     });
 
@@ -207,7 +207,7 @@ void main() {
         fetcher: getMock);
 
     var count = 0;
-    unleash.on('update', (dynamic _) {
+    unleash.on('update', (_) {
       count += 1;
     });
 
@@ -273,7 +273,7 @@ void main() {
         fetcher: getMock);
 
     // Ready should be registered before we start the client.
-    unleash.on('ready', (dynamic _) {
+    unleash.on('ready', (_) {
       count += 1;
     });
 
@@ -330,7 +330,7 @@ void main() {
     expect(unleash.isEnabled('flutter-on'), false);
 
     final completer = Completer<void>();
-    unleash.on('initialized', (dynamic _) {
+    unleash.on('initialized', (_) {
       completer.complete();
     });
     await completer.future;
@@ -374,7 +374,7 @@ void main() {
           fetcher: getMock);
 
       var updateEventCount = 0;
-      unleash.on('update', (dynamic _) {
+      unleash.on('update', (_) {
         updateEventCount += 1;
       });
 
@@ -401,7 +401,7 @@ void main() {
           fetcher: getMock);
 
       var updateEventCount = 0;
-      unleash.on('update', (dynamic _) {
+      unleash.on('update', (_) {
         updateEventCount += 1;
       });
 
@@ -760,12 +760,12 @@ void main() {
 
     final events = [];
     final initialized = Completer<void>();
-    unleash.on('initialized', (dynamic _) {
+    unleash.on('initialized', (_) {
       events.add('initialized');
       initialized.complete();
     });
     final ready = Completer<void>();
-    unleash.on('ready', (dynamic _) {
+    unleash.on('ready', (_) {
       events.add('ready');
       ready.complete();
     });
@@ -794,7 +794,7 @@ void main() {
         fetcher: getMock);
 
     var count = 0;
-    unleash.on('ready', (dynamic _) {
+    unleash.on('ready', (_) {
       count += 1;
     });
 
@@ -846,7 +846,7 @@ void main() {
         fetcher: getMock);
 
     final initialized = Completer<void>();
-    unleash.on('initialized', (dynamic _) {
+    unleash.on('initialized', (_) {
       initialized.complete();
     });
     await initialized.future;
@@ -874,7 +874,7 @@ void main() {
         fetcher: getMock);
 
     final initialized = Completer<void>();
-    unleash.on('initialized', (dynamic _) {
+    unleash.on('initialized', (_) {
       initialized.complete();
     });
     await initialized.future;
@@ -901,7 +901,7 @@ void main() {
         fetcher: getMock);
 
     final initialized = Completer<void>();
-    unleash.on('ready', (dynamic _) {
+    unleash.on('ready', (_) {
       initialized.complete();
     });
     await initialized.future;

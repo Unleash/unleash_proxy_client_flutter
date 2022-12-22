@@ -35,7 +35,7 @@ var unleash = UnleashClient(
 You shouldn't start working with the client immediately. It's recommended to wait for `ready` or `initialized` event:
 
 ```dart
-unleash.on('ready', (dynamic _) {
+unleash.on('ready', (_) {
     if (unleash.isEnabled('proxy.demo')) {
       print('proxy.demo is enabled');
     } else {
@@ -92,7 +92,7 @@ The client is also an event emitter. This means that your code can subscribe to 
 This is a neat way to update your app when toggle state updates.
 
 ```dart
-unleash.on('update', (dynamic _) {
+unleash.on('update', (_) {
     var myToggle = unleash.isEnabled('proxy.demo');
     //do something useful
 });
