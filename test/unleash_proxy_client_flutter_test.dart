@@ -741,4 +741,40 @@ void main() {
       );
     });
   });
+
+  test('should emit an error posting and getting a status code above 399',
+      () async {
+    fakeAsync((async) {
+      var payload =
+          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+
+      var getMock = GetMock(body: mockData, status: 200, headers: {});
+      var postMock = PostMock(payload: payload, status: 400, headers: {});
+
+      final unleash = UnleashClient(
+          url: url,
+          clientKey: 'proxy-123',
+          appName: 'flutter-test',
+          refreshInterval: 10,
+          metricsInterval: 10,
+          sessionIdGenerator: generateSessionId,
+          fetcher: getMock,
+          poster: postMock);
+
+      var value;
+      unleash.on('error', (dynamic payload) {
+        value = payload;
+      });
+
+      unleash.start();
+      async.elapse(const Duration(seconds: 0));
+      expect(unleash.isEnabled('flutter-variant'), true);
+      async.elapse(const Duration(seconds: 10));
+      expect(postMock.calledTimes, 1);
+      expect(value, {
+        "type": 'HttpError',
+        "code": 400,
+      });
+    });
+  });
 }

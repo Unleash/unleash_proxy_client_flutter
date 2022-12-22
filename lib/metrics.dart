@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:clock/clock.dart';
+import 'package:events_emitter/events_emitter.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -53,6 +54,7 @@ class Metrics {
   final int metricsInterval;
   final String clientKey;
   final Future<http.Response> Function(http.Request) poster;
+  final Function(String, [dynamic]) emit;
   bool disableMetrics;
   Timer? timer;
   Bucket bucket = Bucket();
@@ -64,7 +66,8 @@ class Metrics {
       this.disableMetrics = false,
       required this.poster,
       required this.url,
-      required this.clientKey});
+      required this.clientKey,
+      required this.emit});
 
   Future<void> start() async {
     if (disableMetrics) {
@@ -109,10 +112,15 @@ class Metrics {
           appName: appName, instanceId: 'flutter', bucket: localBucket);
       var jsonPayload = json.encode(payload);
       var request = createRequest(jsonPayload);
-      await poster(request);
+      var response = await poster(request);
+      if (response.statusCode > 399) {
+        emit('error', {
+          "type": 'HttpError',
+          "code": response.statusCode,
+        });
+      }
     } catch (e) {
-      // emit an error
-      print(e);
+      emit('error', e);
     }
   }
 

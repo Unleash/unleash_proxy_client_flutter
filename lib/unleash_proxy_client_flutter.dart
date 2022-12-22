@@ -58,7 +58,8 @@ class UnleashClient extends EventEmitter {
         url: url,
         metricsInterval: metricsInterval,
         clientKey: clientKey,
-        disableMetrics: disableMetrics);
+        disableMetrics: disableMetrics,
+        emit: emit);
     ready = init();
   }
 
