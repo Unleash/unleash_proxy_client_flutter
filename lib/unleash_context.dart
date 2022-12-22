@@ -13,22 +13,15 @@ class UnleashContext {
   }
 
   Map<String, String> toMap() {
-    final params = <String, String>{};
-
     final userId = this.userId;
-    if (userId != null) {
-      params['userId'] = userId;
-    }
-
     final remoteAddress = this.remoteAddress;
-    if (remoteAddress != null) {
-      params['remoteAddress'] = remoteAddress;
-    }
-
     final sessionId = this.sessionId;
-    if (sessionId != null) {
-      params['sessionId'] = sessionId;
-    }
+
+    final params = <String, String>{
+      if (userId != null) 'userId': userId,
+      if (remoteAddress != null) 'remoteAddress': remoteAddress,
+      if (sessionId != null) 'sessionId': sessionId,
+    };
 
     params.addAll(properties);
 
