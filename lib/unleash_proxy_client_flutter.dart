@@ -109,7 +109,8 @@ class UnleashClient extends EventEmitter {
     clientState = ClientState.initialized;
 
     if (bootstrap != null && (bootstrapOverride || togglesInStorage.isEmpty)) {
-      await actualStorageProvider.save(storageWithApp(appName, storageKey), stringifyToggles(bootstrap));
+      await actualStorageProvider.save(
+          storageWithApp(appName, storageKey), stringifyToggles(bootstrap));
       toggles = bootstrap;
       emit('ready');
       clientState = ClientState.ready;
@@ -139,7 +140,8 @@ class UnleashClient extends EventEmitter {
         this.etag = response.headers['ETag'];
       }
       if (response.statusCode == 200) {
-        await actualStorageProvider.save(storageWithApp(appName, storageKey), response.body);
+        await actualStorageProvider.save(
+            storageWithApp(appName, storageKey), response.body);
         toggles = parseToggles(response.body);
         emit('update');
       }
@@ -159,11 +161,12 @@ class UnleashClient extends EventEmitter {
     if (sessionId != null) {
       return sessionId;
     } else {
-      final existingSessionId =
-          await actualStorageProvider.get(storageWithApp(appName, sessionStorageKey));
+      final existingSessionId = await actualStorageProvider
+          .get(storageWithApp(appName, sessionStorageKey));
       if (existingSessionId == null) {
         final newSessionId = sessionIdGenerator();
-        await actualStorageProvider.save(storageWithApp(appName, sessionStorageKey), newSessionId);
+        await actualStorageProvider.save(
+            storageWithApp(appName, sessionStorageKey), newSessionId);
         return newSessionId;
       }
       return existingSessionId;
@@ -171,7 +174,8 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {
-    final toggles = await actualStorageProvider.get(storageWithApp(appName, storageKey));
+    final toggles =
+        await actualStorageProvider.get(storageWithApp(appName, storageKey));
 
     if (toggles == null) {
       return {};
