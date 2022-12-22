@@ -17,11 +17,11 @@ class ToggleConfig {
         variant: Variant.fromJson(json["variant"]));
   }
 
-  Map<String, dynamic> serialize() {
+  Map<String, dynamic> toMap() {
     return {
       'enabled': enabled,
       'impressionData': impressionData,
-      'variant': variant.serialize()
+      'variant': variant.toMap()
     };
   }
 

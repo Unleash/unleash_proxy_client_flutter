@@ -8,11 +8,11 @@ class UnleashContext {
       : properties = properties ?? {};
 
   String toQueryParams() {
-    final result = Uri(queryParameters: toSnapshot()).query;
+    final result = Uri(queryParameters: toMap()).query;
     return result.isNotEmpty ? '?$result' : '';
   }
 
-  Map<String, String> toSnapshot() {
+  Map<String, String> toMap() {
     final params = <String, String>{};
 
     final userId = this.userId;

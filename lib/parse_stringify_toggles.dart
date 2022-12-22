@@ -12,7 +12,7 @@ Map<String, ToggleConfig> parseToggles(String body) {
 }
 
 Map<String, dynamic> toJSON(String toggleName, ToggleConfig toggle) {
-  return {'name': toggleName, ...toggle.serialize()};
+  return {'name': toggleName, ...toggle.toMap()};
 }
 
 String stringifyToggles(Map<String, ToggleConfig> toggles) {

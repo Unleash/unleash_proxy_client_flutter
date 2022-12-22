@@ -10,7 +10,7 @@ class Variant {
     return Variant(name: json["name"], enabled: json["enabled"]);
   }
 
-  Map<String, dynamic> serialize() {
+  Map<String, dynamic> toMap() {
     return {'name': name, 'enabled': enabled};
   }
 
