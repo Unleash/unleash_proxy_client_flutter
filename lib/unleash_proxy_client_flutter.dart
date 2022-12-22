@@ -32,6 +32,7 @@ class UnleashClient extends EventEmitter {
   final Future<http.Response> Function(http.Request) fetcher;
   final Future<http.Response> Function(http.Request) poster;
   final String Function() sessionIdGenerator;
+  final DateTime Function() clock;
   final bool disableMetrics;
   Timer? timer;
   Map<String, ToggleConfig> toggles = {};
@@ -58,6 +59,7 @@ class UnleashClient extends EventEmitter {
       this.fetcher = get,
       this.poster = post,
       this.sessionIdGenerator = generateSessionId,
+      this.clock = DateTime.now,
       this.disableMetrics = false,
       this.storageProvider,
       this.bootstrap,
@@ -73,6 +75,7 @@ class UnleashClient extends EventEmitter {
         metricsInterval: metricsInterval,
         clientKey: clientKey,
         disableMetrics: disableMetrics,
+        clock: clock,
         emit: emit);
     final bootstrap = this.bootstrap;
     if (bootstrap != null) {

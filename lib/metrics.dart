@@ -1,15 +1,17 @@
 import 'package:http/http.dart' as http;
-import 'package:clock/clock.dart';
 import 'dart:async';
 import 'dart:convert';
 
 class Bucket {
-  DateTime start = clock.now();
+  final DateTime Function() clock;
+  DateTime start;
   late DateTime stop;
   Map<String, ToggleMetrics> toggles = {};
 
+  Bucket(this.clock) : start = clock();
+
   void closeBucket() {
-    stop = clock.now();
+    stop = clock();
   }
 
   bool isEmpty() {
@@ -54,19 +56,22 @@ class Metrics {
   final String clientKey;
   final Future<http.Response> Function(http.Request) poster;
   final Function(String, [dynamic]) emit;
+  final DateTime Function() clock;
   bool disableMetrics;
   Timer? timer;
-  Bucket bucket = Bucket();
+  Bucket bucket;
   Uri url;
 
   Metrics(
       {required this.appName,
       required this.metricsInterval,
+      required this.clock,
       this.disableMetrics = false,
       required this.poster,
       required this.url,
       required this.clientKey,
-      required this.emit});
+      required this.emit})
+      : bucket = Bucket(clock);
 
   Future<void> start() async {
     if (disableMetrics) {
@@ -104,7 +109,7 @@ class Metrics {
 
     var localBucket = bucket;
     // For now, accept that a failing request will lose the metrics.
-    bucket = Bucket();
+    bucket = Bucket(clock);
 
     try {
       var payload = MetricsPayload(
