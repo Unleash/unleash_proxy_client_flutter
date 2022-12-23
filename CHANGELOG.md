@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Added examples
+
 ## 0.0.2
 
 * Added support for impression events
