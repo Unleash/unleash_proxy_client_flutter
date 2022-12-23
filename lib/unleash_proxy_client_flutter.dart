@@ -276,8 +276,7 @@ class UnleashClient extends EventEmitter {
     final enabled = toggle?.enabled ?? false;
 
     if (impressionDataAll || (toggle != null && toggle.impressionData)) {
-      final contextWithAppName = context.toMap();
-      contextWithAppName['appName'] = appName;
+      final contextWithAppName = {...context.toMap(), 'appName': appName};
 
       emit('impression', {
         'eventType': type,
