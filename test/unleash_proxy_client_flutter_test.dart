@@ -1194,4 +1194,47 @@ void main() {
       }
     ]);
   });
+
+  test('emits impression event with impressionDataAll',
+          () async {
+        final getMock = GetMock();
+        final unleash = UnleashClient(
+            url: url,
+            clientKey: 'proxy-123',
+            appName: 'flutter-test',
+            storageProvider: InMemoryStorageProvider(),
+            eventIdGenerator: () => '1234',
+            sessionIdGenerator: () => '5678',
+            impressionDataAll: true,
+            fetcher: getMock);
+
+        List<Map<String, dynamic>> impressions = [];
+        unleash.on('impression', (Map<String, dynamic> impression) {
+          impressions.add(impression);
+        });
+
+        await unleash.start();
+
+        unleash.isEnabled('flutter-off'); // does not have impressionData
+        unleash.getVariant('flutter-off'); // does not have impressionData
+
+        expect(impressions, [
+          {
+            'eventType': 'isEnabled',
+            'eventId': '1234',
+            'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+            'enabled': false,
+            'featureName': 'flutter-off',
+            'impressionData': false
+          },
+          {
+            'eventType': 'getVariant',
+            'eventId': '1234',
+            'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+            'enabled': false,
+            'featureName': 'flutter-off',
+            'impressionData': false
+          }
+        ]);
+      });
 }

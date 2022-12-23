@@ -55,6 +55,7 @@ class UnleashClient extends EventEmitter {
   var clientState = ClientState.initializing;
   var context = UnleashContext();
   late Metrics metrics;
+  bool impressionDataAll;
 
   UnleashClient(
       {required this.url,
@@ -73,7 +74,8 @@ class UnleashClient extends EventEmitter {
       this.bootstrapOverride = true,
       this.disableRefresh = false,
       this.headerName = 'Authorization',
-      this.customHeaders = const {}}) {
+      this.customHeaders = const {},
+      this.impressionDataAll = false}) {
     ready = _init();
     metrics = Metrics(
         appName: appName,
@@ -274,7 +276,7 @@ class UnleashClient extends EventEmitter {
     var enabled = toggle?.enabled ?? false;
     metrics.count(featureName, enabled);
 
-    if (toggle != null && toggle.impressionData) {
+    if (impressionDataAll || (toggle != null && toggle.impressionData)) {
       final contextWithAppName = context.toMap();
       contextWithAppName['appName'] = appName;
 
@@ -284,7 +286,7 @@ class UnleashClient extends EventEmitter {
         'context': contextWithAppName,
         'enabled': enabled,
         'featureName': featureName,
-        'impressionData': toggle.impressionData
+        'impressionData': toggle?.impressionData
       });
     }
 
@@ -294,7 +296,7 @@ class UnleashClient extends EventEmitter {
   Variant getVariant(String featureName) {
     final toggle = toggles[featureName];
 
-    if (toggle != null && toggle.impressionData) {
+    if (impressionDataAll || (toggle != null && toggle.impressionData)) {
       final contextWithAppName = context.toMap();
       contextWithAppName['appName'] = appName;
 
@@ -302,9 +304,9 @@ class UnleashClient extends EventEmitter {
         'eventType': 'getVariant',
         'eventId': eventIdGenerator(),
         'context': contextWithAppName,
-        'enabled': toggle.enabled,
+        'enabled': toggle?.enabled,
         'featureName': featureName,
-        'impressionData': toggle.impressionData
+        'impressionData': toggle?.impressionData
       });
     }
 
