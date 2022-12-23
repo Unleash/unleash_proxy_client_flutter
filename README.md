@@ -24,7 +24,7 @@ You need to have a Unleash-hosted instance, and the proxy need to be enabled. In
 ```dart
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
 
-var unleash = UnleashClient(
+final unleash = UnleashClient(
     url: Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
     clientKey: 'proxy-123',
     appName: 'my-app');
@@ -63,7 +63,8 @@ unleash.start();
 **Step 6: Get toggle variant**
 
 ```dart
-var variant = unleash.getVariant('proxy.demo');
+final variant = unleash.getVariant('proxy.demo');
+
 if(variant.name == 'blue') {
  // something with variant blue...
 }
@@ -96,7 +97,7 @@ This is a neat way to update your app when toggle state updates.
 
 ```dart
 unleash.on('update', (_) {
-    var myToggle = unleash.isEnabled('proxy.demo');
+    final myToggle = unleash.isEnabled('proxy.demo');
     //do something useful
 });
 ```
@@ -123,7 +124,6 @@ A stopped client _can_ be restarted.
 unleash.stop();
 ```
 
-
 ## Bootstrap
 Now it is possible to bootstrap the SDK with your own feature toggle configuration when you don't want to make an API call.
 
@@ -134,7 +134,7 @@ Add a `bootstrap` attribute when create a new `UnleashClient`.
 There's also a `bootstrapOverride` attribute which is by default is `true`.
 
 ```dart
-var unleash = UnleashClient(
+final unleash = UnleashClient(
     url: Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
     clientKey: 'proxy-123',
     appName: 'my-app',
@@ -147,9 +147,9 @@ var unleash = UnleashClient(
 });
 ```
 **NOTES: ⚠️**
-If `bootstrapOverride` is `true` (by default), any local cached data will be overridden with the bootstrap specified.   
-If `bootstrapOverride` is `false` any local cached data will not be overridden unless the local cache is empty.
 
+* If `bootstrapOverride` is `true` (by default), any local cached data will be overridden with the bootstrap specified.   
+* If `bootstrapOverride` is `false` any local cached data will not be overridden unless the local cache is empty.
 
 ## Useful commands development
 
