@@ -274,7 +274,7 @@ class UnleashClient extends EventEmitter {
     var enabled = toggle?.enabled ?? false;
     metrics.count(featureName, enabled);
 
-    if(toggle != null && toggle.impressionData) {
+    if (toggle != null && toggle.impressionData) {
       final contextWithAppName = context.toMap();
       contextWithAppName['appName'] = appName;
 
@@ -294,7 +294,7 @@ class UnleashClient extends EventEmitter {
   Variant getVariant(String featureName) {
     final toggle = toggles[featureName];
 
-    if(toggle != null && toggle.impressionData) {
+    if (toggle != null && toggle.impressionData) {
       final contextWithAppName = context.toMap();
       contextWithAppName['appName'] = appName;
 

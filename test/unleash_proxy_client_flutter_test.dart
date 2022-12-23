@@ -1109,7 +1109,8 @@ void main() {
     expect(unleash.getVariant('flutter-on').name, 'variant-name');
   });
 
-  test('emits impression event on isEnabled when impressionData allows', () async {
+  test('emits impression event on isEnabled when impressionData allows',
+      () async {
     final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
@@ -1131,24 +1132,28 @@ void main() {
     unleash.isEnabled('flutter-on');
     unleash.isEnabled('flutter-off'); // does not have impressionData
 
-    expect(impressions, [{
-      'eventType': 'isEnabled',
-      'eventId': '1234',
-      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
-      'enabled': true,
-      'featureName': 'flutter-on',
-      'impressionData': true
-      }, {
-      'eventType': 'isEnabled',
-      'eventId': '1234',
-      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
-      'enabled': true,
-      'featureName': 'flutter-on',
-      'impressionData': true
-    }]);
+    expect(impressions, [
+      {
+        'eventType': 'isEnabled',
+        'eventId': '1234',
+        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'enabled': true,
+        'featureName': 'flutter-on',
+        'impressionData': true
+      },
+      {
+        'eventType': 'isEnabled',
+        'eventId': '1234',
+        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'enabled': true,
+        'featureName': 'flutter-on',
+        'impressionData': true
+      }
+    ]);
   });
 
-  test('emits impression event on getVariant when impressionData allows', () async {
+  test('emits impression event on getVariant when impressionData allows',
+      () async {
     final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
@@ -1170,20 +1175,23 @@ void main() {
     unleash.getVariant('flutter-variant');
     unleash.getVariant('flutter-off'); // does not have impressionData
 
-    expect(impressions, [{
-      'eventType': 'getVariant',
-      'eventId': '1234',
-      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
-      'enabled': true,
-      'featureName': 'flutter-variant',
-      'impressionData': true
-    }, {
-      'eventType': 'getVariant',
-      'eventId': '1234',
-      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
-      'enabled': true,
-      'featureName': 'flutter-variant',
-      'impressionData': true
-    }]);
+    expect(impressions, [
+      {
+        'eventType': 'getVariant',
+        'eventId': '1234',
+        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'enabled': true,
+        'featureName': 'flutter-variant',
+        'impressionData': true
+      },
+      {
+        'eventType': 'getVariant',
+        'eventId': '1234',
+        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'enabled': true,
+        'featureName': 'flutter-variant',
+        'impressionData': true
+      }
+    ]);
   });
 }
