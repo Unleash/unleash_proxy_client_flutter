@@ -271,17 +271,16 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  bool isEnabled(String featureName) {
+  void _emitImpression(String featureName, String type) {
     final toggle = toggles[featureName];
     final enabled = toggle?.enabled ?? false;
-    metrics.count(featureName, enabled);
 
     if (impressionDataAll || (toggle != null && toggle.impressionData)) {
       final contextWithAppName = context.toMap();
       contextWithAppName['appName'] = appName;
 
       emit('impression', {
-        'eventType': 'isEnabled',
+        'eventType': type,
         'eventId': eventIdGenerator(),
         'context': contextWithAppName,
         'enabled': enabled,
@@ -289,6 +288,14 @@ class UnleashClient extends EventEmitter {
         'impressionData': toggle?.impressionData
       });
     }
+  }
+
+  bool isEnabled(String featureName) {
+    final toggle = toggles[featureName];
+    final enabled = toggle?.enabled ?? false;
+    metrics.count(featureName, enabled);
+
+    _emitImpression(featureName, 'isEnabled');
 
     return enabled;
   }
@@ -298,19 +305,7 @@ class UnleashClient extends EventEmitter {
     final enabled = toggle != null ? toggle.enabled : false;
 
     metrics.count(featureName, enabled);
-    if (impressionDataAll || (toggle != null && toggle.impressionData)) {
-      final contextWithAppName = context.toMap();
-      contextWithAppName['appName'] = appName;
-
-      emit('impression', {
-        'eventType': 'getVariant',
-        'eventId': eventIdGenerator(),
-        'context': contextWithAppName,
-        'enabled': enabled,
-        'featureName': featureName,
-        'impressionData': toggle?.impressionData
-      });
-    }
+    _emitImpression(featureName, 'getVariant');
 
     if (toggle != null) {
       return toggle.variant;
