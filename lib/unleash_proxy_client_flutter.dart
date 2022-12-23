@@ -3,6 +3,7 @@ library unleash_proxy_client_flutter;
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:events_emitter/events_emitter.dart';
+import 'package:unleash_proxy_client_flutter/client_events.dart';
 import 'package:unleash_proxy_client_flutter/parse_stringify_toggles.dart';
 import 'package:unleash_proxy_client_flutter/session_id_generator.dart';
 import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
@@ -110,14 +111,14 @@ class UnleashClient extends EventEmitter {
       toggles = togglesInStorage;
     }
 
-    emit('initialized');
+    emit(initializedEvent);
     clientState = ClientState.initialized;
 
     if (bootstrap != null && (bootstrapOverride || togglesInStorage.isEmpty)) {
       await actualStorageProvider.save(
           storageWithApp(appName, storageKey), stringifyToggles(bootstrap));
       toggles = bootstrap;
-      emit('ready');
+      emit(readyEvent);
       clientState = ClientState.ready;
     }
   }
@@ -148,16 +149,16 @@ class UnleashClient extends EventEmitter {
         await actualStorageProvider.save(
             storageWithApp(appName, storageKey), response.body);
         toggles = parseToggles(response.body);
-        emit('update');
+        emit(updateEvent);
       }
       if (response.statusCode > 399) {
-        emit('error', {
+        emit(errorEvent, {
           "type": 'HttpError',
           "code": response.statusCode,
         });
       }
     } catch (e) {
-      emit('error', e);
+      emit(errorEvent, e);
     }
   }
 
@@ -253,7 +254,7 @@ class UnleashClient extends EventEmitter {
     await _fetchToggles();
 
     if (clientState != ClientState.ready) {
-      emit('ready');
+      emit(readyEvent);
       clientState = ClientState.ready;
     }
 
@@ -278,7 +279,7 @@ class UnleashClient extends EventEmitter {
     if (impressionDataAll || (toggle != null && toggle.impressionData)) {
       final contextWithAppName = {...context.toMap(), 'appName': appName};
 
-      emit('impression', {
+      emit(impressionEvent, {
         'eventType': type,
         'eventId': eventIdGenerator(),
         'context': contextWithAppName,

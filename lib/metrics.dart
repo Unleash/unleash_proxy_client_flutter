@@ -2,6 +2,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:unleash_proxy_client_flutter/client_events.dart';
+
 class Bucket {
   final DateTime Function() clock;
   DateTime start;
@@ -118,13 +120,13 @@ class Metrics {
       final request = createRequest(jsonPayload);
       final response = await poster(request);
       if (response.statusCode > 399) {
-        emit('error', {
+        emit(errorEvent, {
           "type": 'HttpError',
           "code": response.statusCode,
         });
       }
     } catch (e) {
-      emit('error', e);
+      emit(errorEvent, e);
     }
   }
 
