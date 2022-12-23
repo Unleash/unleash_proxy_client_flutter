@@ -1,3 +1,4 @@
+/// https://docs.getunleash.io/reference/unleash-context
 class UnleashContext {
   String? userId;
   String? sessionId;

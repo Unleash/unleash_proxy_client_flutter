@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 
+/// Storage provider using shared preferences. This is a default implementation.
 class SharedPreferencesStorageProvider extends StorageProvider {
   final SharedPreferences _sharedPreferences;
 

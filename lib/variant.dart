@@ -1,3 +1,4 @@
+/// https://docs.getunleash.io/reference/feature-toggle-variants
 class Variant {
   final String name;
   final bool enabled;

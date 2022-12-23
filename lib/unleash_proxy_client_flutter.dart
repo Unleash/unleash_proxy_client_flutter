@@ -29,33 +29,82 @@ String storageWithApp(String appName, String key) {
   return '$appName.$key';
 }
 
+/// Main entry point to Flutter Unleash Proxy (https://docs.getunleash.io/reference/unleash-proxy) client
 class UnleashClient extends EventEmitter {
+  /// Unleash Proxy URL (https://docs.getunleash.io/reference/unleash-proxy)
   final Uri url;
+
+  /// The key used for Unleash Proxy authorization
   final String clientKey;
+
+  /// The name of the app where the Unleash Client is used
   final String appName;
+
+  /// The number of seconds between toggles re-fetch
   final int refreshInterval;
+
+  /// The number of second between metrics sending
   final int metricsInterval;
+
+  /// The HTTP client for fetching toggles from the Unleash Proxy
   final Future<http.Response> Function(http.Request) fetcher;
+
+  /// The HTTP client for sending metrics to the Unleash Proxy
   final Future<http.Response> Function(http.Request) poster;
+
+  /// Exposed for testability purposes
   final String Function() sessionIdGenerator;
+
+  /// Exposed for testability purposes
   final String Function() eventIdGenerator;
+
+  /// Exposed for testability purposes
   final DateTime Function() clock;
+
+  /// The flag to turn-off metrics tracking
   final bool disableMetrics;
+
+  /// The scheduling timer for re-fetch of the toggles at a refreshInterval
   Timer? timer;
+
+  /// The local in-memory copy of the toggles
   Map<String, ToggleConfig> toggles = {};
+
+  /// The initial toggle setup provided by the user
   Map<String, ToggleConfig>? bootstrap;
+
+  /// The flag to override cached data in the local-storage with the user provided toggle setup
   final bool bootstrapOverride;
+
+  /// The flag to disable feature toggle setting after the initial fetch
   final bool disableRefresh;
+
+  /// The custom name for sending clientKey
   final String headerName;
+
+  /// The extra headers user want to provide to the Unleash Proxy
   final Map<String, String> customHeaders;
+
+  /// The swappable storage provided. By default it can be in-memory or shared preferences based.
+  /// The shared preferences provider may requires async init so it's marked as late.
   late StorageProvider actualStorageProvider;
+
+  /// The user injected storage provider that has to be resolved prior to injecting it here
   StorageProvider? storageProvider;
+
+  /// The HTTP header to prevent sending data to client when it hasn't changed
   String? etag;
-  late Future<void> ready;
-  var readyEventEmitted = false;
+
+  /// The internal state of the Unleash Client. It goes from initializing to initialized to ready.
   var clientState = ClientState.initializing;
+
+  /// The information relating to the current feature toggle request
   var context = UnleashContext();
+
+  /// The utility to count and report client side metrics
   late Metrics metrics;
+
+  /// The flag used commonly for "disabled" feature toggles that are not visible to frontend SDKs.
   bool impressionDataAll;
 
   UnleashClient(
@@ -77,7 +126,7 @@ class UnleashClient extends EventEmitter {
       this.headerName = 'Authorization',
       this.customHeaders = const {},
       this.impressionDataAll = false}) {
-    ready = _init();
+    _init();
     metrics = Metrics(
         appName: appName,
         poster: poster,

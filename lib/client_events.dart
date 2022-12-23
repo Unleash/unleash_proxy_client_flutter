@@ -1,3 +1,4 @@
+/// All client emitted events
 const initializedEvent = 'initialized';
 const readyEvent = 'ready';
 const updateEvent = 'update';

@@ -1,5 +1,6 @@
 import 'package:unleash_proxy_client_flutter/variant.dart';
 
+/// Unleash Proxy toggle without the name (https://docs.getunleash.io/reference/unleash-proxy#payload)
 class ToggleConfig {
   final bool enabled;
   final bool impressionData;
