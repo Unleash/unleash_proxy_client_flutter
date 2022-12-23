@@ -12,6 +12,7 @@ import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
 import 'package:unleash_proxy_client_flutter/metrics.dart';
 
+import 'event_id_generator.dart';
 import 'http_toggle_client.dart';
 
 enum ClientState {
@@ -36,6 +37,7 @@ class UnleashClient extends EventEmitter {
   final Future<http.Response> Function(http.Request) fetcher;
   final Future<http.Response> Function(http.Request) poster;
   final String Function() sessionIdGenerator;
+  final String Function() eventIdGenerator;
   final DateTime Function() clock;
   final bool disableMetrics;
   Timer? timer;
@@ -63,6 +65,7 @@ class UnleashClient extends EventEmitter {
       this.fetcher = get,
       this.poster = post,
       this.sessionIdGenerator = generateSessionId,
+      this.eventIdGenerator = generateEventId,
       this.clock = DateTime.now,
       this.disableMetrics = false,
       this.storageProvider,
@@ -278,8 +281,24 @@ class UnleashClient extends EventEmitter {
   }
 
   bool isEnabled(String featureName) {
-    var enabled = toggles[featureName]?.enabled ?? false;
+    final toggle = toggles[featureName];
+    var enabled = toggle?.enabled ?? false;
     metrics.count(featureName, enabled);
+
+    if(toggle != null && toggle.impressionData) {
+      final contextWithAppName = context.toMap();
+      contextWithAppName['appName'] = appName;
+
+      emit('impression', {
+        'eventType': 'isEnabled',
+        'eventId': eventIdGenerator(),
+        'context': contextWithAppName,
+        'enabled': enabled,
+        'featureName': featureName,
+        'impressionData': toggle.impressionData
+      });
+    }
+
     return enabled;
   }
 }

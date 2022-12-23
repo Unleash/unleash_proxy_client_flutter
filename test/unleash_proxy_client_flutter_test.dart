@@ -13,7 +13,7 @@ import 'package:unleash_proxy_client_flutter/variant.dart';
 
 const mockData = '''{ 
      "toggles": [
-      { "name": "flutter-on", "enabled": true, "impressionData": false, "variant": { "enabled": false, "name": "disabled" } }, 
+      { "name": "flutter-on", "enabled": true, "impressionData": true, "variant": { "enabled": false, "name": "disabled" } }, 
       { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
       { "name": "flutter-variant", "enabled": true, "impressionData": false, "variant": { "enabled": true, "name": "flutter-variant" } }
      ] 
@@ -1107,5 +1107,44 @@ void main() {
     await initialized.future;
 
     expect(unleash.getVariant('flutter-on').name, 'variant-name');
+  });
+
+  test('emits impression event on isEnabled ', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
+        eventIdGenerator: () => '1234',
+        sessionIdGenerator: () => '5678',
+        fetcher: getMock);
+
+    List<Map<String, dynamic>> impressions = [];
+    unleash.on('impression', (Map<String, dynamic> impression) {
+      impressions.add(impression);
+    });
+
+    await unleash.start();
+
+    unleash.isEnabled('flutter-on'); // has impressionData
+    unleash.isEnabled('flutter-on');
+    unleash.isEnabled('flutter-off'); // does not have impressionData
+
+    expect(impressions, [{
+      'eventType': 'isEnabled',
+      'eventId': '1234',
+      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+      'enabled': true,
+      'featureName': 'flutter-on',
+      'impressionData': true
+      }, {
+      'eventType': 'isEnabled',
+      'eventId': '1234',
+      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+      'enabled': true,
+      'featureName': 'flutter-on',
+      'impressionData': true
+    }]);
   });
 }
