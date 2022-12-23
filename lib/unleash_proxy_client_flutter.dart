@@ -273,7 +273,7 @@ class UnleashClient extends EventEmitter {
 
   bool isEnabled(String featureName) {
     final toggle = toggles[featureName];
-    var enabled = toggle?.enabled ?? false;
+    final enabled = toggle?.enabled ?? false;
     metrics.count(featureName, enabled);
 
     if (impressionDataAll || (toggle != null && toggle.impressionData)) {
@@ -295,7 +295,9 @@ class UnleashClient extends EventEmitter {
 
   Variant getVariant(String featureName) {
     final toggle = toggles[featureName];
+    final enabled = toggle != null ? toggle.enabled : false;
 
+    metrics.count(featureName, enabled);
     if (impressionDataAll || (toggle != null && toggle.impressionData)) {
       final contextWithAppName = context.toMap();
       contextWithAppName['appName'] = appName;
@@ -304,14 +306,13 @@ class UnleashClient extends EventEmitter {
         'eventType': 'getVariant',
         'eventId': eventIdGenerator(),
         'context': contextWithAppName,
-        'enabled': toggle?.enabled,
+        'enabled': enabled,
         'featureName': featureName,
         'impressionData': toggle?.impressionData
       });
     }
 
     if (toggle != null) {
-      metrics.count(featureName, toggle.enabled);
       return toggle.variant;
     } else {
       return Variant.defaultVariant;
