@@ -242,17 +242,6 @@ class UnleashClient extends EventEmitter {
     await completer.future;
   }
 
-  Variant getVariant(String featureName) {
-    final toggle = toggles[featureName];
-
-    if (toggle != null) {
-      metrics.count(featureName, toggle.enabled);
-      return toggle.variant;
-    } else {
-      return Variant.defaultVariant;
-    }
-  }
-
   Future<void> start() async {
     if (clientState == ClientState.initializing) {
       await _waitForEvent('initialized');
@@ -300,5 +289,30 @@ class UnleashClient extends EventEmitter {
     }
 
     return enabled;
+  }
+
+  Variant getVariant(String featureName) {
+    final toggle = toggles[featureName];
+
+    if(toggle != null && toggle.impressionData) {
+      final contextWithAppName = context.toMap();
+      contextWithAppName['appName'] = appName;
+
+      emit('impression', {
+        'eventType': 'getVariant',
+        'eventId': eventIdGenerator(),
+        'context': contextWithAppName,
+        'enabled': toggle.enabled,
+        'featureName': featureName,
+        'impressionData': toggle.impressionData
+      });
+    }
+
+    if (toggle != null) {
+      metrics.count(featureName, toggle.enabled);
+      return toggle.variant;
+    } else {
+      return Variant.defaultVariant;
+    }
   }
 }

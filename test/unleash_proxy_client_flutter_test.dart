@@ -15,7 +15,7 @@ const mockData = '''{
      "toggles": [
       { "name": "flutter-on", "enabled": true, "impressionData": true, "variant": { "enabled": false, "name": "disabled" } }, 
       { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
-      { "name": "flutter-variant", "enabled": true, "impressionData": false, "variant": { "enabled": true, "name": "flutter-variant" } }
+      { "name": "flutter-variant", "enabled": true, "impressionData": true, "variant": { "enabled": true, "name": "flutter-variant" } }
      ] 
   }''';
 
@@ -1109,7 +1109,7 @@ void main() {
     expect(unleash.getVariant('flutter-on').name, 'variant-name');
   });
 
-  test('emits impression event on isEnabled ', () async {
+  test('emits impression event on isEnabled when impressionData allows', () async {
     final getMock = GetMock();
     final unleash = UnleashClient(
         url: url,
@@ -1144,6 +1144,45 @@ void main() {
       'context': {'sessionId': '5678', 'appName': 'flutter-test'},
       'enabled': true,
       'featureName': 'flutter-on',
+      'impressionData': true
+    }]);
+  });
+
+  test('emits impression event on getVariant when impressionData allows', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
+        eventIdGenerator: () => '1234',
+        sessionIdGenerator: () => '5678',
+        fetcher: getMock);
+
+    List<Map<String, dynamic>> impressions = [];
+    unleash.on('impression', (Map<String, dynamic> impression) {
+      impressions.add(impression);
+    });
+
+    await unleash.start();
+
+    unleash.getVariant('flutter-variant'); // has impressionData
+    unleash.getVariant('flutter-variant');
+    unleash.getVariant('flutter-off'); // does not have impressionData
+
+    expect(impressions, [{
+      'eventType': 'getVariant',
+      'eventId': '1234',
+      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+      'enabled': true,
+      'featureName': 'flutter-variant',
+      'impressionData': true
+    }, {
+      'eventType': 'getVariant',
+      'eventId': '1234',
+      'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+      'enabled': true,
+      'featureName': 'flutter-variant',
       'impressionData': true
     }]);
   });
