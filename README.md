@@ -151,8 +151,9 @@ If `bootstrapOverride` is `true` (by default), any local cached data will be ove
 If `bootstrapOverride` is `false` any local cached data will not be overridden unless the local cache is empty.
 
 
-## Local development
+## Useful commands development
 
 * `flutter test`
 * `flutter format lib test`
 * `flutter analyze lib test`
+* `dart pub publish`
