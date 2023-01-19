@@ -1,6 +1,6 @@
 # Unleash Proxy Client for Flutter (Dart)
 
-This is a tiny Unleash Client SDK you can use together with the
+This is a tiny Unleash Client SDK you can use together with the [Unleash Frontend API](https://docs.getunleash.io/reference/front-end-api#using-the-unleash-front-end-api) or the 
 [Unleash Proxy](https://docs.getunleash.io/sdks/unleash-proxy).
 This makes it super simple to use Unleash from any Flutter app.
 
