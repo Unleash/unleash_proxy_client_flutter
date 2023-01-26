@@ -15,10 +15,10 @@ class FlagBuilder extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _FlagBuilderState createState() => _FlagBuilderState();
+  FlagBuilderState createState() => FlagBuilderState();
 }
 
-class _FlagBuilderState extends State<FlagBuilder> {
+class FlagBuilderState extends State<FlagBuilder> {
   bool _isEnabled = false;
   late EventListener _listener;
 

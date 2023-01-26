@@ -1,15 +1,9 @@
-import 'dart:async';
-
 import 'package:events_emitter/listener.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:unleash_proxy_client_flutter/flag_builder.dart';
-import 'package:unleash_proxy_client_flutter/in_memory_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
-
-import 'unleash_proxy_client_flutter_test.dart';
 
 class MockUnleashClient extends Mock implements UnleashClient {}
 
@@ -85,7 +79,7 @@ void main() {
       expect(find.text('Disabled'), findsOneWidget);
     });
 
-    testWidgets('widget is built only when flag has changed', (tester) async {
+    testWidgets("widget is not built when flag hasn't changed", (tester) async {
       when(() => unleashClient.isEnabled('flutter-on')).thenReturn(true);
       final build = MockBuild();
       when(() => build(any(), any())).thenReturn(const SizedBox());
