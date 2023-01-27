@@ -550,6 +550,30 @@ void main() {
     ]);
   });
 
+  test('update context with await', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+
+    await unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
+    await unleash.start();
+
+    expect(getMock.calledTimes, 1);
+    expect(getMock.calledWithUrls, [
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+    ]);
+  });
+
   test('set context field should wait on asynchronous start', () async {
     final getMock = GetMock();
     final unleash = UnleashClient(
