@@ -107,6 +107,9 @@ class UnleashClient extends EventEmitter {
   /// The flag used commonly for "disabled" feature toggles that are not visible to frontend SDKs.
   bool impressionDataAll;
 
+  /// Internal indicator if the client has been started
+  var started = false;
+
   UnleashClient(
       {required this.url,
       required this.clientKey,
@@ -240,7 +243,10 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
-    if (clientState == ClientState.ready) {
+    if (started == false) {
+      await _waitForEvent('initialized');
+      _updateContextFields(unleashContext);
+    } else if (clientState == ClientState.ready) {
       _updateContextFields(unleashContext);
       await _fetchToggles();
     } else {
@@ -295,6 +301,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> start() async {
+    started = true;
     if (clientState == ClientState.initializing) {
       await _waitForEvent('initialized');
     }
