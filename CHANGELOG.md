@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Fix updateContext called before start
+
 ## 1.0.1
 
 * Fix pubspec.yaml version 
