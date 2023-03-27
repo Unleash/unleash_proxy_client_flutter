@@ -163,15 +163,15 @@ class UnleashClient extends EventEmitter {
       toggles = togglesInStorage;
     }
 
-    emit(initializedEvent);
     clientState = ClientState.initialized;
+    emit(initializedEvent);
 
     if (bootstrap != null && (bootstrapOverride || togglesInStorage.isEmpty)) {
       await actualStorageProvider.save(
           storageWithApp(appName, storageKey), stringifyToggles(bootstrap));
       toggles = bootstrap;
-      emit(readyEvent);
       clientState = ClientState.ready;
+      emit(readyEvent);
     }
   }
 
@@ -310,8 +310,8 @@ class UnleashClient extends EventEmitter {
     await _fetchToggles();
 
     if (clientState != ClientState.ready) {
-      emit(readyEvent);
       clientState = ClientState.ready;
+      emit(readyEvent);
     }
 
     if (!disableRefresh) {

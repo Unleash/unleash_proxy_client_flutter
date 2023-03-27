@@ -1051,6 +1051,31 @@ void main() {
     expect(count, 1);
   });
 
+  test('clientState should be ready when ready event is emitted', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: true,
+              impressionData: false,
+              variant: Variant(enabled: true, name: 'variant-name'))
+        },
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+
+    unleash.on('initialized', (_) {
+      expect(unleash.clientState, ClientState.initialized);
+    });
+    unleash.on('ready', (_) {
+      expect(unleash.clientState, ClientState.ready);
+    });
+
+    await unleash.start();
+  });
+
   test('API should override bootstrap after fetching data', () async {
     final getMock = GetMock();
     final unleash = UnleashClient(
