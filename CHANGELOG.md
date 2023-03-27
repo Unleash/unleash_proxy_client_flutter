@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Fix set client state before emitting event
+
 ## 1.0.2
 
 * Fix updateContext called before start
