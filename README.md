@@ -107,7 +107,7 @@ The Unleash SDK takes the following options:
 | disableRefresh    | no | false                     | If set to true, the client will not check for updated toggle configuration                                                                |
 | metricsInterval   | no | 30                        | How often, in seconds, the SDK should send usage metrics back to Unleash Proxy                                                              | 
 | disableMetrics    | no | false                     | Set this option to `true` if you want to disable usage metrics
-| storageProvider   | no | `InMemoryStorageProvider` | Allows you to inject a custom storeProvider                                                                              |
+| storageProvider   | no | `SharedPreferencesStorageProvider` | Allows you to inject a custom storeProvider                                                                              |
 | bootstrap         | no | `[]`                      | Allows you to bootstrap the cached feature toggle configuration.                                                                               | 
 | bootstrapOverride | no| `true`                    | Should the bootstrap automatically override cached data in the local-storage. Will only be used if bootstrap is not an empty array.     |
 | headerName        | no| `Authorization`           | Provides possiblity to specify custom header that is passed to Unleash / Unleash Proxy with the `clientKey` |
