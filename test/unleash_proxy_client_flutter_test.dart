@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,16 +9,16 @@ import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
-
-import 'dart:async';
-import 'package:fake_async/fake_async.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
 
 const mockData = '''{ 
      "toggles": [
       { "name": "flutter-on", "enabled": true, "impressionData": true, "variant": { "enabled": false, "name": "disabled" } }, 
       { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
-      { "name": "flutter-variant", "enabled": true, "impressionData": true, "variant": { "enabled": true, "name": "flutter-variant" } }
+      { "name": "flutter-variant", "enabled": true, "impressionData": true, "variant": { "enabled": true, "name": "flutter-variant" } },
+      { "name": "flutter-variant-payload", "enabled": true, "impressionData":
+       true, "variant": { "enabled": true, "name": "flutter-variant", "payload": {"type": "string", "value": "someValue"}
+       } }
      ] 
   }''';
 
@@ -1023,7 +1026,7 @@ void main() {
 
     expect(events, ['initialized', 'ready']);
     expect(storageToggles,
-        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true}}]}');
+        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true,"payload":null}}]}');
   });
 
   test('should not emit ready event twice when using bootstrap', () async {
