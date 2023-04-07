@@ -69,8 +69,20 @@ You can use the `getVariant` method to get the variant of an **enabled feature t
 ```dart
 final variant = unleash.getVariant('proxy.demo');
 
-if(variant.name == 'blue') {
+if (variant.name == 'blue') {
  // something with variant blue...
+}
+```
+
+You can also access the payload associated with the variant:
+
+```dart
+final variant = unleash.getVariant('proxy.demo');
+final payload = variant.payload;
+
+if (payload != null) {
+  // do something with the payload
+  // print(payload "${payload.type} ${payload.value}");
 }
 ```
 
