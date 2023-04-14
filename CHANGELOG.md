@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Feat: added variant payload
+
 ## 1.0.3
 
 * Fix set client state before emitting event
