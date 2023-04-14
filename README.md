@@ -113,7 +113,8 @@ The Unleash SDK takes the following options:
 | headerName        | no| `Authorization`           | Provides possiblity to specify custom header that is passed to Unleash / Unleash Proxy with the `clientKey` |
 | customHeaders     | no| `{}`                      | Additional headers to use when making HTTP requests to the Unleash proxy. In case of name collisions with the default headers, the `customHeaders` value will be used. |
 | impressionDataAll | no| `false` | Allows you to trigger "impression" events for **all** `getToggle` and `getVariant` invocations. This is particularly useful for "disabled" feature toggles that are not visible to frontend SDKs. |
-
+| fetcher           | no | `http.get`                         | Allows you to define your own **fetcher**. Can be used to add certificate pinning or additional http behavior. |
+| poster            | no | `http.post`                        | Allows you to define your own **poster**. Can be used to add certificate pinning or additional http behavior.  |
 ### Listen for updates via the events_emitter
 
 The client is also an event emitter. This means that your code can subscribe to updates from the client.
