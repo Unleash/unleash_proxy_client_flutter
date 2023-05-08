@@ -363,10 +363,9 @@ class UnleashClient extends EventEmitter {
     metrics.count(featureName, enabled);
     _emitImpression(featureName, 'getVariant');
 
-    if (toggle != null) {
-      return toggle.variant;
-    } else {
-      return Variant.defaultVariant;
-    }
+    final variant = toggle != null ? toggle.variant : Variant.defaultVariant;
+    metrics.countVariant(featureName, variant.name);
+
+    return variant;
   }
 }

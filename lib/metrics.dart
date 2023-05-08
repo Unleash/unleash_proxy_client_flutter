@@ -30,11 +30,9 @@ class Bucket {
 class ToggleMetrics {
   int yes = 0;
   int no = 0;
+  Map<String, int> variants = {};
 
-  Map<String, dynamic> toJson() => {
-        'yes': yes,
-        'no': no,
-      };
+  Map<String, dynamic> toJson() => {'yes': yes, 'no': no, 'variants': variants};
 }
 
 class MetricsPayload {
@@ -100,6 +98,24 @@ class Metrics {
       toggle.yes++;
     } else {
       toggle.no++;
+    }
+  }
+
+  void countVariant(String name, String variant) {
+    if (disableMetrics) {
+      return;
+    }
+
+    var toggle = bucket.toggles[name];
+    if (toggle == null) {
+      toggle = ToggleMetrics();
+      bucket.toggles[name] = toggle;
+    }
+
+    if (toggle.variants[variant] == null) {
+      toggle.variants[variant] = 1;
+    } else {
+      toggle.variants[variant] = toggle.variants[variant]! + 1;
     }
   }
 
