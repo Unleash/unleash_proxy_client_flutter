@@ -15,7 +15,7 @@ const mockData = '''{
      "toggles": [
       { "name": "flutter-on", "enabled": true, "impressionData": true, "variant": { "enabled": false, "name": "disabled" } }, 
       { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
-      { "name": "flutter-variant", "enabled": true, "impressionData": true, "variant": { "enabled": true, "name": "flutter-variant" } },
+      { "name": "flutter-variant", "enabled": true, "impressionData": true, "variant": { "enabled": true, "name": "flutter-variant-value" } },
       { "name": "flutter-variant-payload", "enabled": true, "impressionData":
        true, "variant": { "enabled": true, "name": "flutter-variant", "payload": {"type": "string", "value": "someValue"}
        } }
@@ -811,7 +811,7 @@ void main() {
 
     final variant = unleash.getVariant('flutter-variant');
 
-    expect(variant, Variant(name: 'flutter-variant', enabled: true));
+    expect(variant, Variant(name: 'flutter-variant-value', enabled: true));
   });
 
   test('should not send metrics on an interval if bucket is empty', () {
@@ -868,7 +868,7 @@ void main() {
   test('should send metrics on interval if metrics are observed', () {
     fakeAsync((async) {
       var payload =
-          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000Z","stop":"2000-01-01T00:00:00.000Z","toggles":{"flutter-on":{"yes":1,"no":0}}}}''';
+          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000Z","stop":"2000-01-01T00:00:00.000Z","toggles":{"flutter-on":{"yes":1,"no":0,"variants":{}}}}}''';
 
       var getMock = GetMock(body: mockData, status: 200, headers: {});
       var postMock = PostMock(payload: payload, status: 200, headers: {});
@@ -910,7 +910,7 @@ void main() {
   test('should record metrics for getVariant', () {
     fakeAsync((async) {
       var payload =
-          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000Z","stop":"2000-01-01T00:00:00.000Z","toggles":{"flutter-variant":{"yes":3,"no":0}}}}''';
+          '''{"appName":"flutter-test","instanceId":"flutter","bucket":{"start":"2000-01-01T00:00:00.000Z","stop":"2000-01-01T00:00:00.000Z","toggles":{"flutter-variant":{"yes":3,"no":0,"variants":{"flutter-variant-value":2}},"nonexistent":{"yes":0,"no":1,"variants":{"disabled":1}}}}}''';
 
       var getMock = GetMock(body: mockData, status: 200, headers: {});
       var postMock = PostMock(payload: payload, status: 200, headers: {});
@@ -934,6 +934,7 @@ void main() {
       expect(unleash.isEnabled('flutter-variant'), true);
       expect(unleash.getVariant('flutter-variant').enabled, true);
       expect(unleash.getVariant('flutter-variant').enabled, true);
+      expect(unleash.getVariant('nonexistent').enabled, false);
 
       async.elapse(const Duration(seconds: 10));
 
