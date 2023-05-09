@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Feat: variant metrics support
+
 ## 1.1.0
 
 * Feat: added variant payload
