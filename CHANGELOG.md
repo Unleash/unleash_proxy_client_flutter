@@ -1,3 +1,7 @@
+## 1.2.1
+
+* Fix: handle empty ToggleConfig values
+
 ## 1.2.0
 
 * Feat: variant metrics support
