@@ -13,9 +13,11 @@ class ToggleConfig {
 
   factory ToggleConfig.fromJson(Map<String, dynamic> json) {
     return ToggleConfig(
-        enabled: json["enabled"],
-        impressionData: json["impressionData"],
-        variant: Variant.fromJson(json["variant"]));
+        enabled: json["enabled"] ?? false,
+        impressionData: json["impressionData"] ?? false,
+        variant: json["variant"] != null
+            ? Variant.fromJson(json["variant"])
+            : Variant(enabled: false, name: "disabled"));
   }
 
   Map<String, dynamic> toMap() {
