@@ -490,11 +490,11 @@ void main() {
     expect(getMock.calledWithUrls, [
       Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&customKey=customValue'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&customKey=customValue&anotherCustomKey=anotherCustomValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue')
     ]);
   });
 
@@ -524,7 +524,7 @@ void main() {
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&anotherCustomKey=anotherCustomValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BanotherCustomKey%5D=anotherCustomValue')
     ]);
   });
 
@@ -549,7 +549,7 @@ void main() {
     expect(getMock.calledWithUrls, [
       Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue')
     ]);
   });
 
@@ -573,7 +573,7 @@ void main() {
     expect(getMock.calledTimes, 1);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue')
     ]);
   });
 
@@ -597,7 +597,7 @@ void main() {
     expect(getMock.calledTimes, 1);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&customKey=customValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue')
     ]);
   });
 
@@ -660,7 +660,7 @@ void main() {
     expect(getMock.calledWithUrls, [
       Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&custom%3FKey=customValue%3F')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&properties%5Bcustom%3FKey%5D=customValue%3F')
     ]);
   });
 

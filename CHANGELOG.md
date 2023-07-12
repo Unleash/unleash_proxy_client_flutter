@@ -1,3 +1,7 @@
+## 1.2.2
+
+* Fix: encoding of custom properties
+
 ## 1.2.1
 
 * Fix: handle empty ToggleConfig values

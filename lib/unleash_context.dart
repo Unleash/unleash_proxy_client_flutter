@@ -24,7 +24,9 @@ class UnleashContext {
       if (sessionId != null) 'sessionId': sessionId,
     };
 
-    params.addAll(properties);
+    properties.forEach((key, value) {
+      params['properties[$key]'] = value;
+    });
 
     return params;
   }
