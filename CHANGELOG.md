@@ -1,3 +1,7 @@
+## 1.3.0
+
+* Feat: HTTP dependency update. Since it's an important update (env support) it's a feat (major version update) and not chore. 
+
 ## 1.2.2
 
 * Fix: encoding of custom properties
