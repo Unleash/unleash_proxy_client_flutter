@@ -1,7 +1,7 @@
 # Unleash Proxy Client for Flutter (Dart)
 
 This is a tiny Unleash Client SDK you can use together with the [Unleash Frontend API](https://docs.getunleash.io/reference/front-end-api#using-the-unleash-front-end-api) or the 
-[Unleash Proxy](https://docs.getunleash.io/sdks/unleash-proxy).
+[Unleash Proxy](https://docs.getunleash.io/sdks/unleash-proxy) or the [Unleash Edge](https://docs.getunleash.io/reference/unleash-edge).
 This makes it super simple to use Unleash from any Flutter app.
 
 ## How to use the client as a module
@@ -191,6 +191,6 @@ final unleash = UnleashClient(
 ## Useful commands development
 
 * `flutter test`
-* `flutter format lib test`
+* `dart format lib test`
 * `flutter analyze lib test`
 * `dart pub publish`
