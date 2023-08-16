@@ -163,7 +163,7 @@ void main() {
 
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=5678&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=5678&appName=flutter-test&environment=default')
     ]);
   });
 
@@ -188,7 +188,7 @@ void main() {
     expect(getMock.calledWith, [
       [
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
         {
           'Accept': 'AcceptType',
           'Cache': 'no-cache',
@@ -215,7 +215,7 @@ void main() {
     expect(getMock.calledWith, [
       [
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
         {
           'Accept': 'application/json',
           'Cache': 'no-cache',
@@ -474,6 +474,7 @@ void main() {
         url: url,
         clientKey: 'proxy-123',
         appName: 'flutter-test',
+        environment: 'production',
         sessionIdGenerator: generateSessionId,
         storageProvider: InMemoryStorageProvider(),
         fetcher: getMock);
@@ -490,13 +491,13 @@ void main() {
     expect(getMock.calledTimes, 4);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=production'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test&environment=production'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test&environment=production'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test&environment=production')
     ]);
   });
 
@@ -519,15 +520,15 @@ void main() {
     expect(getMock.calledTimes, 5);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test&environment=default'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=session&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=session&appName=flutter-test&environment=default'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&appName=flutter-test&environment=default'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test&environment=default')
     ]);
   });
 
@@ -551,9 +552,9 @@ void main() {
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test&environment=default')
     ]);
   });
 
@@ -577,7 +578,7 @@ void main() {
     expect(getMock.calledTimes, 1);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test&environment=default')
     ]);
   });
 
@@ -601,7 +602,7 @@ void main() {
     expect(getMock.calledTimes, 1);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test&environment=default')
     ]);
   });
 
@@ -621,9 +622,9 @@ void main() {
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&sessionId=1234&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&sessionId=1234&appName=flutter-test&environment=default')
     ]);
   });
 
@@ -664,9 +665,9 @@ void main() {
 
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+          'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&properties%5Bcustom%3FKey%5D=customValue%3F&appName=flutter-test')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&properties%5Bcustom%3FKey%5D=customValue%3F&appName=flutter-test&environment=default')
     ]);
   });
 
@@ -687,11 +688,11 @@ void main() {
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledWithUrls, [
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test'),
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test&environment=default'),
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test')
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test&environment=default')
       ]);
     });
   });
@@ -715,7 +716,7 @@ void main() {
       expect(getMock.calledWith, [
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -724,7 +725,7 @@ void main() {
         ],
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -755,7 +756,7 @@ void main() {
       expect(getMock.calledWith, [
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -764,7 +765,7 @@ void main() {
         ],
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test&environment=default'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -1219,7 +1220,11 @@ void main() {
       {
         'eventType': 'isEnabled',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': true,
         'featureName': 'flutter-on',
         'impressionData': true
@@ -1227,7 +1232,11 @@ void main() {
       {
         'eventType': 'isEnabled',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': true,
         'featureName': 'flutter-on',
         'impressionData': true
@@ -1262,7 +1271,11 @@ void main() {
       {
         'eventType': 'getVariant',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': true,
         'featureName': 'flutter-variant',
         'impressionData': true
@@ -1270,7 +1283,11 @@ void main() {
       {
         'eventType': 'getVariant',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': true,
         'featureName': 'flutter-variant',
         'impressionData': true
@@ -1304,7 +1321,11 @@ void main() {
       {
         'eventType': 'isEnabled',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': false,
         'featureName': 'flutter-off',
         'impressionData': false
@@ -1312,7 +1333,11 @@ void main() {
       {
         'eventType': 'getVariant',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': false,
         'featureName': 'flutter-off',
         'impressionData': false
@@ -1348,7 +1373,11 @@ void main() {
       {
         'eventType': 'isEnabled',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': false,
         'featureName': 'unknown-feature',
         'impressionData': null
@@ -1356,7 +1385,11 @@ void main() {
       {
         'eventType': 'getVariant',
         'eventId': '1234',
-        'context': {'sessionId': '5678', 'appName': 'flutter-test'},
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
         'enabled': false,
         'featureName': 'unknown-feature',
         'impressionData': null

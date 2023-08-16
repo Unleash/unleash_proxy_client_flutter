@@ -40,6 +40,9 @@ class UnleashClient extends EventEmitter {
   /// The name of the app where the Unleash Client is used
   final String appName;
 
+  /// The name of the environment where the Unleash Client is used
+  final String environment;
+
   /// The number of seconds between toggles re-fetch
   final int refreshInterval;
 
@@ -114,6 +117,7 @@ class UnleashClient extends EventEmitter {
       {required this.url,
       required this.clientKey,
       required this.appName,
+      this.environment = 'default',
       this.metricsInterval = 30,
       this.refreshInterval = 30,
       this.fetcher = get,
@@ -194,6 +198,7 @@ class UnleashClient extends EventEmitter {
           ...url.queryParameters,
           ...context.toMap(),
           'appName': appName,
+          'environment': environment
         },
       );
       final request = http.Request('GET', uri);
@@ -339,7 +344,11 @@ class UnleashClient extends EventEmitter {
     final enabled = toggle?.enabled ?? false;
 
     if (impressionDataAll || (toggle != null && toggle.impressionData)) {
-      final contextWithAppName = {...context.toMap(), 'appName': appName};
+      final contextWithAppName = {
+        ...context.toMap(),
+        'appName': appName,
+        'environment': environment
+      };
 
       emit(impressionEvent, {
         'eventType': type,
