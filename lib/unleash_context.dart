@@ -8,11 +8,6 @@ class UnleashContext {
   UnleashContext({this.userId, this.sessionId, this.remoteAddress, properties})
       : properties = properties ?? {};
 
-  String toQueryParams() {
-    final result = Uri(queryParameters: toMap()).query;
-    return result.isNotEmpty ? '?$result' : '';
-  }
-
   Map<String, String> toMap() {
     final userId = this.userId;
     final remoteAddress = this.remoteAddress;
