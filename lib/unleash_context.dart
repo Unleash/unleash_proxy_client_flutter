@@ -5,7 +5,11 @@ class UnleashContext {
   String? remoteAddress;
   Map<String, String> properties;
 
-  UnleashContext({this.userId, this.sessionId, this.remoteAddress, Map<String, String>? properties})
+  UnleashContext(
+      {this.userId,
+      this.sessionId,
+      this.remoteAddress,
+      Map<String, String>? properties})
       : properties = properties ?? {};
 
   Map<String, String> toMap() {
