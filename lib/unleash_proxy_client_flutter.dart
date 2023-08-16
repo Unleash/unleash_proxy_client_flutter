@@ -189,8 +189,14 @@ class UnleashClient extends EventEmitter {
         headers['If-None-Match'] = etag;
       }
 
-      final request = http.Request(
-          'GET', Uri.parse('${url.toString()}${context.toQueryParams()}'));
+      final uri = url.replace(
+        queryParameters: {
+          ...url.queryParameters,
+          ...context.toMap(),
+          'appName': appName,
+        },
+      );
+      final request = http.Request('GET', uri);
       request.headers.addAll(headers);
       final response = await fetcher(request);
 
