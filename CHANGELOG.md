@@ -1,3 +1,8 @@
+## 1.4.0
+
+* Feat: appName and environment are automatically send to backend and reported in impression events 
+* Fix: type signature for UnleashContext properties
+
 ## 1.3.0
 
 * Feat: HTTP dependency update. Since it's an important update (env support) it's a feat (major version update) and not chore. 
