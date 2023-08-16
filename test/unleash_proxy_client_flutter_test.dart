@@ -162,7 +162,7 @@ void main() {
     await unleash.start();
 
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=5678')
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=5678&appName=flutter-test')
     ]);
   });
 
@@ -187,7 +187,7 @@ void main() {
     expect(getMock.calledWith, [
       [
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
         {
           'Accept': 'AcceptType',
           'Cache': 'no-cache',
@@ -214,7 +214,7 @@ void main() {
     expect(getMock.calledWith, [
       [
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
         {
           'Accept': 'application/json',
           'Cache': 'no-cache',
@@ -488,13 +488,13 @@ void main() {
 
     expect(getMock.calledTimes, 4);
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test')
     ]);
   });
 
@@ -516,15 +516,15 @@ void main() {
 
     expect(getMock.calledTimes, 5);
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=session'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=session&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session'),
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BanotherCustomKey%5D=anotherCustomValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test')
     ]);
   });
 
@@ -547,9 +547,9 @@ void main() {
 
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test')
     ]);
   });
 
@@ -573,7 +573,7 @@ void main() {
     expect(getMock.calledTimes, 1);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test')
     ]);
   });
 
@@ -597,7 +597,7 @@ void main() {
     expect(getMock.calledTimes, 1);
     expect(getMock.calledWithUrls, [
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test')
     ]);
   });
 
@@ -616,9 +616,9 @@ void main() {
 
     expect(getMock.calledTimes, 2);
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&sessionId=1234')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=456&sessionId=1234&appName=flutter-test')
     ]);
   });
 
@@ -658,9 +658,9 @@ void main() {
         properties: {'custom?Key': 'customValue?'}));
 
     expect(getMock.calledWithUrls, [
-      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+      Uri.parse('https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&properties%5Bcustom%3FKey%5D=customValue%3F')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123%3F%3F&remoteAddress=192.168.0.10&sessionId=session&properties%5Bcustom%3FKey%5D=customValue%3F&appName=flutter-test')
     ]);
   });
 
@@ -681,11 +681,11 @@ void main() {
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledWithUrls, [
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+            'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234'),
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test'),
         Uri.parse(
-            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234')
+            'https://app.unleash-hosted.com/demo/api/proxy?userId=123&sessionId=1234&appName=flutter-test')
       ]);
     });
   });
@@ -709,7 +709,7 @@ void main() {
       expect(getMock.calledWith, [
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -718,7 +718,7 @@ void main() {
         ],
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -749,7 +749,7 @@ void main() {
       expect(getMock.calledWith, [
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -758,7 +758,7 @@ void main() {
         ],
         [
           Uri.parse(
-              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234'),
+              'https://app.unleash-hosted.com/demo/api/proxy?sessionId=1234&appName=flutter-test'),
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
@@ -1357,4 +1357,23 @@ void main() {
       }
     ]);
   });
+}
+
+
+abstract class UnleashConfig {
+  /// Flag that will be used to control the image details feature in the app
+  bool get isDetailsPageEnabled;
+}
+
+
+class UnleashConfigImpl extends UnleashConfig {
+  final UnleashClient unleash;
+
+
+  UnleashConfigImpl(this.unleash);
+
+
+  /// After setting up the client
+  @override
+  bool get isDetailsPageEnabled => unleash.isEnabled('isImageDetailsEnabled');
 }
