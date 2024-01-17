@@ -1,9 +1,11 @@
 library unleash_proxy_client_flutter;
 
-import 'package:http/http.dart' as http;
 import 'dart:async';
+
 import 'package:events_emitter/events_emitter.dart';
+import 'package:http/http.dart' as http;
 import 'package:unleash_proxy_client_flutter/client_events.dart';
+import 'package:unleash_proxy_client_flutter/metrics.dart';
 import 'package:unleash_proxy_client_flutter/parse_stringify_toggles.dart';
 import 'package:unleash_proxy_client_flutter/session_id_generator.dart';
 import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
@@ -11,7 +13,6 @@ import 'package:unleash_proxy_client_flutter/storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
-import 'package:unleash_proxy_client_flutter/metrics.dart';
 
 import 'event_id_generator.dart';
 import 'http_toggle_client.dart';
@@ -253,6 +254,7 @@ class UnleashClient extends EventEmitter {
     return parseToggles(toggles);
   }
 
+  /// Overrides the entire context fields data.
   Future<void> updateContext(UnleashContext unleashContext) async {
     if (started == false) {
       await _waitForEvent('initialized');
@@ -277,15 +279,27 @@ class UnleashClient extends EventEmitter {
     }
   }
 
+  /// Add a single context field.
   Future<void> setContextField(String field, String value) async {
-    if (clientState == ClientState.ready) {
-      _updateContextField(field, value);
-      await _fetchToggles();
-    } else {
+    if (clientState != ClientState.ready) {
       await _waitForEvent('ready');
-      _updateContextField(field, value);
-      await _fetchToggles();
     }
+
+    _updateContextField(field, value);
+    await _fetchToggles();
+  }
+
+  /// Add multiple context fields at the same time.
+  Future<void> setContextFields(Map<String, String> fields) async {
+    if (clientState != ClientState.ready) {
+      await _waitForEvent('ready');
+    }
+
+    for (final entry in fields.entries) {
+      _updateContextField(entry.key, entry.value);
+    }
+
+    await _fetchToggles();
   }
 
   void _updateContextField(String field, String value) {
