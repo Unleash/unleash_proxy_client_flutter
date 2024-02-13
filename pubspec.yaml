@@ -6,7 +6,7 @@ issue_tracker: https://github.com/Unleash/unleash_proxy_client_flutter
 version: 1.4.0
 
 environment:
-  sdk: ">=2.18.0 <4.0.0"
+  sdk: ">=2.19.0 <4.0.0"
   flutter: ">=3.0.0"
 
 dependencies:
@@ -14,8 +14,8 @@ dependencies:
     sdk: flutter
   http: '>=0.13.5 <2.0.0'
   events_emitter: ^0.5.2
-  shared_preferences: ^2.0.15
-  uuid: ^3.0.7
+  shared_preferences: ^2.2.2
+  uuid: ^4.2.2
 
 dev_dependencies:
   flutter_test:
