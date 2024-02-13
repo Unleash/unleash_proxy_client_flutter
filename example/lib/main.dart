@@ -39,8 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     var unleash = UnleashClient(
-        url: Uri.parse('https://app.unleash-hosted.com/demo/api/proxy'),
-        clientKey: 'proxy-123',
+        url: Uri.parse('https://sandbox.getunleash.io/enterprise/api/frontend'),
+        clientKey: 'SDKIntegration:development.f0474f4a37e60794ee8fb00a4c112de58befde962af6d5055b383ea3',
         refreshInterval: 30,
         appName: 'example-flutter-app');
     void updateCounterEnabled(_) {
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-        _counter++;
+      _counter++;
     });
   }
 
