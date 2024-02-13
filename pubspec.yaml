@@ -14,8 +14,8 @@ dependencies:
     sdk: flutter
   http: '>=0.13.5 <2.0.0'
   events_emitter: ^0.5.2
-  shared_preferences: ^2.0.15
-  uuid: ^3.0.7
+  shared_preferences: ^2.2.0
+  uuid: ^4.2.2
 
 dev_dependencies:
   flutter_test:
