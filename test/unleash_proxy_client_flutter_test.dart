@@ -487,7 +487,8 @@ void main() {
         properties: {'customKey': 'customValue'}));
     await unleash.setContextField('userId', '456');
     await unleash.setContextField('anotherCustomKey', 'anotherCustomValue');
-    await unleash.setContextFields({'userId': '789', 'mapCustomKey': 'mapCustomValue'});
+    await unleash
+        .setContextFields({'userId': '789', 'mapCustomKey': 'mapCustomValue'});
 
     expect(getMock.calledTimes, 5);
     expect(getMock.calledWithUrls, [
@@ -501,7 +502,7 @@ void main() {
           'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test&environment=production'),
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=789&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue'
-              '&properties%5BanotherCustomKey%5D=anotherCustomValue&properties%5BmapCustomKey%5D=mapCustomValue&appName=flutter-test&environment=production')
+          '&properties%5BanotherCustomKey%5D=anotherCustomValue&properties%5BmapCustomKey%5D=mapCustomValue&appName=flutter-test&environment=production')
     ]);
   });
 
