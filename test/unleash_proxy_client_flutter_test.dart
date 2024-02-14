@@ -500,7 +500,8 @@ void main() {
       Uri.parse(
           'https://app.unleash-hosted.com/demo/api/proxy?userId=456&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue&appName=flutter-test&environment=production'),
       Uri.parse(
-          'https://app.unleash-hosted.com/demo/api/proxy?userId=789&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5BanotherCustomKey%5D=anotherCustomValue&properties%5BmapCustomKey%5D=mapCustomValue&appName=flutter-test&environment=production')
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=789&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue'
+              '&properties%5BanotherCustomKey%5D=anotherCustomValue&properties%5BmapCustomKey%5D=mapCustomValue&appName=flutter-test&environment=production')
     ]);
   });
 
