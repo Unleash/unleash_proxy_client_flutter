@@ -104,6 +104,9 @@ unleash.updateContext(UnleashContext(userId: '1233'));
 
 // Used to update a single field on the Unleash Context.
 unleash.setContextField('userId', '4141');
+
+// Used to update multiple context fields on the Unleash Context.
+unleash.setContextFields({'userId': '4141'});
 ```
 
 ### Available options
