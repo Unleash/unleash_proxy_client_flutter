@@ -278,12 +278,20 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> setContextField(String field, String value) async {
+    await setContextFields({field: value});
+  }
+
+  Future<void> setContextFields(Map<String, String> fields) async {
     if (clientState == ClientState.ready) {
-      _updateContextField(field, value);
+      fields.forEach((field, value) {
+        _updateContextField(field, value);
+      });
       await _fetchToggles();
     } else {
       await _waitForEvent('ready');
-      _updateContextField(field, value);
+      fields.forEach((field, value) {
+        _updateContextField(field, value);
+      });
       await _fetchToggles();
     }
   }
