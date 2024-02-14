@@ -97,7 +97,7 @@ The `updateContext` method will replace the entire
 
 The `setContextField` method only acts on the property that you choose. It does not affect any other properties of the Unleash context.
 
-The `setContextFielsd` method only acts on the properties that you choose. It does not affect any other properties of the Unleash context.
+The `setContextFields` method only acts on the properties that you choose. It does not affect any other properties of the Unleash context.
 
 ```dart
 // Used to set the context fields, shared with the Unleash Proxy. This 
