@@ -88,7 +88,7 @@ if (payload != null) {
 
 #### Updating the Unleash context
 
-The [Unleash context](https://docs.getunleash.io/reference/unleash-context) is used to evaluate features against attributes of a the current user. To update and configure the Unleash context in this SDK, use the `updateContext` and `setContextField` methods.
+The [Unleash context](https://docs.getunleash.io/reference/unleash-context) is used to evaluate features against attributes of a the current user. To update and configure the Unleash context in this SDK, use the `updateContext`, `setContextField` and `setContextFields` methods.
 
 The context you set in your app will be passed along to the Unleash proxy or the front-end API as query parameters for feature evaluation.
 
@@ -96,6 +96,8 @@ The `updateContext` method will replace the entire
 (mutable part) of the Unleash context with the data that you pass in.
 
 The `setContextField` method only acts on the property that you choose. It does not affect any other properties of the Unleash context.
+
+The `setContextFielsd` method only acts on the properties that you choose. It does not affect any other properties of the Unleash context.
 
 ```dart
 // Used to set the context fields, shared with the Unleash Proxy. This 
