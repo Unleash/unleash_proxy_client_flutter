@@ -1,7 +1,7 @@
 ## 1.5.0
 
 * Feat: ability to set multiple context fields at once without providing full context
-* Chore: shared_preferences and uuid dependencies update (non breaking changes)
+* Chore: shared_preferences and uuid dependencies update (non-breaking changes)
 
 ## 1.4.0
 
