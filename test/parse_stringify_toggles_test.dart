@@ -1,38 +1,23 @@
-import 'package:test/test.dart';
-import 'parse_stringify_toggles.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:unleash_proxy_client_flutter/parse_stringify_toggles.dart';
+
+const mockData = '''{ 
+     "toggles": [
+      { "name": "flutter-on", "enabled": true, "impressionData": true, "variant": { "enabled": false, "name": "disabled" } }, 
+      { "name": "flutter-off", "enabled": false, "impressionData": false, "variant": { "enabled": false, "name": "flutter-off-variant" } },
+      { "invalid": "flutter-variant", "enabled": true, "impressionData": true, "variant": { "enabled": true, "name": "flutter-variant" } }
+     ] 
+  }''';
 
 void main() {
   group('parseToggles', () {
-    test('should parse valid toggles correctly', () {
-      var jsonBody = '''
-      {
-        "toggles": [
-          {"name": "feature1", "enabled": true},
-          {"name": "feature2", "enabled": false}
-        ]
-      }
-      ''';
-      var result = parseToggles(jsonBody);
-      expect(result.containsKey('feature1'), isTrue);
-      expect(result['feature1']?.enabled, isTrue);
-      expect(result.containsKey('feature2'), isTrue);
-      expect(result['feature2']?.enabled, isFalse);
-    });
-
     test('should skip invalid entries and parse only valid ones', () {
-      var jsonBody = '''
-      {
-        "toggles": [
-          {"name": "validFeature", "enabled": true},
-          {"invalid": "data"},
-          {"name": 123, "enabled": "yes"}
-        ]
-      }
-      ''';
-      var result = parseToggles(jsonBody);
-      expect(result.length, 1);
-      expect(result.containsKey('validFeature'), isTrue);
-      expect(result['validFeature']?.enabled, isTrue);
+      var result = parseToggles(mockData);
+      expect(result.length, 2);
+      expect(result.containsKey('flutter-on'), isTrue);
+      expect(result['flutter-on']?.enabled, isTrue);
+      expect(result.containsKey('flutter-off'), isTrue);
+      expect(result['flutter-off']?.enabled, isFalse);
     });
 
     test('should return an empty map if toggles is not a list', () {

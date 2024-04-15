@@ -9,7 +9,6 @@ Map<String, ToggleConfig> parseToggles(String body) {
 
   // Return an empty map if 'toggles' isn't a list or doesn't exist
   if (decoded['toggles'] is! List) {
-    print('Expected a list of toggles, received ${decoded['toggles'].runtimeType}');
     return {};
   }
 
@@ -19,9 +18,6 @@ Map<String, ToggleConfig> parseToggles(String body) {
   for (var toggle in toggles) {
     if (toggle is Map<String, dynamic> && toggle.containsKey('name')) {
       result[toggle['name']] = ToggleConfig.fromJson(toggle);
-    } else {
-      // Log the invalid toggle entry; skip processing it
-      print('Skipping invalid toggle entry: $toggle');
     }
   }
 
