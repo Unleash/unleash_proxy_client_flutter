@@ -230,17 +230,17 @@ class UnleashClient extends EventEmitter {
 
   Future<Map<String, ToggleConfig>> _fetchTogglesFromStorage() async {
     try {
-        final toggles =
-            await actualStorageProvider.get(storageWithApp(appName, storageKey));
+      final toggles =
+          await actualStorageProvider.get(storageWithApp(appName, storageKey));
 
-        if (toggles == null) {
-          return {};
-        }
-
-        return parseToggles(toggles);
-     } catch (e) {
+      if (toggles == null) {
         return {};
       }
+
+      return parseToggles(toggles);
+    } catch (e) {
+      return {};
+    }
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
