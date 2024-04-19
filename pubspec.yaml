@@ -5,6 +5,7 @@ repository: https://github.com/Unleash/unleash_proxy_client_flutter
 issue_tracker: https://github.com/Unleash/unleash_proxy_client_flutter
 version: 1.5.1
 
+
 environment:
   sdk: ">=2.18.0 <4.0.0"
   flutter: ">=3.0.0"
