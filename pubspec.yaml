@@ -3,7 +3,7 @@ description: A Flutter/Dart client that can be used together with the unleash-pr
 homepage: https://github.com/Unleash/unleash_proxy_client_flutter
 repository: https://github.com/Unleash/unleash_proxy_client_flutter
 issue_tracker: https://github.com/Unleash/unleash_proxy_client_flutter
-version: 1.5.1
+version: 1.5.0
 
 
 environment:
