@@ -1,3 +1,7 @@
+## 1.5.1
+
+* Fix: handle parsing errors from storage
+
 ## 1.5.0
 
 * Feat: ability to set multiple context fields at once without providing full context
