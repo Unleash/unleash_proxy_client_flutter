@@ -1,3 +1,7 @@
+## 1.5.2
+
+* Chore: update dependency range on shared_preferences and uuid
+
 ## 1.5.1
 
 * Fix: handle parsing errors from storage
