@@ -193,9 +193,10 @@ final unleash = UnleashClient(
 * If `bootstrapOverride` is `true` (by default), any local cached data will be overridden with the bootstrap specified.   
 * If `bootstrapOverride` is `false` any local cached data will not be overridden unless the local cache is empty.
 
-## Useful commands development
+## Useful commands for development
 
-* `flutter test`
-* `dart format lib test`
-* `flutter analyze lib test`
-* `dart pub publish`
+* run tests: `flutter test`
+* format code: `dart format lib test`
+* analyse code: `flutter analyze lib test`
+* run example app (from inside the `example` dir): `flutter run`
+* publish new version (update manually first depending on semver): `dart pub publish`
