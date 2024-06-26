@@ -1,3 +1,7 @@
+## 1.5.3
+
+* Fix: payload stringify in bootstrap
+
 ## 1.5.2
 
 * Chore: update dependency range on shared_preferences and uuid

@@ -15,7 +15,8 @@ void main() {
       ] 
     }''';
 
-    Map<String, ToggleConfig> result = parseToggles(mockData);
+    Map<String, ToggleConfig> result =
+        parseToggles(stringifyToggles(parseToggles(mockData)));
 
     expect(result.length, 4);
 

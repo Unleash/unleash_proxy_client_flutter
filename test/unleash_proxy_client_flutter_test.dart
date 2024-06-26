@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unleash_proxy_client_flutter/in_memory_storage_provider.dart';
+import 'package:unleash_proxy_client_flutter/payload.dart';
 import 'package:unleash_proxy_client_flutter/shared_preferences_storage_provider.dart';
 import 'package:unleash_proxy_client_flutter/toggle_config.dart';
 import 'package:unleash_proxy_client_flutter/unleash_context.dart';
@@ -1015,7 +1016,10 @@ void main() {
           'flutter-on': ToggleConfig(
               enabled: true,
               impressionData: false,
-              variant: Variant(enabled: true, name: 'variant-name'))
+              variant: Variant(
+                  enabled: true,
+                  name: 'variant-name',
+                  payload: Payload(type: "string", value: "someValue")))
         },
         fetcher: getMock);
 
@@ -1039,7 +1043,7 @@ void main() {
 
     expect(events, ['initialized', 'ready']);
     expect(storageToggles,
-        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true,"payload":null}}]}');
+        '{"toggles":[{"name":"flutter-on","enabled":true,"impressionData":false,"variant":{"name":"variant-name","enabled":true,"payload":{"type":"string","value":"someValue"}}}]}');
   });
 
   test('should not emit ready event twice when using bootstrap', () async {
