@@ -20,7 +20,7 @@ class Variant {
   }
 
   Map<String, dynamic> toMap() {
-    return {'name': name, 'enabled': enabled, 'payload': payload};
+    return {'name': name, 'enabled': enabled, 'payload': payload?.toMap()};
   }
 
   @override
