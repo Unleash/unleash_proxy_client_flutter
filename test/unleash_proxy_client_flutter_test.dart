@@ -329,6 +329,19 @@ void main() {
     expect(getMock.calledTimes, 1);
   });
 
+  test('can fetch initial toggles with default value', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+
+    expect(unleash.isEnabled('flutter-on', defaultValue: true), true);
+    expect(unleash.isEnabled('flutter-off'), false);
+  });
+
   test('can store toggles in memory storage', () async {
     final getMock = GetMock();
     final storageProvider = InMemoryStorageProvider();

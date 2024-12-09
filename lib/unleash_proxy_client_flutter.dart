@@ -373,9 +373,9 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  bool isEnabled(String featureName) {
+  bool isEnabled(String featureName, {bool defaultValue = false}) {
     final toggle = toggles[featureName];
-    final enabled = toggle?.enabled ?? false;
+    final enabled = toggle?.enabled ?? defaultValue;
     metrics.count(featureName, enabled);
 
     _emitImpression(featureName, 'isEnabled');
