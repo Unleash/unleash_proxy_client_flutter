@@ -1,3 +1,7 @@
+## 1.6.0
+
+* Feat: save network calls when context fields don't change
+
 ## 1.5.3
 
 * Fix: payload stringify in bootstrap
