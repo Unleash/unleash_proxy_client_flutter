@@ -30,21 +30,31 @@ class UnleashContext {
     return params;
   }
 
-  Map<String, String> toFlatMap() {
-    final userId = this.userId;
-    final remoteAddress = this.remoteAddress;
-    final sessionId = this.sessionId;
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! UnleashContext) return false;
+    return other.userId == userId &&
+        other.sessionId == sessionId &&
+        other.remoteAddress == remoteAddress &&
+        _mapEquals(other.properties, properties);
+  }
 
-    final params = <String, String>{
-      if (userId != null) 'userId': userId,
-      if (remoteAddress != null) 'remoteAddress': remoteAddress,
-      if (sessionId != null) 'sessionId': sessionId,
-    };
+  @override
+  int get hashCode {
+    return Object.hash(
+      userId,
+      sessionId,
+      remoteAddress,
+      properties,
+    );
+  }
 
-    properties.forEach((key, value) {
-      params[key] = value;
-    });
-
-    return params;
+  static bool _mapEquals(Map<String, String> map1, Map<String, String> map2) {
+    if (map1.length != map2.length) return false;
+    for (final key in map1.keys) {
+      if (map1[key] != map2[key]) return false;
+    }
+    return true;
   }
 }

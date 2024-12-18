@@ -277,7 +277,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> updateContext(UnleashContext unleashContext) async {
-    if (!_anyFieldHasChanged(unleashContext.toFlatMap())) return;
+    if (unleashContext == context) return;
     if (started == false) {
       await _waitForEvent('initialized');
       _updateContextFields(unleashContext);
