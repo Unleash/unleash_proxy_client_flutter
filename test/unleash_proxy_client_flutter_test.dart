@@ -604,7 +604,7 @@ void main() {
         remoteAddress: 'address',
         sessionId: 'session',
         properties: {'customKey': 'customValue'}));
-    // update whole context before start
+    // update whole context before start but keep data identical
     await unleash.updateContext(UnleashContext(
         userId: '123',
         remoteAddress: 'address',
