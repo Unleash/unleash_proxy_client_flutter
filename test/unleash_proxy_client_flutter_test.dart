@@ -613,8 +613,7 @@ void main() {
     // set standard property before start
     unleash.setContextField('userId', '123');
     // set standard an custom property before start
-    unleash
-        .setContextFields({'customKey': 'customValue', 'userId': '123'});
+    unleash.setContextFields({'customKey': 'customValue', 'userId': '123'});
     await unleash.start();
 
     // set standard properties after start
