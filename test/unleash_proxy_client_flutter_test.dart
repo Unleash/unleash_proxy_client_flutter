@@ -610,15 +610,20 @@ void main() {
         remoteAddress: 'address',
         sessionId: 'session',
         properties: {'customKey': 'customValue'}));
+    // set standard property before start
+    unleash.setContextField('userId', '123');
+    // set standard an custom property before start
+    unleash
+        .setContextFields({'customKey': 'customValue', 'userId': '123'});
     await unleash.start();
 
-    // set standard properties
+    // set standard properties after start
     await unleash.setContextField('userId', '123');
     await unleash.setContextField('remoteAddress', 'address');
     await unleash.setContextField('sessionId', 'session');
-    // set custom property
+    // set custom property after start
     await unleash.setContextField('customKey', 'customValue');
-    // set standard and custom property
+    // set standard and custom property after start
     await unleash
         .setContextFields({'customKey': 'customValue', 'userId': '123'});
     // update whole context after start
