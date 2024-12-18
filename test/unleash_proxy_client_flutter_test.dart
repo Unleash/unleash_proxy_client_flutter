@@ -588,6 +588,100 @@ void main() {
     ]);
   });
 
+  test(
+      'set and update context with the same value will not trigger new fetch call',
+      () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+    await unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
+    // update whole context before start but keep data identical
+    await unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
+    // set standard property before start
+    unleash.setContextField('userId', '123');
+    // set standard an custom property before start
+    unleash.setContextFields({'customKey': 'customValue', 'userId': '123'});
+    await unleash.start();
+
+    // set standard properties after start
+    await unleash.setContextField('userId', '123');
+    await unleash.setContextField('remoteAddress', 'address');
+    await unleash.setContextField('sessionId', 'session');
+    // set custom property after start
+    await unleash.setContextField('customKey', 'customValue');
+    // set standard and custom property after start
+    await unleash
+        .setContextFields({'customKey': 'customValue', 'userId': '123'});
+    // update whole context after start
+    await unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
+
+    expect(getMock.calledTimes, 1);
+    expect(getMock.calledWithUrls, [
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test&environment=default')
+    ]);
+  });
+
+  test('update context removing fields triggers new flag update', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        sessionIdGenerator: generateSessionId,
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+    // ignore this one
+    unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {
+          'customKey': 'customValue',
+          'remove1': 'val1',
+          'remove2': 'val2'
+        }));
+    // first call
+    unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue', 'remove1': 'val1'}));
+    await unleash.start();
+
+    // remove another field and second call
+    await unleash.updateContext(UnleashContext(
+        userId: '123',
+        remoteAddress: 'address',
+        sessionId: 'session',
+        properties: {'customKey': 'customValue'}));
+
+    expect(getMock.calledTimes, 2);
+    expect(getMock.calledWithUrls, [
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&properties%5Bremove1%5D=val1&appName=flutter-test&environment=default'),
+      Uri.parse(
+          'https://app.unleash-hosted.com/demo/api/proxy?userId=123&remoteAddress=address&sessionId=session&properties%5BcustomKey%5D=customValue&appName=flutter-test&environment=default')
+    ]);
+  });
+
   test('update context without await', () async {
     final getMock = GetMock();
     final unleash = UnleashClient(

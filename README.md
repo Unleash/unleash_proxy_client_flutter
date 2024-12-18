@@ -30,6 +30,7 @@ final unleash = UnleashClient(
     url: Uri.parse('https://<your-unleash-instance>/api/frontend'),
     clientKey: '<your-client-side-token>',
     appName: 'my-app');
+unleash.start();
 ```
 
 #### Connection options

@@ -257,7 +257,27 @@ class UnleashClient extends EventEmitter {
     }
   }
 
+  /// Checks if any of the provided context fields are different from the current ones.
+  bool _anyFieldHasChanged(Map<String, String> fields) {
+    for (var entry in fields.entries) {
+      String key = entry.key;
+      String newValue = entry.value;
+
+      if (key == 'userId') {
+        if (context.userId != newValue) return true;
+      } else if (key == 'sessionId') {
+        if (context.sessionId != newValue) return true;
+      } else if (key == 'remoteAddress') {
+        if (context.remoteAddress != newValue) return true;
+      } else {
+        if (context.properties[key] != newValue) return true;
+      }
+    }
+    return false;
+  }
+
   Future<void> updateContext(UnleashContext unleashContext) async {
+    if (unleashContext == context) return;
     if (started == false) {
       await _waitForEvent('initialized');
       _updateContextFields(unleashContext);
@@ -286,6 +306,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> setContextFields(Map<String, String> fields) async {
+    if (!_anyFieldHasChanged(fields)) return;
     if (clientState == ClientState.ready) {
       fields.forEach((field, value) {
         _updateContextField(field, value);
