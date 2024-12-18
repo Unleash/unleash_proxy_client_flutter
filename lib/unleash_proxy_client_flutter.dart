@@ -257,21 +257,6 @@ class UnleashClient extends EventEmitter {
     }
   }
 
-  Future<void> updateContext(UnleashContext unleashContext) async {
-    if (!_anyFieldHasChanged(unleashContext.toFlatMap())) return;
-    if (started == false) {
-      await _waitForEvent('initialized');
-      _updateContextFields(unleashContext);
-    } else if (clientState == ClientState.ready) {
-      _updateContextFields(unleashContext);
-      await _fetchToggles();
-    } else {
-      await _waitForEvent('ready');
-      _updateContextFields(unleashContext);
-      await _fetchToggles();
-    }
-  }
-
   /// Checks if any of the provided context fields are different from the current ones.
   bool _anyFieldHasChanged(Map<String, String> fields) {
     for (var entry in fields.entries) {
@@ -289,6 +274,21 @@ class UnleashClient extends EventEmitter {
       }
     }
     return false;
+  }
+
+  Future<void> updateContext(UnleashContext unleashContext) async {
+    if (!_anyFieldHasChanged(unleashContext.toFlatMap())) return;
+    if (started == false) {
+      await _waitForEvent('initialized');
+      _updateContextFields(unleashContext);
+    } else if (clientState == ClientState.ready) {
+      _updateContextFields(unleashContext);
+      await _fetchToggles();
+    } else {
+      await _waitForEvent('ready');
+      _updateContextFields(unleashContext);
+      await _fetchToggles();
+    }
   }
 
   void _updateContextFields(UnleashContext unleashContext) {
