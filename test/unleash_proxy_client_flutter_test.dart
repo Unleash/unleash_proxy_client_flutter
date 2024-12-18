@@ -589,7 +589,7 @@ void main() {
   });
 
   test(
-      'set and updated context with the same value will not trigger new fetch call',
+      'set and update context with the same value will not trigger new fetch call',
       () async {
     final getMock = GetMock();
     final unleash = UnleashClient(
