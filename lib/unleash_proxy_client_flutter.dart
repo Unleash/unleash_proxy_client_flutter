@@ -321,6 +321,18 @@ class UnleashClient extends EventEmitter {
     }
   }
 
+  Future<void> sendMetrics() async {
+    await metrics.sendMetrics();
+  }
+
+  Future<void> updateToggles() async {
+    if (clientState != ClientState.ready) {
+      await _waitForEvent('ready');
+      await _fetchToggles();
+    }
+    await _fetchToggles();
+  }
+
   void _updateContextField(String field, String value) {
     if (field == 'userId') {
       context.userId = value;
@@ -358,7 +370,7 @@ class UnleashClient extends EventEmitter {
       emit(readyEvent);
     }
 
-    if (!disableRefresh) {
+    if (!disableRefresh && refreshInterval > 0) {
       timer = Timer.periodic(Duration(seconds: refreshInterval), (timer) {
         _fetchToggles();
       });

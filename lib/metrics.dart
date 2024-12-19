@@ -74,7 +74,7 @@ class Metrics {
       : bucket = Bucket(clock);
 
   Future<void> start() async {
-    if (disableMetrics) {
+    if (disableMetrics || metricsInterval == 0) {
       return;
     }
 
@@ -119,14 +119,14 @@ class Metrics {
     }
   }
 
-  void sendMetrics() async {
+  Future<void> sendMetrics() async {
     bucket.closeBucket();
     if (bucket.isEmpty()) {
       return;
     }
 
     final localBucket = bucket;
-    // For now, accept that a failing request will lose the metrics.
+    // For now, accept that a failing request will loose the metrics.
     bucket = Bucket(clock);
 
     try {
