@@ -444,6 +444,100 @@ void main() {
     });
   });
 
+  test('can manually update toggles', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        disableRefresh: true,
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+
+    var updateEventCount = 0;
+    unleash.on('update', (_) {
+      updateEventCount += 1;
+    });
+
+    await unleash.start();
+    expect(getMock.calledTimes, 1);
+    expect(updateEventCount, 1);
+
+    await unleash.updateToggles();
+    expect(getMock.calledTimes, 2);
+    expect(updateEventCount, 2);
+
+    await unleash.updateToggles();
+    expect(getMock.calledTimes, 3);
+    expect(updateEventCount, 3);
+  });
+
+  test('should not update toggles when not started', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        refreshInterval: 0,
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+
+    unleash.updateToggles();
+    expect(getMock.calledTimes, 0);
+  });
+
+  test('update toggles should wait on asynchronous start', () async {
+    final getMock = GetMock();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        refreshInterval: 0,
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock);
+
+    final completer = Completer<void>();
+    // Ready should be registered before we start the client.
+    unleash.on('ready', (_) {
+      completer.complete();
+    });
+
+    unleash.start();
+    unleash.updateToggles();
+
+    await completer.future;
+
+    expect(getMock.calledTimes, 1);
+
+    await unleash.updateToggles();
+
+    expect(getMock.calledTimes, 3);
+  });
+
+  test('can manually send metrics', () async {
+    var postMock = PostMock(payload: '''{}''', status: 200, headers: {});
+    final getMock = GetMock(body: mockData, status: 200, headers: {});
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        refreshInterval: 0,
+        metricsInterval: 0,
+        storageProvider: InMemoryStorageProvider(),
+        fetcher: getMock,
+        poster: postMock);
+
+    await unleash.start();
+
+    // no buckets to send
+    await unleash.sendMetrics();
+    expect(postMock.calledTimes, 0);
+
+    unleash.isEnabled('flutter-on');
+    await unleash.sendMetrics();
+    expect(postMock.calledTimes, 1);
+  });
+
   test('stopping client should cancel the timer', () {
     fakeAsync((async) {
       final getMock = GetMock();

@@ -1,3 +1,8 @@
+## 1.7.0
+
+* Feat: manual control over updateToggles and sendMetrics
+
+
 ## 1.6.0
 
 * Feat: save network calls when context fields don't change
