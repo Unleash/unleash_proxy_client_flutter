@@ -7,9 +7,9 @@ void main() {
         userId: 'user1',
         sessionId: 'session1',
         remoteAddress: '192.168.1.1',
-        properties: {'key1': 'value1'}
-    );
+        properties: {'key1': 'value1'});
 
-    expect(context1.getKey(), "dXNlcklkPXVzZXIxO3Nlc3Npb25JZD1zZXNzaW9uMTtyZW1vdGVBZGRyZXNzPTE5Mi4xNjguMS4xO2tleTE9dmFsdWUxOw==");
+    expect(context1.getKey(),
+        "dXNlcklkPXVzZXIxO3Nlc3Npb25JZD1zZXNzaW9uMTtyZW1vdGVBZGRyZXNzPTE5Mi4xNjguMS4xO2tleTE9dmFsdWUxOw==");
   });
 }
