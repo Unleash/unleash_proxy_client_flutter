@@ -1,5 +1,7 @@
 library unleash_proxy_client_flutter;
 
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:events_emitter/events_emitter.dart';
@@ -15,6 +17,7 @@ import 'package:unleash_proxy_client_flutter/metrics.dart';
 
 import 'event_id_generator.dart';
 import 'http_toggle_client.dart';
+import 'last_update_terms.dart';
 
 enum ClientState {
   initializing,
@@ -24,9 +27,16 @@ enum ClientState {
 
 const storageKey = '_unleash_repo';
 const sessionStorageKey = '_unleash_sessionId';
+const lastUpdateKey = '_unleash_repoLastUpdateTimestamp';
 
 String storageWithApp(String appName, String key) {
   return '$appName.$key';
+}
+
+class ExperimentalConfig {
+  final int? togglesStorageTTL;
+
+  const ExperimentalConfig({this.togglesStorageTTL});
 }
 
 /// Main entry point to Flutter Unleash Proxy (https://docs.getunleash.io/reference/unleash-proxy) client
@@ -113,6 +123,10 @@ class UnleashClient extends EventEmitter {
   /// Internal indicator if the client has been started
   var started = false;
 
+  ExperimentalConfig? experimental;
+
+  int lastRefreshTimestamp = 0;
+
   UnleashClient(
       {required this.url,
       required this.clientKey,
@@ -132,7 +146,8 @@ class UnleashClient extends EventEmitter {
       this.disableRefresh = false,
       this.headerName = 'Authorization',
       this.customHeaders = const {},
-      this.impressionDataAll = false}) {
+      this.impressionDataAll = false,
+      this.experimental}) {
     _init();
     metrics = Metrics(
         appName: appName,
@@ -146,6 +161,12 @@ class UnleashClient extends EventEmitter {
     final bootstrap = this.bootstrap;
     if (bootstrap != null) {
       toggles = bootstrap;
+    }
+    if (experimental != null) {
+      final ttl = experimental?.togglesStorageTTL;
+      if (ttl != null && ttl > 0) {
+        experimental = ExperimentalConfig(togglesStorageTTL: ttl * 1000);
+      }
     }
   }
 
@@ -167,6 +188,12 @@ class UnleashClient extends EventEmitter {
       toggles = togglesInStorage;
     }
 
+    if (bootstrap != null) {
+      await _storeLastRefreshTimestamp();
+    } else {
+      lastRefreshTimestamp = await _getLastRefreshTimestamp();
+    }
+
     clientState = ClientState.initialized;
     emit(initializedEvent);
 
@@ -174,6 +201,7 @@ class UnleashClient extends EventEmitter {
       await actualStorageProvider.save(
           storageWithApp(appName, storageKey), stringifyToggles(bootstrap));
       toggles = bootstrap;
+
       clientState = ClientState.ready;
       emit(readyEvent);
     }
@@ -212,7 +240,11 @@ class UnleashClient extends EventEmitter {
         await actualStorageProvider.save(
             storageWithApp(appName, storageKey), response.body);
         toggles = parseToggles(response.body);
+        await _storeLastRefreshTimestamp();
         emit(updateEvent);
+      }
+      if (response.statusCode == 304) {
+        await _storeLastRefreshTimestamp();
       }
       if (response.statusCode > 399) {
         emit(errorEvent, {
@@ -345,6 +377,50 @@ class UnleashClient extends EventEmitter {
     }
   }
 
+  bool _isTogglesStorageTTLEnabled() {
+    return experimental?.togglesStorageTTL != null &&
+        experimental!.togglesStorageTTL! > 0;
+  }
+
+  bool _isUpToDate() {
+    if (!_isTogglesStorageTTLEnabled()) {
+      return false;
+    }
+
+    final now = clock().millisecondsSinceEpoch;
+    final ttl = experimental?.togglesStorageTTL ?? 0;
+
+    return lastRefreshTimestamp > 0 &&
+        (lastRefreshTimestamp <= now) &&
+        (now - lastRefreshTimestamp < ttl);
+  }
+
+  Future<int> _getLastRefreshTimestamp() async {
+    if (_isTogglesStorageTTLEnabled()) {
+      final lastRefresh = await actualStorageProvider
+          .get(storageWithApp(appName, lastUpdateKey));
+      final lastRefreshDecoded = lastRefresh != null
+          ? LastUpdateTerms.fromJson(jsonDecode(lastRefresh))
+          : null;
+      final contextHash = context.getKey();
+      if (lastRefreshDecoded != null && lastRefreshDecoded.key == contextHash) {
+        return lastRefreshDecoded.timestamp;
+      }
+      return 0;
+    }
+    return 0;
+  }
+
+  Future<void> _storeLastRefreshTimestamp() async {
+    if (_isTogglesStorageTTLEnabled()) {
+      lastRefreshTimestamp = clock().millisecondsSinceEpoch;
+      final lastUpdateValue = LastUpdateTerms(
+          key: context.getKey(), timestamp: lastRefreshTimestamp);
+      await actualStorageProvider.save(storageWithApp(appName, lastUpdateKey),
+          jsonEncode(lastUpdateValue.toMap()));
+    }
+  }
+
   Future<void> _waitForEvent(String eventName) async {
     final completer = Completer<void>();
     void listener(dynamic value) async {
@@ -363,7 +439,10 @@ class UnleashClient extends EventEmitter {
     }
 
     metrics.start();
-    await _fetchToggles();
+
+    if (!_isUpToDate()) {
+      await _fetchToggles();
+    }
 
     if (clientState != ClientState.ready) {
       clientState = ClientState.ready;

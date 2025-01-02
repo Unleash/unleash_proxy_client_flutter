@@ -30,6 +30,14 @@ class UnleashContext {
     return params;
   }
 
+  // TODO: consider different hashing function that is stable between sessions
+  String getKey() {
+    final propertiesHash = Object.hashAll(
+        properties.entries.map((e) => Object.hash(e.key, e.value)));
+    return Object.hash(userId, sessionId, remoteAddress, propertiesHash)
+        .toString();
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
