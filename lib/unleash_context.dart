@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 /// https://docs.getunleash.io/reference/unleash-context
 class UnleashContext {
   String? userId;
@@ -30,12 +32,25 @@ class UnleashContext {
     return params;
   }
 
-  // TODO: consider different hashing function that is stable between sessions
   String getKey() {
-    final propertiesHash = Object.hashAll(
-        properties.entries.map((e) => Object.hash(e.key, e.value)));
-    return Object.hash(userId, sessionId, remoteAddress, propertiesHash)
-        .toString();
+    final buffer = StringBuffer();
+
+    if (userId != null) {
+      buffer.write('userId=$userId;');
+    }
+    if (sessionId != null) {
+      buffer.write('sessionId=$sessionId;');
+    }
+    if (remoteAddress != null) {
+      buffer.write('remoteAddress=$remoteAddress;');
+    }
+
+    properties.forEach((key, value) {
+      buffer.write('$key=$value;');
+    });
+
+    final bytes = utf8.encode(buffer.toString());
+    return base64.encode(bytes);
   }
 
   @override
