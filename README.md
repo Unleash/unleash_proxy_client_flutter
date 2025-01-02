@@ -204,12 +204,13 @@ In this case, it becomes your responsibility to call `updateToggles` and/or `sen
 
 If you start multiple clients sharing the same storage provider (e.g. a default `SharedPreferencesStorageProvider`) you might want to skip fetching toggles on start for all but one of the clients. 
 This can be achieved by setting the `togglesStorageTTL` to a non-zero value. 
-E.g in the example below, the toggles will be considered valid for 10 seconds and will not be fetched on start if they already exist in storage.
+E.g in the example below, the toggles will be considered valid for 60 seconds and will not be fetched on start if they already exist in storage.
+We recommend to set `togglesStorageTTL` to a value greater than the `refreshInterval`.
 
 ```dart
     final anotherUnleash = UnleashClient(
         // ...
-        experimental: const ExperimentalConfig(togglesStorageTTL: 10)
+        experimental: const ExperimentalConfig(togglesStorageTTL: 60)
     );
 ```
 
