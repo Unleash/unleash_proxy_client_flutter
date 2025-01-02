@@ -329,6 +329,181 @@ void main() {
     expect(getMock.calledTimes, 1);
   });
 
+  test('skip initial fetch when TTL not exceeded and 200 code', () async {
+    final getMock = GetMock();
+    final sharedStorageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: getMock,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+
+    await unleash.start();
+
+    final anotherGetMock = GetMock();
+    final anotherUnleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: anotherGetMock,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+
+    await anotherUnleash.start();
+
+    expect(anotherUnleash.isEnabled('flutter-on'), true);
+    expect(anotherUnleash.isEnabled('flutter-off'), false);
+    expect(anotherGetMock.calledTimes, 0);
+  });
+
+  test('skip initial fetch when TTL not exceeded and 304 code', () async {
+    final getMock = GetMock(status: 304);
+    final sharedStorageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: getMock,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+
+    await unleash.start();
+
+    final anotherGetMock = GetMock(status: 304);
+    final anotherUnleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: anotherGetMock,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+
+    await anotherUnleash.start();
+
+    expect(anotherGetMock.calledTimes, 0);
+  });
+
+  test('skip initial fetch when bootstrap is provided and TTL not expired',
+      () async {
+    final getMock = GetMock();
+    final storageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: storageProvider,
+        fetcher: getMock,
+        bootstrap: {
+          'flutter-on': ToggleConfig(
+              enabled: true,
+              impressionData: false,
+              variant: Variant(
+                  enabled: true,
+                  name: 'variant-name',
+                  payload: Payload(type: "string", value: "someValue")))
+        },
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+
+    await unleash.start();
+
+    expect(unleash.isEnabled('flutter-on'), true);
+    expect(getMock.calledTimes, 0);
+  });
+
+  test('do not skip initial fetch when context is different', () async {
+    final getMock = GetMock();
+    final sharedStorageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: getMock,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+    unleash.updateContext(
+        UnleashContext(properties: {'customKey': 'customValue'}));
+
+    await unleash.start();
+
+    final anotherGetMock = GetMock();
+    final anotherUnleash = UnleashClient(
+      url: url,
+      clientKey: 'proxy-123',
+      appName: 'flutter-test',
+      storageProvider: sharedStorageProvider,
+      fetcher: anotherGetMock,
+      experimental: const ExperimentalConfig(togglesStorageTTL: 10),
+    );
+    unleash.updateContext(UnleashContext(
+        properties: {'customKey': 'anotherCustomValue'})); // different context
+
+    await anotherUnleash.start();
+
+    expect(anotherGetMock.calledTimes, 1);
+  });
+
+  test('do not skip initial fetch when TTL exceeded', () async {
+    final getMock = GetMock();
+    final sharedStorageProvider = InMemoryStorageProvider();
+    final originalTime = DateTime.utc(2000);
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        clock: () => originalTime,
+        fetcher: getMock);
+
+    await unleash.start();
+
+    final anotherGetMock = GetMock();
+    final anotherUnleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: anotherGetMock,
+        clock: () => originalTime.add(const Duration(seconds: 11)),
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+
+    await anotherUnleash.start();
+
+    expect(anotherUnleash.isEnabled('flutter-on'), true);
+    expect(anotherUnleash.isEnabled('flutter-off'), false);
+    expect(anotherGetMock.calledTimes, 1);
+  });
+
+  test('do not skip initial fetch when TTL is 0', () async {
+    final getMock = GetMock();
+    final sharedStorageProvider = InMemoryStorageProvider();
+    final originalTime = DateTime.utc(2000);
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        clock: () => originalTime,
+        fetcher: getMock);
+
+    await unleash.start();
+
+    final anotherGetMock = GetMock();
+    final anotherUnleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: anotherGetMock,
+        clock: () => originalTime,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 0));
+
+    await anotherUnleash.start();
+
+    expect(anotherGetMock.calledTimes, 1);
+  });
+
   test('can store toggles in memory storage', () async {
     final getMock = GetMock();
     final storageProvider = InMemoryStorageProvider();

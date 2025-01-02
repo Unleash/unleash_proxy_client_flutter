@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 /// https://docs.getunleash.io/reference/unleash-context
 class UnleashContext {
   String? userId;
@@ -28,6 +30,27 @@ class UnleashContext {
     });
 
     return params;
+  }
+
+  String getKey() {
+    final buffer = StringBuffer();
+
+    if (userId != null) {
+      buffer.write('userId=$userId;');
+    }
+    if (sessionId != null) {
+      buffer.write('sessionId=$sessionId;');
+    }
+    if (remoteAddress != null) {
+      buffer.write('remoteAddress=$remoteAddress;');
+    }
+
+    properties.forEach((key, value) {
+      buffer.write('$key=$value;');
+    });
+
+    final bytes = utf8.encode(buffer.toString());
+    return base64.encode(bytes);
   }
 
   @override

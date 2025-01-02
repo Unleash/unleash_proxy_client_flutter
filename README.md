@@ -116,23 +116,24 @@ unleash.setContextFields({'userId': '4141'});
 
 The Unleash SDK takes the following options:
 
-| option            | required | default                   | description                                                                                                                                      |
-|-------------------|----------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| url               | yes | n/a                       | The Unleash Proxy URL to connect to. E.g.: `https://examples.com/proxy`                                                                         |
-| clientKey         | yes | n/a                       | The Unleash Proxy Secret to be used                                                                                                             | 
-| appName           | yes | n/a                       | The name of the application using this SDK. Will be used as part of the metrics sent to Unleash Proxy. Will also be part of the Unleash Context. | 
-| refreshInterval   | no | 30                        | How often, in seconds, the SDK should check for updated toggle configuration. If set to 0 will disable checking for updates                 |
-| disableRefresh    | no | false                     | If set to true, the client will not check for updated toggle configuration                                                                |
-| metricsInterval   | no | 30                        | How often, in seconds, the SDK should send usage metrics back to Unleash Proxy                                                              | 
-| disableMetrics    | no | false                     | Set this option to `true` if you want to disable usage metrics
+| option            | required | default                            | description                                                                                                                                      |
+|-------------------|----------|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| url               | yes | n/a                                | The Unleash Proxy URL to connect to. E.g.: `https://examples.com/proxy`                                                                         |
+| clientKey         | yes | n/a                                | The Unleash Proxy Secret to be used                                                                                                             | 
+| appName           | yes | n/a                                | The name of the application using this SDK. Will be used as part of the metrics sent to Unleash Proxy. Will also be part of the Unleash Context. | 
+| refreshInterval   | no | 30                                 | How often, in seconds, the SDK should check for updated toggle configuration. If set to 0 will disable checking for updates                 |
+| disableRefresh    | no | false                              | If set to true, the client will not check for updated toggle configuration                                                                |
+| metricsInterval   | no | 30                                 | How often, in seconds, the SDK should send usage metrics back to Unleash Proxy                                                              | 
+| disableMetrics    | no | false                              | Set this option to `true` if you want to disable usage metrics
 | storageProvider   | no | `SharedPreferencesStorageProvider` | Allows you to inject a custom storeProvider                                                                              |
-| bootstrap         | no | `[]`                      | Allows you to bootstrap the cached feature toggle configuration.                                                                               | 
-| bootstrapOverride | no| `true`                    | Should the bootstrap automatically override cached data in the local-storage. Will only be used if bootstrap is not an empty array.     |
-| headerName        | no| `Authorization`           | Provides possiblity to specify custom header that is passed to Unleash / Unleash Proxy with the `clientKey` |
-| customHeaders     | no| `{}`                      | Additional headers to use when making HTTP requests to the Unleash proxy. In case of name collisions with the default headers, the `customHeaders` value will be used. |
-| impressionDataAll | no| `false` | Allows you to trigger "impression" events for **all** `getToggle` and `getVariant` invocations. This is particularly useful for "disabled" feature toggles that are not visible to frontend SDKs. |
+| bootstrap         | no | `null`                             | Allows you to bootstrap the cached feature toggle configuration.                                                                               | 
+| bootstrapOverride | no| `true`                             | Should the bootstrap automatically override cached data in the local-storage. Will only be used if bootstrap is not an empty array.     |
+| headerName        | no| `Authorization`                    | Provides possiblity to specify custom header that is passed to Unleash / Unleash Proxy with the `clientKey` |
+| customHeaders     | no| `{}`                               | Additional headers to use when making HTTP requests to the Unleash proxy. In case of name collisions with the default headers, the `customHeaders` value will be used. |
+| impressionDataAll | no| `false`                            | Allows you to trigger "impression" events for **all** `getToggle` and `getVariant` invocations. This is particularly useful for "disabled" feature toggles that are not visible to frontend SDKs. |
 | fetcher           | no | `http.get`                         | Allows you to define your own **fetcher**. Can be used to add certificate pinning or additional http behavior. |
 | poster            | no | `http.post`                        | Allows you to define your own **poster**. Can be used to add certificate pinning or additional http behavior.  |
+| experimental      | no | `null`                             | Enabling optional experimentation. `togglesStorageTTL` : How long (Time To Live), in seconds, the toggles in storage are considered valid and should not be fetched on start. If set to 0 will disable expiration checking and will be considered always expired.
 ### Listen for updates via the events_emitter
 
 The client is also an event emitter. This means that your code can subscribe to updates from the client.
@@ -174,7 +175,7 @@ This is also useful if you require the toggles to be in a certain state immediat
 
 ### How to use it ?
 Add a `bootstrap` attribute when create a new `UnleashClient`.  
-There's also a `bootstrapOverride` attribute which is by default is `true`.
+There's also a `bootstrapOverride` attribute which by default is `true`.
 
 ```dart
 final unleash = UnleashClient(
@@ -198,6 +199,20 @@ final unleash = UnleashClient(
 
 You can opt out of the Unleash feature flag auto-refresh mechanism and metrics update by settings the `refreshInterval` and/or `metricsInterval` options to `0`.
 In this case, it becomes your responsibility to call `updateToggles` and/or `sendMetrics` methods.
+
+## Experimental: skip fetching toggles on start
+
+If you start multiple clients sharing the same storage provider (e.g. a default `SharedPreferencesStorageProvider`) you might want to skip fetching toggles on start for all but one of the clients. 
+This can be achieved by setting the `togglesStorageTTL` to a non-zero value. 
+E.g in the example below, the toggles will be considered valid for 60 seconds and will not be fetched on start if they already exist in storage.
+We recommend to set `togglesStorageTTL` to a value greater than the `refreshInterval`.
+
+```dart
+    final anotherUnleash = UnleashClient(
+        // ...
+        experimental: const ExperimentalConfig(togglesStorageTTL: 60)
+    );
+```
 
 ## Release guide
 * Run tests: `flutter test`
