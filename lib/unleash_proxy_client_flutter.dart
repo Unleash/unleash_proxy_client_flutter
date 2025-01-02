@@ -201,7 +201,6 @@ class UnleashClient extends EventEmitter {
       await actualStorageProvider.save(
           storageWithApp(appName, storageKey), stringifyToggles(bootstrap));
       toggles = bootstrap;
-
       clientState = ClientState.ready;
       emit(readyEvent);
     }
