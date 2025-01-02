@@ -1,3 +1,7 @@
+## 1.8.0
+
+* Feat: experimental support for skip fetch toggles on start
+
 ## 1.7.0
 
 * Feat: manual control over updateToggles and sendMetrics
