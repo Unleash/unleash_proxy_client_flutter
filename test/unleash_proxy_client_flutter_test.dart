@@ -197,7 +197,7 @@ void main() {
           'Cache': 'no-cache',
           'X-UNLEASH-APPNAME': 'flutter-test',
           'X-UNLEASH-CONNECTION-ID': '1234',
-          'User-Agent': 'unleash-flutter@1.0.0',
+          'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
           'CustomHeader': 'CustomHeaderValue',
           'X-Custom': 'CustomExtension'
         }
@@ -229,7 +229,7 @@ void main() {
           'Cache': 'no-cache',
           'X-UNLEASH-APPNAME': 'flutter-test',
           'X-UNLEASH-CONNECTION-ID': '1234',
-          'User-Agent': 'unleash-flutter@1.0.0',
+          'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
           'CustomHeader': 'proxy-123',
         }
       ]
@@ -1103,7 +1103,7 @@ void main() {
             'Cache': 'no-cache',
             'X-UNLEASH-APPNAME': 'flutter-test',
             'X-UNLEASH-CONNECTION-ID': '1234',
-            'User-Agent': 'unleash-flutter@1.0.0',
+            'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1115,7 +1115,7 @@ void main() {
             'Cache': 'no-cache',
             'X-UNLEASH-APPNAME': 'flutter-test',
             'X-UNLEASH-CONNECTION-ID': '1234',
-            'User-Agent': 'unleash-flutter@1.0.0',
+            'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
             'Authorization': 'proxy-123',
             'If-None-Match': 'ETagValue'
           }
@@ -1151,7 +1151,7 @@ void main() {
             'Cache': 'no-cache',
             'X-UNLEASH-APPNAME': 'flutter-test',
             'X-UNLEASH-CONNECTION-ID': '1234',
-            'User-Agent': 'unleash-flutter@1.0.0',
+            'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1163,7 +1163,7 @@ void main() {
             'Cache': 'no-cache',
             'X-UNLEASH-APPNAME': 'flutter-test',
             'X-UNLEASH-CONNECTION-ID': '1234',
-            'User-Agent': 'unleash-flutter@1.0.0',
+            'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
             'Authorization': 'proxy-123',
           }
         ]
@@ -1306,7 +1306,7 @@ void main() {
             'Authorization': 'proxy-123',
             'X-UNLEASH-APPNAME': 'flutter-test',
             'X-UNLEASH-CONNECTION-ID': '1234',
-            'User-Agent': 'unleash-flutter@1.0.0',
+            'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
           },
           payload
         ],
@@ -1359,7 +1359,7 @@ void main() {
             'Authorization': 'proxy-123',
             'X-UNLEASH-APPNAME': 'flutter-test',
             'X-UNLEASH-CONNECTION-ID': '1234',
-            'User-Agent': 'unleash-flutter@1.0.0',
+            'X-UNLEASH-USER-AGENT': 'unleash-flutter@1.0.0',
           },
           payload
         ],

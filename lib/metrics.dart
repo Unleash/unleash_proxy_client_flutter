@@ -158,7 +158,7 @@ class Metrics {
       'Authorization': clientKey,
       'X-UNLEASH-APPNAME': appName,
       'X-UNLEASH-CONNECTION-ID': connectionId,
-      'User-Agent': userAgent,
+      'X-UNLEASH-USER-AGENT': userAgent,
     };
 
     final request =
