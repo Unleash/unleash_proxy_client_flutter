@@ -225,9 +225,9 @@ class UnleashClient extends EventEmitter {
       final headers = {
         'Accept': 'application/json',
         'Cache': 'no-cache',
-        'X-UNLEASH-APPNAME': appName,
-        'X-UNLEASH-CONNECTION-ID': connectionId,
-        'X-UNLEASH-USER-AGENT': userAgent,
+        'x-unleash-appname': appName,
+        'x-unleash-connection-id': connectionId,
+        'x-unleash-sdk': userAgent,
       };
       headers[headerName] = clientKey;
       headers.addAll(customHeaders);
