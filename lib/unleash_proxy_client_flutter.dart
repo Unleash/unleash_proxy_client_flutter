@@ -142,11 +142,11 @@ class UnleashClient extends EventEmitter {
       this.refreshInterval = 30,
       this.fetcher = get,
       this.poster = post,
-        // overwrite in tests, do not change in client code
+      // overwrite in tests, do not change in client code
       this.sessionIdGenerator = generateSessionId,
-        // overwrite in tests, do not change in client code
+      // overwrite in tests, do not change in client code
       this.idGenerator = generateId,
-        // overwrite in tests, do not change in client code
+      // overwrite in tests, do not change in client code
       this.clock = DateTime.now,
       this.disableMetrics = false,
       this.storageProvider,
