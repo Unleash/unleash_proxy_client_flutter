@@ -183,7 +183,7 @@ void main() {
         storageProvider: InMemoryStorageProvider(),
         sessionIdGenerator: generateSessionId,
         idGenerator: () => '1234',
-        userAgent: 'unleash-flutter@1.0.0',
+        sdkName: 'unleash-flutter@1.0.0',
         fetcher: getMock);
 
     await unleash.start();
@@ -214,7 +214,7 @@ void main() {
         headerName: 'CustomHeader',
         storageProvider: InMemoryStorageProvider(),
         sessionIdGenerator: generateSessionId,
-        userAgent: 'unleash-flutter@1.0.0',
+        sdkName: 'unleash-flutter@1.0.0',
         idGenerator: () => '1234',
         fetcher: getMock);
 
@@ -1087,7 +1087,7 @@ void main() {
           refreshInterval: 10,
           sessionIdGenerator: generateSessionId,
           idGenerator: () => '1234',
-          userAgent: 'unleash-flutter@1.0.0',
+          sdkName: 'unleash-flutter@1.0.0',
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
@@ -1135,7 +1135,7 @@ void main() {
           refreshInterval: 10,
           sessionIdGenerator: generateSessionId,
           idGenerator: () => '1234',
-          userAgent: 'unleash-flutter@1.0.0',
+          sdkName: 'unleash-flutter@1.0.0',
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
@@ -1283,7 +1283,7 @@ void main() {
           metricsInterval: 10,
           sessionIdGenerator: generateSessionId,
           idGenerator: () => '1234',
-          userAgent: 'unleash-flutter@1.0.0',
+          sdkName: 'unleash-flutter@1.0.0',
           storageProvider: InMemoryStorageProvider(),
           clock: () => DateTime.utc(2000),
           fetcher: getMock,
@@ -1331,7 +1331,7 @@ void main() {
           clock: () => DateTime.utc(2000),
           sessionIdGenerator: generateSessionId,
           idGenerator: () => '1234',
-          userAgent: 'unleash-flutter@1.0.0',
+          sdkName: 'unleash-flutter@1.0.0',
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock,
           poster: postMock);

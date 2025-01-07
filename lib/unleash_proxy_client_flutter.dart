@@ -54,7 +54,7 @@ class UnleashClient extends EventEmitter {
   String connectionId = '';
 
   // The SDK user agent used by Unleash to know what version is generating traffic
-  final String userAgent;
+  final String sdkName;
 
   /// The name of the environment where the Unleash Client is used
   final String environment;
@@ -157,7 +157,7 @@ class UnleashClient extends EventEmitter {
       this.customHeaders = const {},
       this.impressionDataAll = false,
       // should be used only for testing
-      this.userAgent = 'unleash-flutter@1.9.0',
+      this.sdkName = 'unleash-flutter@1.9.0',
       this.experimental}) {
     _init();
     metrics = Metrics(
@@ -169,7 +169,7 @@ class UnleashClient extends EventEmitter {
         disableMetrics: disableMetrics,
         clock: clock,
         connectionId: connectionId,
-        userAgent: userAgent,
+        sdkName: sdkName,
         emit: emit);
     final bootstrap = this.bootstrap;
     if (bootstrap != null) {
@@ -227,7 +227,7 @@ class UnleashClient extends EventEmitter {
         'Cache': 'no-cache',
         'x-unleash-appname': appName,
         'x-unleash-connection-id': connectionId,
-        'x-unleash-sdk': userAgent,
+        'x-unleash-sdk': sdkName,
       };
       headers[headerName] = clientKey;
       headers.addAll(customHeaders);

@@ -58,7 +58,7 @@ class Metrics {
   final Function(String, [dynamic]) emit;
   final DateTime Function() clock;
   final String connectionId;
-  final String userAgent;
+  final String sdkName;
   bool disableMetrics;
   Timer? timer;
   Bucket bucket;
@@ -73,7 +73,7 @@ class Metrics {
     required this.url,
     required this.clientKey,
     required this.connectionId,
-    required this.userAgent,
+    required this.sdkName,
     required this.emit,
   }) : bucket = Bucket(clock);
 
@@ -158,7 +158,7 @@ class Metrics {
       'Authorization': clientKey,
       'x-unleash-appname': appName,
       'x-unleash-connection-id': connectionId,
-      'x-unleash-sdk': userAgent,
+      'x-unleash-sdk': sdkName,
     };
 
     final request =
