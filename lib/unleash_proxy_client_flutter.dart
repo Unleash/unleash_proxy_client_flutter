@@ -142,11 +142,11 @@ class UnleashClient extends EventEmitter {
       this.refreshInterval = 30,
       this.fetcher = get,
       this.poster = post,
-      // should be used only for testing
+        // overwrite in tests, do not change in client code
       this.sessionIdGenerator = generateSessionId,
-      // should be used only for testing
+        // overwrite in tests, do not change in client code
       this.idGenerator = generateId,
-      // should be used only for testing
+        // overwrite in tests, do not change in client code
       this.clock = DateTime.now,
       this.disableMetrics = false,
       this.storageProvider,
@@ -156,7 +156,7 @@ class UnleashClient extends EventEmitter {
       this.headerName = 'Authorization',
       this.customHeaders = const {},
       this.impressionDataAll = false,
-      // should be used only for testing
+      // bump on each release, overwrite in tests, do not change in client code
       this.sdkName = 'unleash-flutter@1.9.0',
       this.experimental}) {
     _init();
