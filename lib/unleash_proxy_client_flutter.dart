@@ -225,8 +225,8 @@ class UnleashClient extends EventEmitter {
       final headers = {
         'Accept': 'application/json',
         'Cache': 'no-cache',
-        'x-unleash-appname': appName,
-        'x-unleash-connection-id': connectionId,
+        'X-UNLEASH-APPNAME': appName,
+        'X-UNLEASH-CONNECTION-ID': connectionId,
         'User-Agent': userAgent,
       };
       headers[headerName] = clientKey;

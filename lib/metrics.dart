@@ -156,8 +156,8 @@ class Metrics {
       'Cache': 'no-cache',
       'Content-Type': 'application/json',
       'Authorization': clientKey,
-      'x-unleash-appname': appName,
-      'x-unleash-connection-id': connectionId,
+      'X-UNLEASH-APPNAME': appName,
+      'X-UNLEASH-CONNECTION-ID': connectionId,
       'User-Agent': userAgent,
     };
 
