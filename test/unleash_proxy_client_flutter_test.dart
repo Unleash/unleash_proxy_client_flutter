@@ -193,6 +193,7 @@ void main() {
         {
           'Accept': 'AcceptType',
           'Cache': 'no-cache',
+          'x-unleash-appname': 'flutter-test',
           'CustomHeader': 'CustomHeaderValue',
           'X-Custom': 'CustomExtension'
         }
@@ -220,6 +221,7 @@ void main() {
         {
           'Accept': 'application/json',
           'Cache': 'no-cache',
+          'x-unleash-appname': 'flutter-test',
           'CustomHeader': 'proxy-123',
         }
       ]
@@ -1089,6 +1091,7 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
+            'x-unleash-appname': 'flutter-test',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1098,6 +1101,7 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
+            'x-unleash-appname': 'flutter-test',
             'Authorization': 'proxy-123',
             'If-None-Match': 'ETagValue'
           }
@@ -1129,6 +1133,7 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
+            'x-unleash-appname': 'flutter-test',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1138,6 +1143,7 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
+            'x-unleash-appname': 'flutter-test',
             'Authorization': 'proxy-123',
           }
         ]
@@ -1275,7 +1281,8 @@ void main() {
             'content-type': 'application/json',
             'Accept': 'application/json',
             'Cache': 'no-cache',
-            'Authorization': 'proxy-123'
+            'Authorization': 'proxy-123',
+            'x-unleash-appname': 'flutter-test',
           },
           payload
         ],
@@ -1323,7 +1330,8 @@ void main() {
             'content-type': 'application/json',
             'Accept': 'application/json',
             'Cache': 'no-cache',
-            'Authorization': 'proxy-123'
+            'Authorization': 'proxy-123',
+            'x-unleash-appname': 'flutter-test',
           },
           payload
         ],

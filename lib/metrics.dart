@@ -152,6 +152,7 @@ class Metrics {
       'Cache': 'no-cache',
       'Content-Type': 'application/json',
       'Authorization': clientKey,
+      'x-unleash-appname': appName,
     };
 
     final request =
