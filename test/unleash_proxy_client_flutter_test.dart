@@ -182,6 +182,7 @@ void main() {
         },
         storageProvider: InMemoryStorageProvider(),
         sessionIdGenerator: generateSessionId,
+        idGenerator: () => '1234',
         fetcher: getMock);
 
     await unleash.start();
@@ -194,6 +195,7 @@ void main() {
           'Accept': 'AcceptType',
           'Cache': 'no-cache',
           'x-unleash-appname': 'flutter-test',
+          'x-unleash-connection-id': '1234',
           'CustomHeader': 'CustomHeaderValue',
           'X-Custom': 'CustomExtension'
         }
@@ -210,6 +212,7 @@ void main() {
         headerName: 'CustomHeader',
         storageProvider: InMemoryStorageProvider(),
         sessionIdGenerator: generateSessionId,
+        idGenerator: () => '1234',
         fetcher: getMock);
 
     await unleash.start();
@@ -222,6 +225,7 @@ void main() {
           'Accept': 'application/json',
           'Cache': 'no-cache',
           'x-unleash-appname': 'flutter-test',
+          'x-unleash-connection-id': '1234',
           'CustomHeader': 'proxy-123',
         }
       ]
@@ -1078,6 +1082,7 @@ void main() {
           appName: 'flutter-test',
           refreshInterval: 10,
           sessionIdGenerator: generateSessionId,
+          idGenerator: () => '1234',
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
@@ -1092,6 +1097,7 @@ void main() {
             'Accept': 'application/json',
             'Cache': 'no-cache',
             'x-unleash-appname': 'flutter-test',
+            'x-unleash-connection-id': '1234',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1102,6 +1108,7 @@ void main() {
             'Accept': 'application/json',
             'Cache': 'no-cache',
             'x-unleash-appname': 'flutter-test',
+            'x-unleash-connection-id': '1234',
             'Authorization': 'proxy-123',
             'If-None-Match': 'ETagValue'
           }
@@ -1120,6 +1127,7 @@ void main() {
           appName: 'flutter-test',
           refreshInterval: 10,
           sessionIdGenerator: generateSessionId,
+          idGenerator: () => '1234',
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock);
 
@@ -1134,6 +1142,7 @@ void main() {
             'Accept': 'application/json',
             'Cache': 'no-cache',
             'x-unleash-appname': 'flutter-test',
+            'x-unleash-connection-id': '1234',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1144,6 +1153,7 @@ void main() {
             'Accept': 'application/json',
             'Cache': 'no-cache',
             'x-unleash-appname': 'flutter-test',
+            'x-unleash-connection-id': '1234',
             'Authorization': 'proxy-123',
           }
         ]
@@ -1262,6 +1272,7 @@ void main() {
           refreshInterval: 10,
           metricsInterval: 10,
           sessionIdGenerator: generateSessionId,
+          idGenerator: () => '1234',
           storageProvider: InMemoryStorageProvider(),
           clock: () => DateTime.utc(2000),
           fetcher: getMock,
@@ -1283,6 +1294,7 @@ void main() {
             'Cache': 'no-cache',
             'Authorization': 'proxy-123',
             'x-unleash-appname': 'flutter-test',
+            'x-unleash-connection-id': '1234',
           },
           payload
         ],
@@ -1306,6 +1318,7 @@ void main() {
           metricsInterval: 10,
           clock: () => DateTime.utc(2000),
           sessionIdGenerator: generateSessionId,
+          idGenerator: () => '1234',
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock,
           poster: postMock);
@@ -1332,6 +1345,7 @@ void main() {
             'Cache': 'no-cache',
             'Authorization': 'proxy-123',
             'x-unleash-appname': 'flutter-test',
+            'x-unleash-connection-id': '1234',
           },
           payload
         ],
@@ -1581,7 +1595,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         storageProvider: InMemoryStorageProvider(),
-        eventIdGenerator: () => '1234',
+        idGenerator: () => '1234',
         sessionIdGenerator: () => '5678',
         fetcher: getMock);
 
@@ -1632,7 +1646,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         storageProvider: InMemoryStorageProvider(),
-        eventIdGenerator: () => '1234',
+        idGenerator: () => '1234',
         sessionIdGenerator: () => '5678',
         fetcher: getMock);
 
@@ -1682,7 +1696,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         storageProvider: InMemoryStorageProvider(),
-        eventIdGenerator: () => '1234',
+        idGenerator: () => '1234',
         sessionIdGenerator: () => '5678',
         impressionDataAll: true,
         fetcher: getMock);
@@ -1734,7 +1748,7 @@ void main() {
         clientKey: 'proxy-123',
         appName: 'flutter-test',
         storageProvider: InMemoryStorageProvider(),
-        eventIdGenerator: () => '1234',
+        idGenerator: () => '1234',
         sessionIdGenerator: () => '5678',
         impressionDataAll: true,
         fetcher: getMock);

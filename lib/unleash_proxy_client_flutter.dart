@@ -15,7 +15,7 @@ import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 import 'package:unleash_proxy_client_flutter/variant.dart';
 import 'package:unleash_proxy_client_flutter/metrics.dart';
 
-import 'event_id_generator.dart';
+import 'id_generator.dart';
 import 'http_toggle_client.dart';
 import 'last_update_terms.dart';
 
@@ -50,6 +50,9 @@ class UnleashClient extends EventEmitter {
   /// The name of the app where the Unleash Client is used
   final String appName;
 
+  /// The internal name used by Unleash to count unique SDK connections
+  String connectionId = '';
+
   /// The name of the environment where the Unleash Client is used
   final String environment;
 
@@ -69,7 +72,7 @@ class UnleashClient extends EventEmitter {
   final String Function() sessionIdGenerator;
 
   /// Exposed for testability purposes
-  final String Function() eventIdGenerator;
+  final String Function() idGenerator;
 
   /// Exposed for testability purposes
   final DateTime Function() clock;
@@ -137,7 +140,7 @@ class UnleashClient extends EventEmitter {
       this.fetcher = get,
       this.poster = post,
       this.sessionIdGenerator = generateSessionId,
-      this.eventIdGenerator = generateEventId,
+      this.idGenerator = generateId,
       this.clock = DateTime.now,
       this.disableMetrics = false,
       this.storageProvider,
@@ -157,6 +160,7 @@ class UnleashClient extends EventEmitter {
         clientKey: clientKey,
         disableMetrics: disableMetrics,
         clock: clock,
+        connectionId: connectionId,
         emit: emit);
     final bootstrap = this.bootstrap;
     if (bootstrap != null) {
@@ -171,6 +175,7 @@ class UnleashClient extends EventEmitter {
   }
 
   Future<void> _init() async {
+    connectionId = idGenerator();
     actualStorageProvider =
         storageProvider ?? await SharedPreferencesStorageProvider.init();
 
@@ -211,7 +216,8 @@ class UnleashClient extends EventEmitter {
       final headers = {
         'Accept': 'application/json',
         'Cache': 'no-cache',
-        'x-unleash-appname': appName
+        'x-unleash-appname': appName,
+        'x-unleash-connection-id': connectionId
       };
       headers[headerName] = clientKey;
       headers.addAll(customHeaders);
@@ -476,7 +482,7 @@ class UnleashClient extends EventEmitter {
 
       emit(impressionEvent, {
         'eventType': type,
-        'eventId': eventIdGenerator(),
+        'eventId': idGenerator(),
         'context': contextWithAppName,
         'enabled': enabled,
         'featureName': featureName,
