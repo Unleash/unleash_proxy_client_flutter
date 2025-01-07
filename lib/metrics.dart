@@ -57,21 +57,25 @@ class Metrics {
   final Future<http.Response> Function(http.Request) poster;
   final Function(String, [dynamic]) emit;
   final DateTime Function() clock;
+  final String connectionId;
+  final String sdkName;
   bool disableMetrics;
   Timer? timer;
   Bucket bucket;
   Uri url;
 
-  Metrics(
-      {required this.appName,
-      required this.metricsInterval,
-      required this.clock,
-      this.disableMetrics = false,
-      required this.poster,
-      required this.url,
-      required this.clientKey,
-      required this.emit})
-      : bucket = Bucket(clock);
+  Metrics({
+    required this.appName,
+    required this.metricsInterval,
+    required this.clock,
+    this.disableMetrics = false,
+    required this.poster,
+    required this.url,
+    required this.clientKey,
+    required this.connectionId,
+    required this.sdkName,
+    required this.emit,
+  }) : bucket = Bucket(clock);
 
   Future<void> start() async {
     if (disableMetrics || metricsInterval == 0) {
@@ -152,6 +156,9 @@ class Metrics {
       'Cache': 'no-cache',
       'Content-Type': 'application/json',
       'Authorization': clientKey,
+      'x-unleash-appname': appName,
+      'x-unleash-connection-id': connectionId,
+      'x-unleash-sdk': sdkName,
     };
 
     final request =

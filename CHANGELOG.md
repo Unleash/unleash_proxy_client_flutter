@@ -1,3 +1,8 @@
+## 1.9.0
+
+* Feat: Unique SDK tracking
+* Refactor: renamed eventIdGenerator to idGenerator but this API is used only for tests
+
 ## 1.8.0
 
 * Feat: experimental support for skip fetch toggles on start
