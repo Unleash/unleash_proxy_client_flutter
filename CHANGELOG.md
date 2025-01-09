@@ -1,3 +1,7 @@
+## 1.9.1
+
+* Chore: Upgrade event_emitter version
+
 ## 1.9.0
 
 * Feat: Unique SDK tracking
