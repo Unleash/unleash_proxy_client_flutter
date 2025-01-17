@@ -454,6 +454,68 @@ void main() {
     expect(anotherGetMock.calledTimes, 1);
   });
 
+  test('skip initial fetch when context is identical with updateContext',
+      () async {
+    final getMock = GetMock();
+    final sharedStorageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: getMock,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+    unleash.updateContext(UnleashContext(userId: '123'));
+
+    await unleash.start();
+
+    final anotherGetMock = GetMock();
+    final anotherUnleash = UnleashClient(
+      url: url,
+      clientKey: 'proxy-123',
+      appName: 'flutter-test',
+      storageProvider: sharedStorageProvider,
+      fetcher: anotherGetMock,
+      experimental: const ExperimentalConfig(togglesStorageTTL: 10),
+    );
+    anotherUnleash.updateContext(UnleashContext(userId: '123'));
+
+    await anotherUnleash.start();
+
+    expect(anotherGetMock.calledTimes, 0);
+  });
+
+  test('skip initial fetch when context is identical with setContextFields',
+      () async {
+    final getMock = GetMock();
+    final sharedStorageProvider = InMemoryStorageProvider();
+    final unleash = UnleashClient(
+        url: url,
+        clientKey: 'proxy-123',
+        appName: 'flutter-test',
+        storageProvider: sharedStorageProvider,
+        fetcher: getMock,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 10));
+    unleash.setContextFields({'userId': '123'});
+
+    await unleash.start();
+
+    final anotherGetMock = GetMock();
+    final anotherUnleash = UnleashClient(
+      url: url,
+      clientKey: 'proxy-123',
+      appName: 'flutter-test',
+      storageProvider: sharedStorageProvider,
+      fetcher: anotherGetMock,
+      experimental: const ExperimentalConfig(togglesStorageTTL: 10),
+    );
+    anotherUnleash.setContextFields({'userId': '123'});
+
+    await anotherUnleash.start();
+
+    expect(anotherGetMock.calledTimes, 0);
+  });
+
   test('do not skip initial fetch when TTL exceeded', () async {
     final getMock = GetMock();
     final sharedStorageProvider = InMemoryStorageProvider();

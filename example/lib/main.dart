@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unleash_proxy_client_flutter/unleash_proxy_client_flutter.dart';
+import 'package:unleash_proxy_client_flutter/unleash_context.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,8 +42,12 @@ class _MyHomePageState extends State<MyHomePage> {
     var unleash = UnleashClient(
         url: Uri.parse('https://sandbox.getunleash.io/enterprise/api/frontend'),
         clientKey: 'SDKIntegration:development.f0474f4a37e60794ee8fb00a4c112de58befde962af6d5055b383ea3',
-        refreshInterval: 30,
+        refreshInterval: 10,
+        experimental: const ExperimentalConfig(togglesStorageTTL: 60),
         appName: 'example-flutter-app');
+    unleash.updateContext(UnleashContext(
+        userId: '123',
+        ));
     void updateCounterEnabled(_) {
       final counterEnabled = unleash.isEnabled('counter');
       setState(() {

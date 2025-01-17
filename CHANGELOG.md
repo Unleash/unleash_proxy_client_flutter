@@ -1,3 +1,7 @@
+## 1.9.2
+
+* Fix: Skip initial toggles fetch when using updateContext or setContextFields
+
 ## 1.9.1
 
 * Chore: Upgrade event_emitter version
