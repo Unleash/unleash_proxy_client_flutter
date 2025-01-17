@@ -157,7 +157,7 @@ class UnleashClient extends EventEmitter {
       this.customHeaders = const {},
       this.impressionDataAll = false,
       // bump on each release, overwrite in tests, do not change in client code
-      this.sdkName = 'unleash-flutter@1.9.1',
+      this.sdkName = 'unleash-flutter@1.9.2',
       this.experimental}) {
     _init();
     metrics = Metrics(
@@ -204,8 +204,6 @@ class UnleashClient extends EventEmitter {
 
     if (bootstrap != null) {
       await _storeLastRefreshTimestamp();
-    } else {
-      lastRefreshTimestamp = await _getLastRefreshTimestamp();
     }
 
     clientState = ClientState.initialized;
@@ -355,7 +353,12 @@ class UnleashClient extends EventEmitter {
 
   Future<void> setContextFields(Map<String, String> fields) async {
     if (!_anyFieldHasChanged(fields)) return;
-    if (clientState == ClientState.ready) {
+    if (started == false) {
+      await _waitForEvent('initialized');
+      fields.forEach((field, value) {
+        _updateContextField(field, value);
+      });
+    } else if (clientState == ClientState.ready) {
       fields.forEach((field, value) {
         _updateContextField(field, value);
       });
@@ -455,6 +458,8 @@ class UnleashClient extends EventEmitter {
     }
 
     metrics.start();
+
+    lastRefreshTimestamp = await _getLastRefreshTimestamp();
 
     if (!_isUpToDate()) {
       await _fetchToggles();
