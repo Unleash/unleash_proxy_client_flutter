@@ -1,3 +1,7 @@
+## 1.9.3
+
+* Chore: Sync x-unleash-sdk version scheme with other SDKs
+
 ## 1.9.2
 
 * Fix: Skip initial toggles fetch when using updateContext or setContextFields

@@ -48,6 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
     unleash.updateContext(UnleashContext(
         userId: '123',
         ));
+    unleash.setContextFields({'userId': '1234'});
     void updateCounterEnabled(_) {
       final counterEnabled = unleash.isEnabled('counter');
       setState(() {

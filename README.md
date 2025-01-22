@@ -220,6 +220,6 @@ We recommend to set `togglesStorageTTL` to a value greater than the `refreshInte
 * Analyse code: `flutter analyze lib test`
 * (optional) run example app (from inside the `example` dir): `flutter run`
 * Bump up the version in `pubspec.yaml`
-* Update the `CHANGELOG.md` and `flutter@version` in unleash_proxy_client_flutter.dart
+* Update the `CHANGELOG.md` and `unleash-client-flutter:version` in unleash_proxy_client_flutter.dart
 * Create a PR in new branch, merge it to main
 * Publish new version from tip of main: `dart pub publish`
