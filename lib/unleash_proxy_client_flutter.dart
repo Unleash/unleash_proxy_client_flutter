@@ -157,7 +157,7 @@ class UnleashClient extends EventEmitter {
       this.customHeaders = const {},
       this.impressionDataAll = false,
       // bump on each release, overwrite in tests, do not change in client code
-      this.sdkName = 'unleash-client-flutter:1.9.3',
+      this.sdkName = 'unleash-client-flutter:1.9.4',
       this.experimental}) {
     _init();
     metrics = Metrics(
@@ -223,9 +223,9 @@ class UnleashClient extends EventEmitter {
       final headers = {
         'Accept': 'application/json',
         'Cache': 'no-cache',
-        'x-unleash-appname': appName,
-        'x-unleash-connection-id': connectionId,
-        'x-unleash-sdk': sdkName,
+        'unleash-appname': appName,
+        'unleash-connection-id': connectionId,
+        'unleash-sdk': sdkName,
       };
       headers[headerName] = clientKey;
       headers.addAll(customHeaders);
