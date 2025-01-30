@@ -195,9 +195,9 @@ void main() {
         {
           'Accept': 'AcceptType',
           'Cache': 'no-cache',
-          'x-unleash-appname': 'flutter-test',
-          'x-unleash-connection-id': '1234',
-          'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+          'unleash-appname': 'flutter-test',
+          'unleash-connection-id': '1234',
+          'unleash-sdk': 'unleash-client-flutter:1.0.0',
           'CustomHeader': 'CustomHeaderValue',
           'X-Custom': 'CustomExtension'
         }
@@ -227,9 +227,9 @@ void main() {
         {
           'Accept': 'application/json',
           'Cache': 'no-cache',
-          'x-unleash-appname': 'flutter-test',
-          'x-unleash-connection-id': '1234',
-          'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+          'unleash-appname': 'flutter-test',
+          'unleash-connection-id': '1234',
+          'unleash-sdk': 'unleash-client-flutter:1.0.0',
           'CustomHeader': 'proxy-123',
         }
       ]
@@ -1163,9 +1163,9 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
-            'x-unleash-appname': 'flutter-test',
-            'x-unleash-connection-id': '1234',
-            'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+            'unleash-appname': 'flutter-test',
+            'unleash-connection-id': '1234',
+            'unleash-sdk': 'unleash-client-flutter:1.0.0',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1175,9 +1175,9 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
-            'x-unleash-appname': 'flutter-test',
-            'x-unleash-connection-id': '1234',
-            'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+            'unleash-appname': 'flutter-test',
+            'unleash-connection-id': '1234',
+            'unleash-sdk': 'unleash-client-flutter:1.0.0',
             'Authorization': 'proxy-123',
             'If-None-Match': 'ETagValue'
           }
@@ -1211,9 +1211,9 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
-            'x-unleash-appname': 'flutter-test',
-            'x-unleash-connection-id': '1234',
-            'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+            'unleash-appname': 'flutter-test',
+            'unleash-connection-id': '1234',
+            'unleash-sdk': 'unleash-client-flutter:1.0.0',
             'Authorization': 'proxy-123',
           }
         ],
@@ -1223,9 +1223,9 @@ void main() {
           {
             'Accept': 'application/json',
             'Cache': 'no-cache',
-            'x-unleash-appname': 'flutter-test',
-            'x-unleash-connection-id': '1234',
-            'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+            'unleash-appname': 'flutter-test',
+            'unleash-connection-id': '1234',
+            'unleash-sdk': 'unleash-client-flutter:1.0.0',
             'Authorization': 'proxy-123',
           }
         ]
@@ -1366,9 +1366,9 @@ void main() {
             'Accept': 'application/json',
             'Cache': 'no-cache',
             'Authorization': 'proxy-123',
-            'x-unleash-appname': 'flutter-test',
-            'x-unleash-connection-id': '1234',
-            'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+            'unleash-appname': 'flutter-test',
+            'unleash-connection-id': '1234',
+            'unleash-sdk': 'unleash-client-flutter:1.0.0',
           },
           payload
         ],
@@ -1419,9 +1419,9 @@ void main() {
             'Accept': 'application/json',
             'Cache': 'no-cache',
             'Authorization': 'proxy-123',
-            'x-unleash-appname': 'flutter-test',
-            'x-unleash-connection-id': '1234',
-            'x-unleash-sdk': 'unleash-client-flutter:1.0.0',
+            'unleash-appname': 'flutter-test',
+            'unleash-connection-id': '1234',
+            'unleash-sdk': 'unleash-client-flutter:1.0.0',
           },
           payload
         ],

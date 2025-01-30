@@ -1,3 +1,7 @@
+## 1.9.4
+
+* Fix: Drop x- prefix from unleash headers
+
 ## 1.9.3
 
 * Chore: Sync x-unleash-sdk version scheme with other SDKs
