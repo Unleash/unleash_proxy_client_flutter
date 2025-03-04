@@ -1736,6 +1736,7 @@ void main() {
     unleash.getVariant('flutter-variant'); // has impressionData
     unleash.getVariant('flutter-variant');
     unleash.getVariant('flutter-off'); // does not have impressionData
+    unleash.getVariant('flutter-on'); // test disabled variant
 
     expect(impressions, [
       {
@@ -1748,7 +1749,8 @@ void main() {
         },
         'enabled': true,
         'featureName': 'flutter-variant',
-        'impressionData': true
+        'impressionData': true,
+        'variant': 'flutter-variant-value'
       },
       {
         'eventType': 'getVariant',
@@ -1760,8 +1762,22 @@ void main() {
         },
         'enabled': true,
         'featureName': 'flutter-variant',
-        'impressionData': true
-      }
+        'impressionData': true,
+        'variant': 'flutter-variant-value'
+      },
+      {
+        'eventType': 'getVariant',
+        'eventId': '1234',
+        'context': {
+          'sessionId': '5678',
+          'appName': 'flutter-test',
+          'environment': 'default'
+        },
+        'enabled': true,
+        'featureName': 'flutter-on',
+        'impressionData': true,
+        'variant': 'disabled'
+      },
     ]);
   });
 
@@ -1810,7 +1826,8 @@ void main() {
         },
         'enabled': false,
         'featureName': 'flutter-off',
-        'impressionData': false
+        'impressionData': false,
+        'variant': 'flutter-off-variant'
       }
     ]);
   });

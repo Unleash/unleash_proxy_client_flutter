@@ -495,14 +495,20 @@ class UnleashClient extends EventEmitter {
         'environment': environment
       };
 
-      emit(impressionEvent, {
+      final impressionEventPayload = {
         'eventType': type,
         'eventId': idGenerator(),
         'context': contextWithAppName,
         'enabled': enabled,
         'featureName': featureName,
         'impressionData': toggle?.impressionData
-      });
+      };
+
+      if (toggle?.variant != null && type == 'getVariant') {
+        impressionEventPayload['variant'] = toggle?.variant?.name;
+      }
+
+      emit(impressionEvent, impressionEventPayload);
     }
   }
 
