@@ -505,7 +505,7 @@ class UnleashClient extends EventEmitter {
       };
 
       if (toggle?.variant != null && type == 'getVariant') {
-        impressionEventPayload['variant'] = toggle?.variant?.name;
+        impressionEventPayload['variant'] = toggle?.variant.name;
       }
 
       emit(impressionEvent, impressionEventPayload);
