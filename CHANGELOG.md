@@ -1,4 +1,4 @@
-## 1.9.4
+## 1.9.5
 
 * Fix: add variant data to impression event
 
