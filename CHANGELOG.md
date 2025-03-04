@@ -1,3 +1,7 @@
+## 1.9.5
+
+* Fix: add variant data to impression event
+
 ## 1.9.4
 
 * Fix: Drop x- prefix from unleash headers

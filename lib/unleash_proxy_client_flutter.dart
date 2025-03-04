@@ -157,7 +157,7 @@ class UnleashClient extends EventEmitter {
       this.customHeaders = const {},
       this.impressionDataAll = false,
       // bump on each release, overwrite in tests, do not change in client code
-      this.sdkName = 'unleash-client-flutter:1.9.4',
+      this.sdkName = 'unleash-client-flutter:1.9.5',
       this.experimental}) {
     _init();
     metrics = Metrics(
@@ -495,14 +495,20 @@ class UnleashClient extends EventEmitter {
         'environment': environment
       };
 
-      emit(impressionEvent, {
+      final impressionEventPayload = {
         'eventType': type,
         'eventId': idGenerator(),
         'context': contextWithAppName,
         'enabled': enabled,
         'featureName': featureName,
         'impressionData': toggle?.impressionData
-      });
+      };
+
+      if (toggle?.variant != null && type == 'getVariant') {
+        impressionEventPayload['variant'] = toggle?.variant.name;
+      }
+
+      emit(impressionEvent, impressionEventPayload);
     }
   }
 
