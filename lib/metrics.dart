@@ -87,6 +87,13 @@ class Metrics {
     });
   }
 
+  stop() {
+    final Timer? timer = this.timer;
+    if (timer != null && timer.isActive) {
+      timer.cancel();
+    }
+  }
+
   void count(String name, bool enabled) {
     if (disableMetrics) {
       return;

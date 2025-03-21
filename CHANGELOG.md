@@ -1,3 +1,7 @@
+## 1.9.6
+
+* Fix: stop metrics timer on client stop
+
 ## 1.9.5
 
 * Fix: add variant data to impression event

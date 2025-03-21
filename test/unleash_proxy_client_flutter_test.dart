@@ -788,25 +788,36 @@ void main() {
   test('stopping client should cancel the timer', () {
     fakeAsync((async) {
       final getMock = GetMock();
+      var payload =
+          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+      final postMock = PostMock(payload: payload, status: 200, headers: {});
       final unleash = UnleashClient(
           url: url,
           clientKey: 'proxy-123',
           appName: 'flutter-test',
           refreshInterval: 10,
+          metricsInterval: 10,
           storageProvider: InMemoryStorageProvider(),
-          fetcher: getMock);
+          fetcher: getMock,
+          poster: postMock);
 
       unleash.start();
+      unleash.isEnabled('flutter-on');
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledTimes, 2);
+      expect(postMock.calledTimes, 1);
       // first stop cancels the timer
       unleash.stop();
+      unleash.isEnabled('flutter-on');
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledTimes, 2);
+      expect(postMock.calledTimes, 1);
       // second stop should be no-op
       unleash.stop();
+      unleash.isEnabled('flutter-on');
       async.elapse(const Duration(seconds: 10));
       expect(getMock.calledTimes, 2);
+      expect(postMock.calledTimes, 1);
     });
   });
 

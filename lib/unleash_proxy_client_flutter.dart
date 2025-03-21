@@ -157,7 +157,7 @@ class UnleashClient extends EventEmitter {
       this.customHeaders = const {},
       this.impressionDataAll = false,
       // bump on each release, overwrite in tests, do not change in client code
-      this.sdkName = 'unleash-client-flutter:1.9.5',
+      this.sdkName = 'unleash-client-flutter:1.9.6',
       this.experimental}) {
     _init();
     metrics = Metrics(
@@ -482,6 +482,7 @@ class UnleashClient extends EventEmitter {
     if (timer != null && timer.isActive) {
       timer.cancel();
     }
+    metrics.stop();
   }
 
   void _emitImpression(String featureName, String type) {
