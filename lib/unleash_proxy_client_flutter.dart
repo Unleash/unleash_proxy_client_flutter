@@ -482,6 +482,7 @@ class UnleashClient extends EventEmitter {
     if (timer != null && timer.isActive) {
       timer.cancel();
     }
+    metrics.stop();
   }
 
   void _emitImpression(String featureName, String type) {
