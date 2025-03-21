@@ -789,7 +789,7 @@ void main() {
     fakeAsync((async) {
       final getMock = GetMock();
       var payload =
-      '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
+          '''{start: 2022-12-21T14:18:38.953834, stop: 2022-12-21T14:18:48.953834, toggles: {}}''';
       final postMock = PostMock(payload: payload, status: 200, headers: {});
       final unleash = UnleashClient(
           url: url,
@@ -799,8 +799,7 @@ void main() {
           metricsInterval: 10,
           storageProvider: InMemoryStorageProvider(),
           fetcher: getMock,
-          poster: postMock
-      );
+          poster: postMock);
 
       unleash.start();
       unleash.isEnabled('flutter-on');
